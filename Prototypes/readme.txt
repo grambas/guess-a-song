@@ -1,0 +1,1 @@
+This is the root folder of the prototypes. The prototypes may be broken up into seperate Android studio projects.
