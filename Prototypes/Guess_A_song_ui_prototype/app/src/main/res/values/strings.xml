@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Guess_A_Song_prototype</string>
+    <string name="title_activity_select_songs">SelectSongs</string>
+</resources>

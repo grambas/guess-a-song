@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_host_game"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.maxi.guess_a_song_prototype.HostGame">
+
+    <TextView
+        android:text="STEP 1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvStep"
+        android:textSize="24sp"
+        android:layout_below="@+id/tvCreateGame"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="11dp" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberSigned"
+        android:ems="10"
+        android:layout_below="@+id/tvStep"
+        android:layout_alignLeft="@+id/tvCreateGame"
+        android:layout_alignStart="@+id/tvCreateGame"
+        android:layout_marginTop="41dp"
+        android:id="@+id/etNumberQuestions"
+        android:layout_alignRight="@+id/tvCreateGame"
+        android:layout_alignEnd="@+id/tvCreateGame"
+        android:hint="Number of questions:" />
+
+    <TextView
+        android:text="Create a game"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvCreateGame"
+        android:textSize="36sp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="time"
+        android:ems="10"
+        android:id="@+id/etTimeSong"
+        android:layout_below="@+id/etNumberQuestions"
+        android:layout_alignLeft="@+id/etNumberQuestions"
+        android:layout_alignStart="@+id/etNumberQuestions"
+        android:layout_alignRight="@+id/etNumberQuestions"
+        android:layout_alignEnd="@+id/etNumberQuestions"
+        android:hint="Time to play song:" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/etOtherSettings"
+        android:layout_below="@+id/etTimeSong"
+        android:layout_alignLeft="@+id/etTimeSong"
+        android:layout_alignStart="@+id/etTimeSong"
+        android:layout_alignRight="@+id/etTimeSong"
+        android:layout_alignEnd="@+id/etTimeSong"
+        android:hint="Other settings..." />
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/etOtherSettings"
+        android:layout_marginTop="38dp"
+        android:layout_alignLeft="@+id/etOtherSettings"
+        android:layout_alignStart="@+id/etOtherSettings"
+        android:layout_alignRight="@+id/etOtherSettings"
+        android:layout_alignEnd="@+id/etOtherSettings">
+
+        <RadioButton
+            android:text="Guess artist name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/rbGuessArtist"
+            android:checked="true"
+            android:layout_weight="1"
+            android:layout_alignBottom="@+id/radioGroup"
+            android:layout_alignLeft="@+id/etOtherSettings"
+            android:layout_alignStart="@+id/etOtherSettings" />
+
+        <RadioButton
+            android:text="Guess song title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/rbGuessTitle"
+            android:layout_weight="1"
+            android:layout_above="@+id/btSave"
+            android:layout_toLeftOf="@+id/tvStep"
+            android:layout_toStartOf="@+id/tvStep"
+            android:layout_marginBottom="23dp" />
+    </RadioGroup>
+
+    <Button
+        android:text="Next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btSave"
+        android:layout_alignParentBottom="true"
+        android:layout_alignLeft="@+id/etOtherSettings"
+        android:layout_alignStart="@+id/etOtherSettings"
+        android:layout_alignRight="@+id/etOtherSettings"
+        android:layout_alignEnd="@+id/etOtherSettings"
+        android:onClick="selectSongs" />
+
+</RelativeLayout>
