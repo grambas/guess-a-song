@@ -27,7 +27,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     // All Static variables
     // Database Version
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     // Database Name
     private static final String DATABASE_NAME = "guess-a-song";
@@ -61,7 +61,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + ")";
         db.execSQL(CREATE_SONGS_TABLE);
 
-        this.addFakeSongs();
+        addFakeSongs(db);
     }
 
     // Upgrading database
@@ -213,12 +213,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * Adds some fake songs to database
      * useing in "onCreate" method
      */
-    public void addFakeSongs() {
-        SQLiteDatabase db = this.getWritableDatabase();
-
+    public void addFakeSongs( SQLiteDatabase db ) {
 
         ContentValues values = new ContentValues();
-        values.put(KEY_ORG_NAME, "Sam Smith - Too good at goodbyes");
+        values.put(KEY_ORG_NAME, "Sam Smith - Too Good At Goodbyes");
         values.put(KEY_ARTIST, "");
         values.put(KEY_TITLE, "");
         values.put(KEY_PATH, "/storage/sdcard0/Music/Sam Smith - Too good at goodbyes.mp3");
@@ -246,7 +244,5 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_ORG_NAME, "Zayn - Dusk Till Dawn ft. Sia");
         values.put(KEY_PATH, "/storage/sdcard0/Music/Zayn - Dusk Till Dawn ft. Sia.mp3");
         db.insert(TABLE_SONGS, null, values);
-
-        db.close(); // Closing database connection
     }
 }
