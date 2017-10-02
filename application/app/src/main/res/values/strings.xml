@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">guess-a-song</string>
+    <string name="title_activity_database_test">DatabaseTestActivity</string>
 </resources>
