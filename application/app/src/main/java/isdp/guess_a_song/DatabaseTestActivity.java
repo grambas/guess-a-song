@@ -39,7 +39,7 @@ public class DatabaseTestActivity extends AppCompatActivity {
 
         // Reading all songs
         Log.d("Reading: ", "Reading all songs..");
-        List<Song> songs = db.getAllSongs();
+        List<Song> songs = db.getAllSongs(1);
         for (Song s : songs) {
             String log = "Id: "+s.getID()+" ,Original Name: " + s.getOriginalName();
             Log.d("Name: ", log);
@@ -57,7 +57,7 @@ public class DatabaseTestActivity extends AppCompatActivity {
 
         // Reading all songs again
         Log.d("Reading: ", "Reading all songs again..");
-        songs = db.getAllSongs();
+        songs = db.getAllSongs(1);
         for (Song s : songs) {
             log = "Id: "+s.getID()+" ,Original Name: " + s.getOriginalName();
             Log.d("Name: ", log);

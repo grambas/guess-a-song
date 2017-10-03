@@ -62,6 +62,16 @@ public class Song {
         this.played_count = played_count;
     }
 
+    /**
+     * Constructor for fake songs
+     * @param artist
+     * @param title
+     */
+    public Song(String artist, String title) {
+        this.artist = artist;
+        this.title = title;
+        this.is_real = 0;
+    }
     // SETTER
 
     public void setID(int id){
@@ -124,6 +134,6 @@ public class Song {
 
     @Override
     public String toString() {
-        return artist + " - " + title;
+        return "Artist: " + artist + " Title: " + title;
     }
 }

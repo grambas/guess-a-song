@@ -12,8 +12,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import isdp.guess_a_song.model.Song;
+import isdp.guess_a_song.utils.SongsImporter;
+
+import static android.R.attr.name;
 
 
 /**
@@ -27,13 +31,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     // All Static variables
     // Database Version
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     // Database Name
     private static final String DATABASE_NAME = "guess-a-song";
 
     // Songs table name
     private static final String TABLE_SONGS = "songs";
+
+    private Context _context;
 
     // Songs Table Columns names
     private static final String KEY_ID = "id";
@@ -46,6 +52,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this._context = context;
     }
 
     // Creating Tables
@@ -72,6 +79,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         // Create tables again
         onCreate(db);
+    }
+
+    /**
+     * Erases everything in the table.
+     */
+    public void clearDatabase() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        // Drop older table if existed
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SONGS);
+        // Create tables again
+        onCreate(db);
+
     }
 
     /**
@@ -131,15 +150,21 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * Getting All Songs
      * @return songs in List
      */
-    public List<Song> getAllSongs() {
+    public List<Song> getAllSongs(int onlyReal) {
         List<Song> songsList = new ArrayList<Song>();
-        // Select All Query
-        String selectQuery = "SELECT  * FROM " + TABLE_SONGS;
-
         SQLiteDatabase db = this.getWritableDatabase();
+        String selectQuery;
+
+        // Select All Query
+        if (onlyReal == 1){
+            selectQuery = "SELECT * FROM "+TABLE_SONGS+" WHERE "+KEY_IS_REAL+" ="+1;
+        }else{
+            selectQuery = "SELECT  * FROM " + TABLE_SONGS;
+        }
         Cursor cursor = db.rawQuery(selectQuery, null);
 
-        // looping through all rows and adding to list
+
+        // Looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
                 Song song = new Song();
@@ -211,38 +236,38 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     /**
      * Adds some fake songs to database
-     * useing in "onCreate" method
+     * uisng in "onCreate" method
      */
     public void addFakeSongs( SQLiteDatabase db ) {
 
+        List<Song> songs = new SongsImporter(this._context).importSongs();
         ContentValues values = new ContentValues();
-        values.put(KEY_ORG_NAME, "Sam Smith - Too Good At Goodbyes");
-        values.put(KEY_ARTIST, "");
-        values.put(KEY_TITLE, "");
-        values.put(KEY_PATH, "/storage/sdcard0/Music/Sam Smith - Too good at goodbyes.mp3");
+        values.put(KEY_ORG_NAME,"");
+        values.put(KEY_PATH, "");
         values.put(KEY_IS_REAL, 0);
+        values.put(KEY_PLAYED_COUNT, 0);
+
+        for (final Song s : songs) {
+            values.put(KEY_ARTIST, s.getArtist());
+            values.put(KEY_TITLE, s.getTitle());
+            db.insert(TABLE_SONGS, null, values);
+        }
+        values.put(KEY_ORG_NAME, "Pink - whtat about us");
+        values.put(KEY_PATH, "/storage/sdcard0/Music/Pink - whtat about us.mp3");
+
+        //Add one fake "real" song
+        values.put(KEY_ORG_NAME, "Sam Smith - Too Good At Goodbyes");
+        values.put(KEY_ARTIST, "Sam Smith");
+        values.put(KEY_TITLE, "Too Good At Goodbyes");
+        values.put(KEY_PATH, "/storage/sdcard0/Music/Sam Smith - Too good at goodbyes.mp3");
+        values.put(KEY_IS_REAL, 1);
         values.put(KEY_PLAYED_COUNT, 0);
         db.insert(TABLE_SONGS, null, values);
 
-
-        values.put(KEY_ORG_NAME, "Dua Lipa - New rules");
-        values.put(KEY_PATH, "/storage/sdcard0/Music/Dua Lipa - New rules.mp3");
-        db.insert(TABLE_SONGS, null, values);
-
-        values.put(KEY_ORG_NAME, "Pink - whtat about us");
-        values.put(KEY_PATH, "/storage/sdcard0/Music/Pink - whtat about us.mp3");
-        db.insert(TABLE_SONGS, null, values);
-
-        values.put(KEY_ORG_NAME, "Avicii - lonely togather");
-        values.put(KEY_PATH, "/storage/sdcard0/Music/Avicii - lonely togather.mp3");
-        db.insert(TABLE_SONGS, null, values);
-
-        values.put(KEY_ORG_NAME, "Anda - Why");
-        values.put(KEY_PATH, "/storage/sdcard0/Music/Sam Smith - Too good at goodbyes.mp3");
-        db.insert(TABLE_SONGS, null, values);
-
-        values.put(KEY_ORG_NAME, "Zayn - Dusk Till Dawn ft. Sia");
-        values.put(KEY_PATH, "/storage/sdcard0/Music/Zayn - Dusk Till Dawn ft. Sia.mp3");
-        db.insert(TABLE_SONGS, null, values);
+        db.close();
     }
+
+
+
+
 }
