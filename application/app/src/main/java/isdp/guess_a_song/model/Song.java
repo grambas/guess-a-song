@@ -121,4 +121,9 @@ public class Song {
     public int getPlayedCount() {
         return played_count;
     }
+
+    @Override
+    public String toString() {
+        return artist + " - " + title;
+    }
 }

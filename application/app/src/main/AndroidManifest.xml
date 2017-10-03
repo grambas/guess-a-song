@@ -16,7 +16,7 @@
 
         </activity>
         <activity
-            android:name=".DatabaseTestActivity"
+            android:name=".SelectSongs"
             android:label="@string/title_activity_database_test"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
