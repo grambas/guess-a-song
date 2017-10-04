@@ -14,9 +14,6 @@ public class JoinGame extends AppCompatActivity {
     }
 
     public void join(View view) {
-        /*
-        Intent intent = new Intent(this, GameRoom.class);
-        startActivity(intent);
-        */
+        //Intent for the join screen
     }
 }
