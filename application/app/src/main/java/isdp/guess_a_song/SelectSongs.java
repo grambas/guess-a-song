@@ -31,7 +31,7 @@ public class SelectSongs extends AppCompatActivity {
         //Songs still have to be parsed
 
         DatabaseHandler db = new DatabaseHandler(this);
-        List<Song> songs = db.getAllSongs();
+        List<Song> songs = db.getAllSongs(1);
 
         listView = (ListView) findViewById(R.id.listView);
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);

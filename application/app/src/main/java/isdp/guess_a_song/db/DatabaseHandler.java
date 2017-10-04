@@ -264,7 +264,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_PLAYED_COUNT, 0);
         db.insert(TABLE_SONGS, null, values);
 
-        db.close();
+        //db.close();
     }
 
 
