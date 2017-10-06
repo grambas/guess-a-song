@@ -44,17 +44,17 @@
         android:layout_centerHorizontal="true" />
 
     <EditText
+        android:id="@+id/etTimeSong"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="time"
-        android:ems="10"
-        android:id="@+id/etTimeSong"
-        android:layout_below="@+id/etNumberQuestions"
-        android:layout_alignLeft="@+id/etNumberQuestions"
-        android:layout_alignStart="@+id/etNumberQuestions"
-        android:layout_alignRight="@+id/etNumberQuestions"
         android:layout_alignEnd="@+id/etNumberQuestions"
-        android:hint="Time to play song:" />
+        android:layout_alignLeft="@+id/etNumberQuestions"
+        android:layout_alignRight="@+id/etNumberQuestions"
+        android:layout_alignStart="@+id/etNumberQuestions"
+        android:layout_below="@+id/etNumberQuestions"
+        android:ems="10"
+        android:hint="Songtime (in seconds):"
+        android:inputType="time" />
 
     <EditText
         android:layout_width="wrap_content"

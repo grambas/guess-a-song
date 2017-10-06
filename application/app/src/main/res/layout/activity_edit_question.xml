@@ -45,29 +45,6 @@
         android:layout_alignRight="@+id/etSecondAnswer"
         android:layout_alignEnd="@+id/etSecondAnswer" />
 
-    <RadioGroup
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/btSave"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/radioGroup2">
-
-        <RadioButton
-            android:text="Artist"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/radioButton2"
-            android:layout_weight="1"
-            android:checked="true" />
-
-        <RadioButton
-            android:text="Title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/radioButton"
-            android:layout_weight="1" />
-    </RadioGroup>
-
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -76,10 +53,10 @@
         android:id="@+id/etFirstAnswer"
         android:hint="1.:"
         android:layout_centerVertical="true"
-        android:layout_alignLeft="@+id/spinner"
-        android:layout_alignStart="@+id/spinner"
-        android:layout_alignRight="@+id/spinner"
-        android:layout_alignEnd="@+id/spinner" />
+        android:layout_alignLeft="@+id/spSongSelector"
+        android:layout_alignStart="@+id/spSongSelector"
+        android:layout_alignRight="@+id/spSongSelector"
+        android:layout_alignEnd="@+id/spSongSelector" />
 
     <TextView
         android:text="Other answers"
@@ -99,7 +76,7 @@
         android:layout_centerHorizontal="true" />
 
     <Spinner
-        android:id="@+id/spinner"
+        android:id="@+id/spSongSelector"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tvSelectSong"
