@@ -70,48 +70,48 @@
         android:hint="Other settings..." />
 
     <RadioGroup
+        android:id="@+id/etGameType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/etOtherSettings"
-        android:layout_marginTop="38dp"
+        android:layout_alignEnd="@+id/etOtherSettings"
         android:layout_alignLeft="@+id/etOtherSettings"
-        android:layout_alignStart="@+id/etOtherSettings"
         android:layout_alignRight="@+id/etOtherSettings"
-        android:layout_alignEnd="@+id/etOtherSettings">
+        android:layout_alignStart="@+id/etOtherSettings"
+        android:layout_below="@+id/etOtherSettings"
+        android:layout_marginTop="38dp">
 
         <RadioButton
-            android:text="Guess artist name"
+            android:id="@+id/rbGuessArtist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/rbGuessArtist"
-            android:checked="true"
-            android:layout_weight="1"
             android:layout_alignBottom="@+id/radioGroup"
             android:layout_alignLeft="@+id/etOtherSettings"
-            android:layout_alignStart="@+id/etOtherSettings" />
+            android:layout_alignStart="@+id/etOtherSettings"
+            android:layout_weight="1"
+            android:checked="true"
+            android:text="Guess artist name" />
 
         <RadioButton
-            android:text="Guess song title"
+            android:id="@+id/rbGuessTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/rbGuessTitle"
-            android:layout_weight="1"
             android:layout_above="@+id/btSave"
+            android:layout_marginBottom="23dp"
             android:layout_toLeftOf="@+id/tvStep"
             android:layout_toStartOf="@+id/tvStep"
-            android:layout_marginBottom="23dp" />
+            android:layout_weight="1"
+            android:text="Guess song title" />
     </RadioGroup>
 
     <Button
-        android:text="Next"
+        android:id="@+id/btStep1Next"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/btSave"
-        android:layout_alignParentBottom="true"
-        android:layout_alignLeft="@+id/etOtherSettings"
-        android:layout_alignStart="@+id/etOtherSettings"
-        android:layout_alignRight="@+id/etOtherSettings"
         android:layout_alignEnd="@+id/etOtherSettings"
-        android:onClick="selectSongs" />
+        android:layout_alignLeft="@+id/etOtherSettings"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/etOtherSettings"
+        android:layout_alignStart="@+id/etOtherSettings"
+        android:text="Next" />
 
 </RelativeLayout>

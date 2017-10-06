@@ -16,17 +16,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 import isdp.guess_a_song.db.DatabaseHandler;
+import isdp.guess_a_song.model.Settings;
 import isdp.guess_a_song.model.Song;
 
 public class SelectSongs extends AppCompatActivity {
 
     private ListView listView;
     private Button btNext;
+    Settings game_settings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_songs);
+
+        Bundle bundle = getIntent().getExtras();
+        //int guess_time = bundle.getInt("guess_time");
+       // int songs_amount = bundle.getInt("songs_amount");
+        //int game_type = bundle.getInt("game_type");
+
+        //String test = "Guess Time: "+ guess_time + " Songs amount: "+ songs_amount + " Game Type: "+game_type;
+
+        try {
+            game_settings = (Settings) bundle.getParcelable("game_settings");
+        } catch (NullPointerException e ) {
+            game_settings = new Settings();
+        }
+
+        Toast.makeText(SelectSongs.this, game_settings.toString(), Toast.LENGTH_LONG).show();
+
 
         //Songs still have to be parsed
 
@@ -71,15 +89,24 @@ public class SelectSongs extends AppCompatActivity {
 
 
                 String selected = "";
+                ArrayList<Song> selected_songs = new ArrayList<Song>();
                 SparseBooleanArray sparseBooleanArray = listView.getCheckedItemPositions();
 
                 for (int i = 0; i < cntChoice; i++) {
                     if (sparseBooleanArray.get(i)) {
                         selected += listView.getItemAtPosition(i).toString() + "\n";
+                        selected_songs.add((Song) listView.getItemAtPosition(i));// add songs to list
                     }
                 }
 
                 Toast.makeText(SelectSongs.this, selected, Toast.LENGTH_LONG).show();
+
+                //TODO change second to other view
+                Intent intent = new Intent(SelectSongs.this, SelectSongs.class);
+                //TODO passed ArrayList are not tested yet
+                intent.putParcelableArrayListExtra("selected_songs",selected_songs);
+                intent.putExtra("game_settings", game_settings);
+
             }
         });
 
