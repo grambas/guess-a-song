@@ -146,17 +146,24 @@ public class Song implements Parcelable {
         return path;
     }
 
-    public int getIsRreal() {
-        return is_real;
-    }
+    public int getIsRreal() { return is_real;  }
 
     public int getPlayedCount() {
         return played_count;
     }
 
+
     @Override
     public String toString() {
-        return "Artist: " + artist + " Title: " + title;
+        return "Song{" +
+                "id='" + id + '\'' +
+                ", original_name='" + original_name + '\'' +
+                ", artist='" + artist + '\'' +
+                ", title='" + title + '\'' +
+                ", path='" + path + '\'' +
+                ", is_real='" + is_real + '\'' +
+                ", played_count='" + played_count + '\'' +
+                '}';
     }
 
     @Override

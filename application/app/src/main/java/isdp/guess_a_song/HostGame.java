@@ -70,7 +70,9 @@ public class HostGame extends AppCompatActivity {
     private boolean checkValidation() {
         boolean ret = true;
         if (!Validation.hasText(guess_time)) ret = false;
+        if (!Validation.validNumber(guess_time)) ret = false;
         if (!Validation.hasText(songs_amount)) ret = false;
+        if (!Validation.validNumber(songs_amount)) ret = false;
 
         return ret;
     }

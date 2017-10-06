@@ -46,12 +46,14 @@ public class SongsImporter {
             String line;
 
             while ((line = reader.readLine()) != null) {
+                //split String with delimiter ; into 2 pieces
                 exploded = line.split(";",2);
                 if (exploded.length == 2) {
                     songs.add(new Song(exploded[0], exploded[1]));
                 } else {
-                    Log.d("SongsImporter", "line without ';' delimter: "+ line);
+                    Log.d("Helpers", "line without ';' delimter: "+ line);
                 }
+
             }
         } catch (IOException e) {
             e.printStackTrace();

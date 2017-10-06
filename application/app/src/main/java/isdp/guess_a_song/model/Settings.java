@@ -107,7 +107,7 @@ public class Settings implements Parcelable {
 
     @Override
     public String toString() {
-        return "Student{" +
+        return "Settings{" +
                 "guess_time='" + guess_time + '\'' +
                 ", songs_amount='" + songs_amount + '\'' +
                 ", game_type='" + game_type + '\'' +
