@@ -12,9 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
-
-        </activity>
+        <activity android:name=".MainActivity"></activity>
         <activity
             android:name=".StartScreen"
             android:label="@string/title_activity_database_test"
@@ -27,6 +25,10 @@
         <activity android:name=".HostGame" />
         <activity android:name=".SelectSongs" />
         <activity android:name=".JoinGame" />
+        <activity android:name=".SingleplayerGame"/>
+        <activity android:name=".EditQuestion" />
+        <activity android:name=".GameRoom" />
+        <activity android:name=".HostPlayScreen"/>
     </application>
 
 </manifest>

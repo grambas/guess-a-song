@@ -68,5 +68,4 @@ public class DatabaseTestActivity extends AppCompatActivity {
         Log.d("Deleting: ", "song from ID..");
         db.deleteSong(song_from_db);
     }
-
 }
