@@ -52,11 +52,11 @@ public class Validation {
         int number = Integer.parseInt(text);
         editText.setError(null);
         if (number > 0){
-            Log.d("Validation", "OK. Number is bigger than 0");
+            //Log.d("Validation", "OK. Number is bigger than 0");
             return true;
         }
         editText.setError(VALID_NUMBER_MSG);
-        Log.d("Validation", "BAD. Number is not bigger than 0");
+        //Log.d("Validation", "BAD. Number is not bigger than 0");
         return false;
 
     }

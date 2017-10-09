@@ -28,6 +28,12 @@ import isdp.guess_a_song.model.Song;
  * @Author Mindaugas Milius
  */
 
+// TODO artist and title is mixed in Database. Need to recheck
+/*
+10-09 16:29:24.263 5897-5897/isdp.guess_a_song D/Song.java: asked title. title= The Beatles
+10-09 16:29:24.265 5897-5897/isdp.guess_a_song D/Song.java: asked title. title= My Neck, My Back (Lick It)
+10-09 16:29:24.266 5897-5897/isdp.guess_a_song D/Song.java: asked title. title= Bob Dylan
+*/
 public class SongsImporter {
     public static final String path = "fake_songs.txt";
     private List<Song> songs;

@@ -18,7 +18,6 @@ public class HostGame extends AppCompatActivity {
 
     private Button btNext;
     private RadioGroup radioGroup;
-    private int game_type;
     private EditText guess_time;
     private EditText songs_amount;
 
@@ -39,32 +38,22 @@ public class HostGame extends AppCompatActivity {
 
                 int selectedId=radioGroup.getCheckedRadioButtonId();
                 int game_type=0;
+
                 if(selectedId==R.id.rbGuessArtist){game_type= Constants.GAME_TYPE_ARTIST;}
                 else if(selectedId==R.id.rbGuessTitle){game_type=Constants.GAME_TYPE_TITLE;}
 
-
                 if ( checkValidation() ){
-                    intent.putExtra("game_settings", new Settings(Integer.parseInt(guess_time.getText().toString()),
-                            Integer.parseInt(songs_amount.getText().toString()), game_type));
+                    Settings temp_sett = new Settings(Integer.parseInt(guess_time.getText().toString()),
+                            Integer.parseInt(songs_amount.getText().toString()), game_type);
+                    intent.putExtra("game_settings", temp_sett);
 
                     startActivity(intent);
                 }
                 else{
                     Toast.makeText(HostGame.this, "Form contains error", Toast.LENGTH_LONG).show();
                 }
-
-
-                //intent.putExtra("guess_time",Integer.parseInt(guess_time.getText().toString()) );
-
-
-
             }
         });
-    }
-
-    public void selectSongs(View view) {
-        Intent intent = new Intent(this, SelectSongs.class);
-        startActivity(intent);
     }
 
     private boolean checkValidation() {

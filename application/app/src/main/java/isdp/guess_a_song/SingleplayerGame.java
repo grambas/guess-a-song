@@ -9,16 +9,21 @@ import android.widget.Button;
 import android.media.MediaPlayer;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import isdp.guess_a_song.controller.AnswersGenerator;
 import isdp.guess_a_song.db.DatabaseHandler;
 import isdp.guess_a_song.model.Question;
 import isdp.guess_a_song.model.Song;
+import isdp.guess_a_song.utils.Constants;
 
 /**
  * A singleplayer version of the game for Sprint #1
  */
+
+// TODO here we need to call Game game = new game.getInstance() and set attributes
 
 public class SingleplayerGame extends AppCompatActivity {
 
@@ -90,7 +95,7 @@ public class SingleplayerGame extends AppCompatActivity {
     *   2) Go to next question
     * */
     private void guessSong(int guess){
-        if(guess == question.getCorrect())score++;
+        if(question.isCorrect(guess))score++;
         else score--;
 
         scoreTv.setText(Integer.toString(score));
@@ -108,10 +113,10 @@ public class SingleplayerGame extends AppCompatActivity {
         question = pickQuestion();
 
         //Update answer options
-        btAns1.setText(question.getAnswer(0));
-        btAns2.setText(question.getAnswer(1));
-        btAns3.setText(question.getAnswer(2));
-        btAns4.setText(question.getAnswer(3));
+        btAns1.setText(question.getAnswer(0).getText());
+        btAns2.setText(question.getAnswer(1).getText());
+        btAns3.setText(question.getAnswer(2).getText());
+        btAns4.setText(question.getAnswer(3).getText());
 
         //Start playing new song
         playSong();
@@ -125,15 +130,16 @@ public class SingleplayerGame extends AppCompatActivity {
         mediaPlayer.start();*/
     }
 
-    private int randomTime(int length){
-        Random rand = new Random();
-        return rand.nextInt(length);
-    }
 
     /*Constructs a new Question with a random, real song from the database*/
     private Question pickQuestion(){
+        DatabaseHandler db = new DatabaseHandler(this);
+
         Random rand = new Random();
         int index = rand.nextInt(allSongs.size());
-        return new Question(allSongs.get(index));
+        Song song = allSongs.get(index);
+        Question q = AnswersGenerator.generate(db,song,Constants.GAME_TYPE_TITLE);
+        q.shuffle();
+        return q;
     }
 }

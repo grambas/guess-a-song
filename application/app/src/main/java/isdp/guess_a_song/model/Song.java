@@ -2,6 +2,10 @@ package isdp.guess_a_song.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.provider.SyncStateContract;
+import android.util.Log;
+
+import isdp.guess_a_song.utils.Constants;
 
 //TODO need to check constructors due to calling this object in SelectSongs view
 
@@ -83,16 +87,6 @@ public class Song implements Parcelable {
         this.is_real = 0;
     }
 
-    public Song(Parcel source) {
-        this.id = source.readInt();
-        this.original_name = source.readString();
-        this.artist = source.readString();
-        this.title = source.readString();
-        this.path = source.readString();
-        this.is_real = source.readInt();
-        this.played_count = source.readInt();
-    }
-
 
     // SETTER
 
@@ -131,7 +125,11 @@ public class Song implements Parcelable {
     }
 
     public String getOriginalName() {
-        return original_name;
+        if(original_name != null && !original_name.isEmpty()){
+            return original_name;
+        }
+        return "No name";
+
     }
 
     public String getArtist() {
@@ -152,6 +150,16 @@ public class Song implements Parcelable {
         return played_count;
     }
 
+    public String songToAnswer(int type){
+        if( type == Constants.GAME_TYPE_TITLE){
+            //Log.d("Song.java", "asked title. title= "+this.title);
+            return this.title;
+        }else if (type == Constants.GAME_TYPE_ARTIST){
+            //Log.d("Song.java", "asked artist. artist= "+this.artist);
+            return this.artist;
+        }
+        else return getOriginalName();
+    }
 
     @Override
     public String toString() {
@@ -176,12 +184,20 @@ public class Song implements Parcelable {
         dest.writeInt(id);
         dest.writeString(original_name);
         dest.writeString(artist);
-
         dest.writeString(title);
         dest.writeString(path);
         dest.writeInt(is_real);
         dest.writeInt(played_count);
 
+    }
+    public Song(Parcel source) {
+        this.id = source.readInt();
+        this.original_name = source.readString();
+        this.artist = source.readString();
+        this.title = source.readString();
+        this.path = source.readString();
+        this.is_real = source.readInt();
+        this.played_count = source.readInt();
     }
     public static final Parcelable.Creator<Song> CREATOR = new Parcelable.Creator<Song>() {
 

@@ -184,7 +184,42 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // return song list
         return songsList;
     }
+    /**
+     * Getting All Songs
+     * @return songs in List
+     */
+    public List<Song> getRandomSongs(Song s) {
+        List<Song> songsList = new ArrayList<Song>();
+        SQLiteDatabase db = this.getWritableDatabase();
+        String selectQuery;
 
+        // Select All Query
+        // TODO maybe  not like artist or title separte
+            selectQuery = "SELECT * FROM "+TABLE_SONGS+" WHERE "+KEY_ORG_NAME+" NOT LIKE '%" + s.getOriginalName() +"%' ORDER BY RANDOM() LIMIT "+ 4;
+
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+
+        // Looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                Song song = new Song();
+                song.setID(Integer.parseInt(cursor.getString(0)));
+                song.setOriginalNname(cursor.getString(1));
+                song.setArtist(cursor.getString(2));
+                song.setTitle(cursor.getString(3));
+                song.setPath(cursor.getString(4));
+                song.setIsReal(Integer.parseInt(cursor.getString(5)));
+                song.setPlayedCount(Integer.parseInt(cursor.getString(6)));
+
+                // Adding song to list
+                songsList.add(song);
+            } while (cursor.moveToNext());
+        }
+
+        // return song list
+        return songsList;
+    }
     /**
      * Update song record in database
      * @param s song to update
