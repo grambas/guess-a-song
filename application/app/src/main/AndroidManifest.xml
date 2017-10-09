@@ -27,6 +27,7 @@
         <activity android:name=".HostGame" />
         <activity android:name=".SelectSongs" />
         <activity android:name=".JoinGame" />
+        <activity android:name=".SingleplayerGame"/>
     </application>
 
 </manifest>

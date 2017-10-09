@@ -22,4 +22,9 @@ public class StartScreen extends AppCompatActivity {
         Intent intent = new Intent(this, JoinGame.class);
         startActivity(intent);
     }
+
+    public void spGame(View v) {
+        Intent intent = new Intent(this, SingleplayerGame.class);
+        startActivity(intent);
+    }
 }
