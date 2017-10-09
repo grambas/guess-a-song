@@ -102,10 +102,11 @@ public class SelectSongs extends AppCompatActivity {
                 Toast.makeText(SelectSongs.this, selected, Toast.LENGTH_LONG).show();
 
                 //TODO change second to other view
-                Intent intent = new Intent(SelectSongs.this, SelectSongs.class);
+                Intent intent = new Intent(SelectSongs.this, EditQuestion.class);
                 //TODO passed ArrayList are not tested yet
                 intent.putParcelableArrayListExtra("selected_songs",selected_songs);
                 intent.putExtra("game_settings", game_settings);
+                startActivity(intent);
 
             }
         });

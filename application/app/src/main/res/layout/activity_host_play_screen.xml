@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="isdp.guess_a_song.HostPlayScreen">
+
+    <TextView
+        android:id="@+id/tvCurrentOnline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Online:"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="16dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:id="@+id/tvCurrentQuestion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Question:"
+        tools:layout_editor_absoluteX="306dp"
+        tools:layout_editor_absoluteY="16dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <ProgressBar
+        android:id="@+id/pbTimer"
+        style="@style/Widget.AppCompat.ProgressBar"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:max="100"
+        tools:layout_editor_absoluteX="132dp"
+        tools:layout_editor_absoluteY="199dp" />
+
+    <TextView
+        android:id="@+id/tvTimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Timer"
+        android:textSize="24sp"
+        tools:layout_editor_absoluteX="162dp"
+        tools:layout_editor_absoluteY="170dp"
+        android:layout_above="@+id/pbTimer"
+        android:layout_centerHorizontal="true" />
+
+    <ImageButton
+        android:id="@+id/ibPlay"
+        android:layout_width="74dp"
+        android:layout_height="73dp"
+        app:srcCompat="@android:drawable/ic_media_play"
+        tools:layout_editor_absoluteX="155dp"
+        tools:layout_editor_absoluteY="336dp"
+        android:layout_below="@+id/tvSongname"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:id="@+id/btNextSong"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Next Song"
+        tools:layout_editor_absoluteX="267dp"
+        tools:layout_editor_absoluteY="447dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:id="@+id/tvSongname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Songname"
+        tools:layout_editor_absoluteX="159dp"
+        tools:layout_editor_absoluteY="319dp"
+        android:layout_below="@+id/pbTimer"
+        android:layout_alignLeft="@+id/tvTimer"
+        android:layout_alignStart="@+id/tvTimer" />
+</RelativeLayout>
