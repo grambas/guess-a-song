@@ -95,8 +95,7 @@ public class Question implements Parcelable {
     };
     //end Parcelling
 
-    @Override
-    public String toString() {
+    public String toStringFull() {
 
         return "Question{" +
                 "song=" + song.getOriginalName() +
@@ -107,7 +106,10 @@ public class Question implements Parcelable {
 
                 '}';
     }
-
+    @Override
+    public String toString() {
+        return song.toString();
+    }
 
     public void shuffle(){
         Collections.shuffle(this.answers);

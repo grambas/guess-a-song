@@ -49,7 +49,12 @@ public class Validation {
     public static boolean validNumber(EditText editText) {
 
         String text = editText.getText().toString().trim();
-        int number = Integer.parseInt(text);
+        int number;
+        try{
+            number = Integer.parseInt(text);
+        }catch(NumberFormatException nfe){
+            return false;
+        }
         editText.setError(null);
         if (number > 0){
             //Log.d("Validation", "OK. Number is bigger than 0");

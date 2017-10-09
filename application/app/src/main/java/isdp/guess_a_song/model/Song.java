@@ -161,8 +161,7 @@ public class Song implements Parcelable {
         else return getOriginalName();
     }
 
-    @Override
-    public String toString() {
+    public String toStringFull() {
         return "Song{" +
                 "id='" + id + '\'' +
                 ", original_name='" + original_name + '\'' +
@@ -173,7 +172,10 @@ public class Song implements Parcelable {
                 ", played_count='" + played_count + '\'' +
                 '}';
     }
-
+    @Override
+    public String toString() {
+        return  artist + " - " + title;
+    }
     @Override
     public int describeContents() {
         return 0;
