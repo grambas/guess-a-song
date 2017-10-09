@@ -55,7 +55,7 @@ public class SongsImporter {
                 //split String with delimiter ; into 2 pieces
                 exploded = line.split(";",2);
                 if (exploded.length == 2) {
-                    songs.add(new Song(exploded[0], exploded[1]));
+                    songs.add(new Song(exploded[1], exploded[0]));
                 } else {
                     Log.d("Helpers", "line without ';' delimter: "+ line);
                 }
