@@ -27,4 +27,8 @@ public class StartScreen extends AppCompatActivity {
         Intent intent = new Intent(this, SingleplayerGame.class);
         startActivity(intent);
     }
+    public void MusicLibrary(View v) {
+        Intent intent = new Intent(this, MusicLibrary.class);
+        startActivity(intent);
+    }
 }

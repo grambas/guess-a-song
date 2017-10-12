@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
 
     <application
         android:allowBackup="true"
@@ -12,23 +14,25 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".MainActivity" />
         <activity
             android:name=".StartScreen"
             android:label="@string/title_activity_database_test"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".HostGame" />
         <activity android:name=".SelectSongs" />
         <activity android:name=".JoinGame" />
-        <activity android:name=".SingleplayerGame"/>
+        <activity android:name=".SingleplayerGame" />
         <activity android:name=".EditQuestion" />
         <activity android:name=".GameRoom" />
-        <activity android:name=".HostPlayScreen"/>
+        <activity android:name=".HostPlayScreen" />
+        <activity android:name=".MusicLibrary"></activity>
     </application>
 
 </manifest>

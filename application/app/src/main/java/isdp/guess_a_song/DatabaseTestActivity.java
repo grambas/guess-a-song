@@ -34,7 +34,7 @@ public class DatabaseTestActivity extends AppCompatActivity {
          */
         // Inserting Songs
         Log.d("Insert: ", "Insert test ..");
-        Song fake_song = new Song("R.Williams - Here I am", "R.Williams","Here I am2","/home/media/songs/r.williams-here i am.mp3",0,0);
+        Song fake_song = new Song("R.Williams - Here I am", "R.Williams","Here I am2","/home/media/songs/r.williams-here i am.mp3",0);
         long fake_song_id =  db.addSong(fake_song);
 
         // Reading all songs
@@ -47,7 +47,7 @@ public class DatabaseTestActivity extends AppCompatActivity {
 
         // Get song
         Log.d("Getting: ", "song from ID..");
-        Song song_from_db = db.getSong(fake_song_id);
+        Song song_from_db = db.getSong("D://");
         String log = "Id: "+song_from_db.getID()+" ,Original Name: " + song_from_db.getOriginalName();
 
         //Update Song

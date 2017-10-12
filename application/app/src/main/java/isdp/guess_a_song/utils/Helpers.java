@@ -1,6 +1,11 @@
 package isdp.guess_a_song.utils;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
+
+import isdp.guess_a_song.model.Song;
 
 
 /**
@@ -24,5 +29,6 @@ public class Helpers {
         Random r = new Random();
         return r.nextInt(max - min + 1) + min;
     }
+
 
 }

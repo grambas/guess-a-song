@@ -64,9 +64,8 @@ public class Song implements Parcelable {
      * @param title
      * @param path
      * @param is_real
-     * @param played_count
      */
-    public Song(String original_name, String artist, String title, String path, int is_real, int played_count) {
+    public Song(String original_name, String artist, String title, String path, int is_real) {
         this.original_name = original_name;
         this.artist = artist;
         this.title = title;
@@ -213,4 +212,20 @@ public class Song implements Parcelable {
             return new Song[size];
         }
     };
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Song)) return false;
+
+        Song song = (Song) o;
+
+        return path.equals(song.path);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return path.hashCode();
+    }
 }
