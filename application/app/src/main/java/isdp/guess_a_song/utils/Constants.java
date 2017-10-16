@@ -12,6 +12,12 @@ package isdp.guess_a_song.utils;
 
 public class Constants {
 
+    public final static String LOGT = "mylogger";
+
+    public final static boolean WITH_PRESENCE = true;
+    public final static boolean NO_PRESENCE = false;
+
+
     // Game Types. Guess an Artist or guess a title
     public final static int GAME_TYPE_ARTIST = 1;
     public final static int GAME_TYPE_TITLE = 2;
@@ -27,6 +33,8 @@ public class Constants {
     public final static int RANDOM_MIN = 1000;
     public final static int RANDOM_MAX = 9999;
 
-
+    //PubNub
+    public static final String PKEY = "pub-c-0959a035-d1bc-47fb-92f9-6bfc3b6f01c6";
+    public static final String SKEY = "sub-c-bdc45456-9d3d-11e7-96f6-d664df0bd9f6";
 
 }

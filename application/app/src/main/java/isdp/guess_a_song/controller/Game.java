@@ -15,6 +15,7 @@ import isdp.guess_a_song.utils.Constants;
 /**
  * Main game controller and instance
  * this class should be called in game creation last step
+ * @author Mindaugas Milius
  */
 
 public class Game {
@@ -27,7 +28,7 @@ public class Game {
 
     // Game attributes
     Settings settings;
-     List<Question> Questions;
+    List<Question> Questions;
     // List<Player> players;
     List<Score> scoreList;
     int status;

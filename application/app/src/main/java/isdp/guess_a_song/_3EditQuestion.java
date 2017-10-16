@@ -18,7 +18,7 @@ import isdp.guess_a_song.model.Settings;
 import isdp.guess_a_song.model.Song;
 import isdp.guess_a_song.utils.Validation;
 
-public class EditQuestion extends AppCompatActivity {
+public class _3EditQuestion extends AppCompatActivity {
 
     private Spinner spSongSelect;
     private EditText etAnswer[] = new EditText[3];
@@ -41,14 +41,14 @@ public class EditQuestion extends AppCompatActivity {
         game_settings = bundle.getParcelable("game_settings");
         songs = bundle.getParcelableArrayList("selected_songs");
 
-        Log.d("EditQuestion","Game type now is: " + game_settings.getGame_type());
+        Log.d("_3EditQuestion","Game type now is: " + game_settings.getGame_type());
         DatabaseHandler db = new DatabaseHandler(this);
 
         /*
         Question generation
          */
         for (final Song song : songs) {
-            Log.d("EditQuestion",song.toString());
+            Log.d("_3EditQuestion",song.toString());
             questions.add(AnswersGenerator.generate(db,song,game_settings.getGame_type()));
         }
 
@@ -138,7 +138,7 @@ public class EditQuestion extends AppCompatActivity {
 
                     // TODO Validate if every song has 3 answers
                     // TODO Change activity, store data in intents, etc.
-                    Intent intent = new Intent(EditQuestion.this, GameRoom.class);
+                    Intent intent = new Intent(_3EditQuestion.this, _4GameRoom.class);
 
                     //send game settings and game questions (instead of songs) to next activity
                     intent.putExtra("game_settings", game_settings);

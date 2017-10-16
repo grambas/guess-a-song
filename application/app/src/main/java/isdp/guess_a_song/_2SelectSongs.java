@@ -3,10 +3,8 @@ package isdp.guess_a_song;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -19,7 +17,7 @@ import isdp.guess_a_song.db.DatabaseHandler;
 import isdp.guess_a_song.model.Settings;
 import isdp.guess_a_song.model.Song;
 
-public class SelectSongs extends AppCompatActivity {
+public class _2SelectSongs extends AppCompatActivity {
 
     private ListView listView;
     private Button btNext;
@@ -33,7 +31,7 @@ public class SelectSongs extends AppCompatActivity {
         game_settings = getIntent().getExtras().getParcelable("game_settings");
 
 
-        Toast.makeText(SelectSongs.this, game_settings.toString(), Toast.LENGTH_LONG).show();
+        Toast.makeText(_2SelectSongs.this, game_settings.toString(), Toast.LENGTH_LONG).show();
 
 
         //Songs still have to be parsed
@@ -89,9 +87,9 @@ public class SelectSongs extends AppCompatActivity {
                     }
                 }
 
-                Toast.makeText(SelectSongs.this, selected, Toast.LENGTH_LONG).show();
+                Toast.makeText(_2SelectSongs.this, selected, Toast.LENGTH_LONG).show();
 
-                Intent intent = new Intent(SelectSongs.this, EditQuestion.class);
+                Intent intent = new Intent(_2SelectSongs.this, _3EditQuestion.class);
 
                 intent.putParcelableArrayListExtra("selected_songs",selected_songs);
                 intent.putExtra("game_settings", game_settings);

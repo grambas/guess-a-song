@@ -74,10 +74,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="MusicLibrary"
+<<<<<<< HEAD
         android:text="Music Library"
         android:layout_below="@+id/btJoin"
         android:layout_alignLeft="@+id/btJoin"
         android:layout_alignStart="@+id/btJoin"
         android:layout_alignRight="@+id/btJoin"
         android:layout_alignEnd="@+id/btJoin" />
+=======
+        android:text="Music Library" />
+
+    <Button
+        android:id="@+id/GameRoomActivity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/MusicLibrary"
+        android:layout_alignLeft="@+id/MusicLibrary"
+        android:layout_alignRight="@+id/MusicLibrary"
+        android:layout_alignStart="@+id/MusicLibrary"
+        android:layout_below="@+id/MusicLibrary"
+        android:onClick="GameRoomActivity"
+        android:text="HOST WAIT ROOM(TEST)" />
+>>>>>>> #47,#37 issues. Working on multiplayer
 </RelativeLayout>

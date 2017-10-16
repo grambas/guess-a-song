@@ -14,7 +14,7 @@ public class StartScreen extends AppCompatActivity {
     }
 
     public void hostGame(View v) {
-        Intent intent = new Intent(this, HostGame.class);
+        Intent intent = new Intent(this, _1HostGame.class);
         startActivity(intent);
     }
 
@@ -29,6 +29,10 @@ public class StartScreen extends AppCompatActivity {
     }
     public void MusicLibrary(View v) {
         Intent intent = new Intent(this, MusicLibrary.class);
+        startActivity(intent);
+    }
+    public void GameRoomActivity(View v) {
+        Intent intent = new Intent(this, _4GameRoom.class);
         startActivity(intent);
     }
 }

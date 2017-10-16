@@ -7,7 +7,7 @@ import android.util.Log;
 
 import isdp.guess_a_song.utils.Constants;
 
-//TODO need to check constructors due to calling this object in SelectSongs view
+//TODO need to check constructors due to calling this object in _2SelectSongs view
 
 /**
  * Created on 10/2/2017.

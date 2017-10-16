@@ -1,8 +1,6 @@
 package isdp.guess_a_song.db;
 
-/**
- * Created on 10/2/2017.
- */
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +17,9 @@ import isdp.guess_a_song.utils.SongsImporter;
 
 import static android.R.attr.name;
 
+/**
+ * Created on 10/2/2017.
+ */
 
 /**
  * Database manager. This class interacts with database.
