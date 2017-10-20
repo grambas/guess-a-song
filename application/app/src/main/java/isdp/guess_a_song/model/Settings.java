@@ -10,29 +10,16 @@ import android.os.Parcelable;
 /**
  * This is moodel Object of game settings.
  * This class can be send to other activities with Parcelable method
+ *
+ * @author Mindaugas Milius
  */
 
 
-/**
- *  Parcelling Constructors
- */
 public class Settings implements Parcelable {
     private int guess_time;
     private int songs_amount;
     private int game_type;
 
-    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
-        public Settings createFromParcel(Parcel in) {
-            return new Settings(in);
-        }
-
-        public Settings[] newArray(int size) {
-            return new Settings[size];
-        }
-    };
-    /**
-     *  Normal Constructors
-     */
 
     /**
      * Default constructor with default values
@@ -104,10 +91,19 @@ public class Settings implements Parcelable {
         dest.writeInt(this.songs_amount);
         dest.writeInt(this.game_type);
     }
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public Settings createFromParcel(Parcel in) {
+            return new Settings(in);
+        }
+        public Settings[] newArray(int size) {
+            return new Settings[size];
+        }
+    };
+    //end Parcelling
 
     @Override
     public String toString() {
-        return "Student{" +
+        return "Settings{" +
                 "guess_time='" + guess_time + '\'' +
                 ", songs_amount='" + songs_amount + '\'' +
                 ", game_type='" + game_type + '\'' +

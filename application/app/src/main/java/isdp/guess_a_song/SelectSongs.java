@@ -30,18 +30,8 @@ public class SelectSongs extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_songs);
 
-        Bundle bundle = getIntent().getExtras();
-        //int guess_time = bundle.getInt("guess_time");
-       // int songs_amount = bundle.getInt("songs_amount");
-        //int game_type = bundle.getInt("game_type");
+        game_settings = getIntent().getExtras().getParcelable("game_settings");
 
-        //String test = "Guess Time: "+ guess_time + " Songs amount: "+ songs_amount + " Game Type: "+game_type;
-
-        try {
-            game_settings = (Settings) bundle.getParcelable("game_settings");
-        } catch (NullPointerException e ) {
-            game_settings = new Settings();
-        }
 
         Toast.makeText(SelectSongs.this, game_settings.toString(), Toast.LENGTH_LONG).show();
 
@@ -49,7 +39,7 @@ public class SelectSongs extends AppCompatActivity {
         //Songs still have to be parsed
 
         DatabaseHandler db = new DatabaseHandler(this);
-        List<Song> songs = db.getAllSongs(1);
+        List<Song> songs = db.getAllSongs(1); // 1 - real songs only
 
         listView = (ListView) findViewById(R.id.listView);
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
@@ -101,9 +91,8 @@ public class SelectSongs extends AppCompatActivity {
 
                 Toast.makeText(SelectSongs.this, selected, Toast.LENGTH_LONG).show();
 
-                //TODO change second to other view
                 Intent intent = new Intent(SelectSongs.this, EditQuestion.class);
-                //TODO passed ArrayList are not tested yet
+
                 intent.putParcelableArrayListExtra("selected_songs",selected_songs);
                 intent.putExtra("game_settings", game_settings);
                 startActivity(intent);

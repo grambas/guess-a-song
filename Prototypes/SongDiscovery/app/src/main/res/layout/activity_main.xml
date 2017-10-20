@@ -6,11 +6,21 @@
     android:layout_height="match_parent"
     tools:context="com.example.jt.myapplication.MainActivity">
 
+    <Button
+        android:id="@+id/btSync"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:text="Sync With Storage" />
+
     <ListView
         android:id="@+id/listView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:dividerHeight="1dp" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:dividerHeight="1dp"
+        android:layout_below="@+id/btSync" />
 </RelativeLayout>

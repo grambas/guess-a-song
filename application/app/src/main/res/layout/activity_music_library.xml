@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="isdp.guess_a_song.MusicLibrary"
+    tools:layout_editor_absoluteY="81dp"
+    tools:layout_editor_absoluteX="0dp">
+
+    <LinearLayout
+        android:id="@+id/mLlayoutBottomButtons"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical" >
+
+        <Button
+            android:id="@+id/btSync"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:text="Sync With Storage"
+            tools:layout_editor_absoluteX="203dp"
+            tools:layout_editor_absoluteY="0dp" />
+
+
+
+        <Button
+            android:id="@+id/btTest2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="clear DB"
+            tools:layout_editor_absoluteX="280dp"
+            tools:layout_editor_absoluteY="456dp" />
+
+
+        <ListView
+            android:id="@+id/listView"
+            android:layout_width="362dp"
+            android:layout_height="384dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:dividerHeight="1dp"
+            tools:layout_editor_absoluteX="19dp"
+            tools:layout_editor_absoluteY="58dp" />
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

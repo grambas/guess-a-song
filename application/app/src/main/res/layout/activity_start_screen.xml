@@ -46,14 +46,38 @@
         android:onClick="hostGame" />
 
     <Button
-        android:text="Join"
+        android:id="@+id/btSP"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/btJoin"
+        android:layout_alignLeft="@+id/btJoin"
+        android:layout_alignRight="@+id/btJoin"
+        android:layout_alignStart="@+id/btJoin"
+        android:layout_below="@+id/btJoin"
+        android:onClick="spGame"
+        android:text="Singleplayer Game" />
+
+    <Button
         android:id="@+id/btJoin"
-        android:layout_below="@+id/btHostGame"
-        android:layout_alignLeft="@+id/btProfile"
-        android:layout_alignStart="@+id/btProfile"
-        android:layout_alignRight="@+id/btHostGame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignEnd="@+id/btHostGame"
-        android:onClick="joinGame" />
+        android:layout_alignLeft="@+id/btProfile"
+        android:layout_alignRight="@+id/btHostGame"
+        android:layout_alignStart="@+id/btProfile"
+        android:layout_below="@+id/btHostGame"
+        android:onClick="joinGame"
+        android:text="Join" />
+
+    <Button
+        android:id="@+id/MusicLibrary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/btSP"
+        android:layout_alignLeft="@+id/btSP"
+        android:layout_alignRight="@+id/btSP"
+        android:layout_alignStart="@+id/btSP"
+        android:layout_below="@+id/btSP"
+        android:onClick="MusicLibrary"
+        android:text="Music Library" />
 </RelativeLayout>
