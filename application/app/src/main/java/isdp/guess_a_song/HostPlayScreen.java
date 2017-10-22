@@ -6,6 +6,7 @@ import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -16,6 +17,8 @@ import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import isdp.guess_a_song.controller.Game;
 import isdp.guess_a_song.model.Question;
@@ -68,37 +71,27 @@ public class HostPlayScreen extends AppCompatActivity {
 
         tvSongname.setText(questions.get(0).getSong().toString());
 
+        final CountDownTimer countDownTimer = new CountDownTimer(game.getSettings().getGuess_time() * 1000, 200) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                tvTimer.setText(Long.toString(millisUntilFinished/1000));
+            }
+
+            @Override
+            public void onFinish() {
+                mediaPlayer.stop();
+            }
+        };
+
         ibPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                playSong(questions.get(currentQuestion));
-
-                //TODO make countdowntimer as it's own class
-
-                final CountDownTimer countDownTimer = new CountDownTimer(30000, 200) {
-                    @Override
-                    public void onTick(long millisUntilFinished) {
-                        tvTimer.setText(Long.toString(millisUntilFinished/1000));
-                    }
-
-                    @Override
-                    public void onFinish() {
-                        mediaPlayer.stop();
-                    }
-                }.start();
+                playSong(questions.get(currentQuestion), countDownTimer);
             }
         });
 
 
         //TODO get this progressbar working
-        this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (mediaPlayer != null) {
-                    pbTimer.setProgress(mediaPlayer.getCurrentPosition()/mediaPlayer.getDuration());
-                }
-            }
-        });
 
         //game.setQuestions(questions);
         //game.setPlayers(players);
@@ -106,19 +99,22 @@ public class HostPlayScreen extends AppCompatActivity {
 
     }
 
-    private void playSong(Question q) {
+    private void playSong(Question q, CountDownTimer timer) {
         if (mediaPlayer == null) {
             mediaPlayer = MediaPlayer.create(this, Uri.parse(q.getSong().getPath()));
             mediaPlayer.start();
+            timer.start();
         } else {
             if (mediaPlayer.isPlaying()) {
                 mediaPlayer.stop();
+                timer.cancel();
             } else {
                 mediaPlayer.reset();
                 try {
                     mediaPlayer.setDataSource(this, Uri.parse(q.getSong().getPath()));
                     mediaPlayer.prepare();
                     mediaPlayer.start();
+                    timer.start();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -126,5 +122,10 @@ public class HostPlayScreen extends AppCompatActivity {
             }
         }
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        //Asking the player to quit or something
     }
 }

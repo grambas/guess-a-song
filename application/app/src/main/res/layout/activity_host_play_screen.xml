@@ -31,7 +31,7 @@
     <ProgressBar
         android:id="@+id/pbTimer"
         style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Horizontal"
-        android:layout_width="120dp"
+        android:layout_width="match_parent"
         android:layout_height="120dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
@@ -75,11 +75,13 @@
         android:id="@+id/tvSongname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/tvTimer"
-        android:layout_alignStart="@+id/tvTimer"
-        android:layout_below="@+id/pbTimer"
         android:text="Songname"
         android:textAlignment="center"
         tools:layout_editor_absoluteX="159dp"
-        tools:layout_editor_absoluteY="319dp" />
+        tools:layout_editor_absoluteY="319dp"
+        android:layout_below="@+id/pbTimer"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 </RelativeLayout>
