@@ -4,6 +4,7 @@ package isdp.guess_a_song.controller;
 import java.util.List;
 
 import isdp.guess_a_song.model.Question;
+import isdp.guess_a_song.model.Score;
 import isdp.guess_a_song.model.Settings;
 import isdp.guess_a_song.utils.Constants;
 
@@ -28,7 +29,7 @@ public class Game {
     Settings settings;
      List<Question> Questions;
     // List<Player> players;
-    // Score score
+    List<Score> scoreList;
     int status;
 
     public static Game getInstance() {
@@ -53,7 +54,13 @@ public class Game {
     public void pause(){
         status  = Constants.GAME_STATUS_PAUSE;
     }
-    public void showScore(){
+    public String showScore(){
+        String scoreString = "";
+        for (Score sc:scoreList) {
+            scoreString += (sc.toString() + "\n");
+        }
+
+        return scoreString;
     }
     public void end(){
         status  = Constants.GAME_STATUS_FINISHED;
