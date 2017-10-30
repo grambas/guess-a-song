@@ -50,23 +50,48 @@ public class _4GameRoom extends AppCompatActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        //INIT AND GETTER
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.host_wait_room);
+
+        //gui objects
+        this.tvGameId = (TextView) findViewById(R.id.tvGameId);
+        this.tvPIN = (TextView) findViewById(R.id.tvGamePIN);
+        Button start = (Button) findViewById(R.id.startGame);
+
+        //game data
+        this.game_settings = getIntent().getExtras().getParcelable("game_settings");
+        questions = getIntent().getParcelableArrayListExtra("questions");
+
+        //pubnub
+        this.mPresence = new PresenceListAdapter(this);
+        this.mPresencePnCallback = new PresencePnCallback(this.mPresence);
+        ListView listView = (ListView) findViewById(R.id.presence_list);
+
+
+        this.gameID = "123456";
+        this.gamePIN = Helpers.randomNumberString(Constants.RANDOM_MIN,Constants.RANDOM_MAX);
+
+        //client
+        client = new PubNubClient(new UserProfile(Constants.HOST_USERNAME),this.gameID);
+
+
+
+
+        //SETTER
+
 
         // generate  game ID & PIN
         // FOR TESTING ALWAYS SAME CHANNEL (ROOM)
         // String gameID = Helpers.randomNumberString(Constants.RANDOM_MIN,Constants.RANDOM_MAX);
-        gameID = "123456";
-        gamePIN = Helpers.randomNumberString(Constants.RANDOM_MIN,Constants.RANDOM_MAX);
 
 
-        this.tvGameId = (TextView) findViewById(R.id.tvGameId);
-        this.tvPIN = (TextView) findViewById(R.id.tvGamePIN);
-
+        //set view fields with data
         this.tvGameId.setText("ID: "+gameID);
         this.tvPIN.setText("PIN: "+gamePIN);
 
-        Button start = (Button) findViewById(R.id.startGame);
         start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -75,25 +100,14 @@ public class _4GameRoom extends AppCompatActivity {
         });
 
 
-        game_settings = getIntent().getExtras().getParcelable("game_settings");
-        questions =  getIntent().getParcelableArrayListExtra("questions");
+        this.game_settings.setGameID(123456);
+        this.game_settings.setGamePIN(Integer.parseInt(this.gamePIN));
 
-
-        //The grid view will be filled with the profile pictures? of each player
-
-        this.mPresence = new PresenceListAdapter(this);
-        this.mPresencePnCallback = new PresencePnCallback(this.mPresence);
-
-        ListView listView = (ListView) findViewById(R.id.presence_list);
         listView.setAdapter(mPresence);
 
-
-        client = new PubNubClient(new UserProfile(Constants.HOST_USERNAME),gameID);
         client.initChannels(mPresencePnCallback);
         client.subscribe(gameID,Constants.WITH_PRESENCE);
         // channel subscribed. Now waiting for players.
-
-
 
         //test publish
         client.publish(gameID, new PubSubPojo("sender","msg","timstp"));
@@ -126,19 +140,16 @@ public class _4GameRoom extends AppCompatActivity {
 //        }
 
         Log.d(Constants.LOGT, "START GAME CLICKER! COLLECTING DATA");
-        Log.d(Constants.LOGT, "game_settings && questions are turned off on TEST Activity so skipping...");
-        //Log.d(Constants.LOGT, "Questions="+questions.toString());
-
-        Log.d(Constants.LOGT, "GameID="+this.gameID);
-        Log.d(Constants.LOGT, "GamePIN="+this.gamePIN);
+        Log.d(Constants.LOGT, "Questions="+questions.toString());
         Log.d(Constants.LOGT, "Users with event=join"+players.toString());
 
-
-        intent.putExtra("gameID", gameID);
-        intent.putExtra("gamePIN", gamePIN);
         intent.putExtra("game_settings", game_settings);
-        intent.putParcelableArrayListExtra("questions", questions);
-        intent.putParcelableArrayListExtra("players", players);
+
+        Bundle b = new Bundle();
+        b.putParcelableArrayList("questions", questions); // Be sure questions is not null here
+        b.putParcelableArrayList("players", players); // Be sure players is not null here
+        intent.putExtras(b);
+
         startActivity(intent);
 
     }

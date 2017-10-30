@@ -1,5 +1,6 @@
 package isdp.guess_a_song;
 
+<<<<<<< HEAD
 import android.content.DialogInterface;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -12,6 +13,13 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+=======
+import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.ListView;
+>>>>>>> #38 and #36 issues commit
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -26,15 +34,21 @@ import java.util.TimerTask;
 import java.util.List;
 
 import isdp.guess_a_song.controller.Game;
+import isdp.guess_a_song.controller.PubNubClient;
+import isdp.guess_a_song.model.PubSubPojo;
 import isdp.guess_a_song.model.Question;
 import isdp.guess_a_song.model.Settings;
 import isdp.guess_a_song.model.UserProfile;
+import isdp.guess_a_song.pubsub.PresenceListAdapter;
+import isdp.guess_a_song.pubsub.PresencePnCallback;
+import isdp.guess_a_song.utils.Constants;
 
 
 public class HostPlayScreen extends AppCompatActivity {
 
 
     private Game game;
+<<<<<<< HEAD
 <<<<<<< HEAD
     private Settings settings;
     private int gameID;
@@ -51,6 +65,12 @@ public class HostPlayScreen extends AppCompatActivity {
     private int currentQuestion = 0;
     private MediaPlayer mediaPlayer;
 =======
+=======
+    //PUBNUB
+    private PubNubClient client;
+    private PresenceListAdapter mPresence;
+    private PresencePnCallback mPresencePnCallback;
+>>>>>>> #38 and #36 issues commit
 //    private Settings settings;
 //    private int gameID;
 //    private int gamePIN;
@@ -73,6 +93,7 @@ public class HostPlayScreen extends AppCompatActivity {
 
 
         // GET DATA FROM PREVIOUS VIEW
+<<<<<<< HEAD
         Bundle bundle = getIntent().getExtras();
 <<<<<<< HEAD
         settings = (Settings) bundle.getParcelable("game_settings");
@@ -82,19 +103,20 @@ public class HostPlayScreen extends AppCompatActivity {
         //players = (Settings) bundle.getParcelable("players");
 =======
 >>>>>>> some changes on laptop sync
+=======
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+>>>>>>> #38 and #36 issues commit
 
         Settings settings =  bundle.getParcelable("game_settings");
-        int gameID =    bundle.getInt("gameID");
-        int gamePIN =   bundle.getInt("gameID");
-        List<Question> questions = bundle.getParcelable("questions");
-        List<UserProfile> players =   bundle.getParcelable("players");
+        List<Question> questions = intent.getParcelableArrayListExtra("questions");
+        List<UserProfile> players = intent.getParcelableArrayListExtra("players");
 
 
         // INIT GAME INSTANCE
         game = game.getInstance();
-        game.setID(gameID);
-        game.setPIN(gamePIN);
         game.setSettings(settings);
+<<<<<<< HEAD
 
 <<<<<<< HEAD
         tvSongname.setText(questions.get(0).getSong().toString());
@@ -148,7 +170,39 @@ public class HostPlayScreen extends AppCompatActivity {
         game.setPlayers(players);
 
 >>>>>>> some changes on laptop sync
+=======
+        game.setQuestions(questions);
+        game.setPlayers(players);
+
+
+
+        //pubnub
+        this.mPresence = new PresenceListAdapter(this);
+        this.mPresencePnCallback = new PresencePnCallback(this.mPresence);
+        //ListView listView = (ListView) findViewById(R.id.presence_list);
+
+        //client
+        Log.d("mylogger",game.getSettings().toString());
+
+        Log.d("mylogger","gameidstring "+game.getSettings().getGameIDString());
+        client = new PubNubClient(new UserProfile(Constants.HOST_USERNAME),game.getSettings().getGameIDString());
+
+        //listView.setAdapter(this.mPresence);
+
+        client.initChannels(mPresencePnCallback);
+        client.subscribe(game.getSettings().getGameIDString(),Constants.WITH_PRESENCE);
+        // channel subscribed. Now waiting for players.
+
+        //test publish
+        client.publish(game.getSettings().getGameIDString(), new PubSubPojo("the BOSS","game started!","timstp"));
+
+
+
+>>>>>>> #38 and #36 issues commit
         game.start();
+        Log.d(Constants.LOGT, game.toString());
+
+
 
     }
 

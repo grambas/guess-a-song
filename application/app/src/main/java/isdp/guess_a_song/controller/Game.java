@@ -22,9 +22,6 @@ import isdp.guess_a_song.utils.Constants;
 public class Game {
 
     //Static final attributes
-    private int ID;
-    private int PIN;
-
     private static final Game instance = new Game();
 
     // Game attributes
@@ -98,13 +95,6 @@ public class Game {
         status  = Constants.GAME_STATUS_FINISHED;
     }
 
-    public  int getID() {
-        return ID;
-    }
-
-    public  int getPIN() {
-        return PIN;
-    }
 
     public Settings getSettings() {
         return settings;
@@ -114,11 +104,15 @@ public class Game {
         this.settings = settings;
     }
 
-    public void setID(int ID) {
-        this.ID = ID;
-    }
 
-    public void setPIN(int PIN) {
-        this.PIN = PIN;
+
+    @Override
+    public String toString() {
+        return "Game{" +
+                ", settings=" + settings +
+                ", Questions=" + Questions +
+                ", players=" + players +
+                ", status=" + status +
+                '}';
     }
 }

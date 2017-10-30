@@ -2,6 +2,7 @@ package isdp.guess_a_song.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 /**
  * Created on 10/5/2017, 11:01 PM
@@ -19,6 +20,8 @@ public class Settings implements Parcelable {
     private int guess_time;
     private int songs_amount;
     private int game_type;
+    private int gameID;
+    private int gamePIN;
 
 
     /**
@@ -28,6 +31,9 @@ public class Settings implements Parcelable {
         this.guess_time =15;
         this.songs_amount = 10;
         this.game_type = 1;
+        this.gameID = -1;
+        this.gamePIN = -1;
+
     }
 
      /**
@@ -40,6 +46,8 @@ public class Settings implements Parcelable {
         this.guess_time = guess_time;
         this.songs_amount = songs_amount;
         this.game_type = game_type;
+        this.gameID = -1;
+        this.gamePIN = -1;
     }
 
     /**
@@ -58,6 +66,20 @@ public class Settings implements Parcelable {
         return game_type;
     }
 
+    public int getGameID() {
+        return gameID;
+    }
+
+    public String getGameIDString() {
+        Log.d("mylogger", Integer.toString(gameID)) ;
+        return Integer.toString(gameID);
+    }
+
+
+    public int getGamePIN() {
+        return gamePIN;
+    }
+
     public void setGuess_time(int guess_time) {
         this.guess_time = guess_time;
     }
@@ -69,7 +91,12 @@ public class Settings implements Parcelable {
     public void setGame_type(int game_type) {
         this.game_type = game_type;
     }
-
+    public void setGameID(int gameID) {
+        this.gameID = gameID;
+    }
+    public void setGamePIN(int gamePIN) {
+        this.gamePIN = gamePIN;
+    }
     /**
      *  Parcelling part
      */
@@ -78,6 +105,8 @@ public class Settings implements Parcelable {
         this.guess_time = in.readInt();
         this.songs_amount = in.readInt();
         this.game_type =  in.readInt();
+        this.gameID =  in.readInt();
+        this.gamePIN=  in.readInt();
     }
 
     @Override
@@ -90,6 +119,9 @@ public class Settings implements Parcelable {
         dest.writeInt(this.guess_time);
         dest.writeInt(this.songs_amount);
         dest.writeInt(this.game_type);
+        dest.writeInt(this.gameID);
+        dest.writeInt(this.gamePIN);
+
     }
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
         public Settings createFromParcel(Parcel in) {
@@ -107,6 +139,8 @@ public class Settings implements Parcelable {
                 "guess_time='" + guess_time + '\'' +
                 ", songs_amount='" + songs_amount + '\'' +
                 ", game_type='" + game_type + '\'' +
+                ", gameID='" + gameID + '\'' +
+                ", gamePIN='" + gamePIN + '\'' +
                 '}';
     }
 

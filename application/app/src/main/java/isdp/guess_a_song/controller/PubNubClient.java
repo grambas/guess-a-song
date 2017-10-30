@@ -93,8 +93,8 @@ public class PubNubClient{
     public final void initChannels(final PresencePnCallback pr) {
         this.pubnub.addListener(pr);
 
-        this.pubnub.subscribe().channels( Arrays.asList(gameID) ).withPresence().execute();
-        this.pubnub.hereNow().channels( Arrays.asList(gameID) ).async(new PNCallback<PNHereNowResult>() {
+        this.pubnub.subscribe().channels( Arrays.asList(this.gameID) ).withPresence().execute();
+        this.pubnub.hereNow().channels( Arrays.asList(this.gameID) ).async(new PNCallback<PNHereNowResult>() {
             @Override
             public void onResponse(PNHereNowResult result, PNStatus status) {
                 if (status.isError()) {
