@@ -35,6 +35,7 @@ public class _4GameRoom extends AppCompatActivity {
 
     private Settings game_settings;
     private ArrayList<Question> questions;
+    private ArrayList<UserProfile> players = new ArrayList<UserProfile>();
 
     //PUBNUB
     private PubNubClient client;
@@ -73,10 +74,9 @@ public class _4GameRoom extends AppCompatActivity {
             }
         });
 
-        /* turned off for TEST instant debbug
+
         game_settings = getIntent().getExtras().getParcelable("game_settings");
         questions =  getIntent().getParcelableArrayListExtra("questions");
-        */
 
 
         //The grid view will be filled with the profile pictures? of each player
@@ -88,9 +88,14 @@ public class _4GameRoom extends AppCompatActivity {
         listView.setAdapter(mPresence);
 
 
-        client = new PubNubClient(new UserProfile("Mindaugas"),gameID);
+        client = new PubNubClient(new UserProfile(Constants.HOST_USERNAME),gameID);
         client.initChannels(mPresencePnCallback);
         client.subscribe(gameID,Constants.WITH_PRESENCE);
+        // channel subscribed. Now waiting for players.
+
+
+
+        //test publish
         client.publish(gameID, new PubSubPojo("sender","msg","timstp"));
     }
 
@@ -102,12 +107,8 @@ public class _4GameRoom extends AppCompatActivity {
         Intent intent = new Intent(this, HostPlayScreen.class);
         //send game settings and game questions (instead of songs) to next activity
 
-        //TODO intent.putParcelableArrayListExtra("players",players);
-        //TODO make UserPlayer Parceable to move list to other view
-
-        List<UserProfile> players = new ArrayList<UserProfile>();
+        //fetch all logged in users to list
         Map<String, PresencePojo> tempor = this.mPresence.getItems();
-
         for (Map.Entry<String, PresencePojo> entry : tempor.entrySet())
         {
             //Log.d(Constants.LOGT, entry.getKey().toString() + "/" + entry.getValue().toString());
@@ -116,7 +117,7 @@ public class _4GameRoom extends AppCompatActivity {
             }
         }
 
-
+//        PresencePojo temp;
 //        for (int i=0;i<this.mPresence.getCount();i++){
 //            temp  = this.mPresence.getItem(i);
 //            if (temp.getPresence() == "join") { //user joined
@@ -133,13 +134,13 @@ public class _4GameRoom extends AppCompatActivity {
         Log.d(Constants.LOGT, "Users with event=join"+players.toString());
 
 
-        /* COMMENTED FOR TESTING BUTTON
         intent.putExtra("gameID", gameID);
         intent.putExtra("gamePIN", gamePIN);
         intent.putExtra("game_settings", game_settings);
         intent.putParcelableArrayListExtra("questions", questions);
+        intent.putParcelableArrayListExtra("players", players);
         startActivity(intent);
-        */
+
     }
 
 }

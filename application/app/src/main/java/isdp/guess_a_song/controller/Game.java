@@ -6,6 +6,7 @@ import java.util.List;
 import isdp.guess_a_song.model.Question;
 import isdp.guess_a_song.model.Score;
 import isdp.guess_a_song.model.Settings;
+import isdp.guess_a_song.model.UserProfile;
 import isdp.guess_a_song.utils.Constants;
 
 /**
@@ -29,8 +30,38 @@ public class Game {
     // Game attributes
     Settings settings;
     List<Question> Questions;
+<<<<<<< HEAD
     // List<Player> players;
     List<Score> scoreList;
+=======
+    List<UserProfile> players;
+    //Score score
+
+    public List<Question> getQuestions() {
+        return Questions;
+    }
+
+    public void setQuestions(List<Question> questions) {
+        Questions = questions;
+    }
+
+    public List<UserProfile> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(List<UserProfile> players) {
+        this.players = players;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+>>>>>>> some changes on laptop sync
     int status;
 
     public static Game getInstance() {

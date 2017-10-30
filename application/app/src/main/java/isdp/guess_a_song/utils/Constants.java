@@ -13,6 +13,8 @@ package isdp.guess_a_song.utils;
 public class Constants {
 
     public final static String LOGT = "mylogger";
+    public final static String HOST_USERNAME = "THE BOSS";
+
 
     public final static boolean WITH_PRESENCE = true;
     public final static boolean NO_PRESENCE = false;

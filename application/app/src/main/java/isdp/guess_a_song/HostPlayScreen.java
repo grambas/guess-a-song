@@ -23,14 +23,19 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import java.util.List;
+
 import isdp.guess_a_song.controller.Game;
 import isdp.guess_a_song.model.Question;
 import isdp.guess_a_song.model.Settings;
+import isdp.guess_a_song.model.UserProfile;
+
 
 public class HostPlayScreen extends AppCompatActivity {
 
 
     private Game game;
+<<<<<<< HEAD
     private Settings settings;
     private int gameID;
     private int gamePIN;
@@ -45,6 +50,13 @@ public class HostPlayScreen extends AppCompatActivity {
 
     private int currentQuestion = 0;
     private MediaPlayer mediaPlayer;
+=======
+//    private Settings settings;
+//    private int gameID;
+//    private int gamePIN;
+//    private List<Question> questions;
+//    private List<UserProfile> players;
+>>>>>>> some changes on laptop sync
 
 
     @Override
@@ -62,20 +74,29 @@ public class HostPlayScreen extends AppCompatActivity {
 
         // GET DATA FROM PREVIOUS VIEW
         Bundle bundle = getIntent().getExtras();
+<<<<<<< HEAD
         settings = (Settings) bundle.getParcelable("game_settings");
         gameID = bundle.getInt("gameID");
         gamePIN = bundle.getInt("gameID");
         questions = (ArrayList) bundle.getParcelableArrayList("questions");
         //players = (Settings) bundle.getParcelable("players");
+=======
+>>>>>>> some changes on laptop sync
+
+        Settings settings =  bundle.getParcelable("game_settings");
+        int gameID =    bundle.getInt("gameID");
+        int gamePIN =   bundle.getInt("gameID");
+        List<Question> questions = bundle.getParcelable("questions");
+        List<UserProfile> players =   bundle.getParcelable("players");
 
 
-
-        //INIT GAME INSTANCE
+        // INIT GAME INSTANCE
         game = game.getInstance();
         game.setID(gameID);
         game.setPIN(gamePIN);
         game.setSettings(settings);
 
+<<<<<<< HEAD
         tvSongname.setText(questions.get(0).getSong().toString());
         tvQuestion.setText("Question: " + Integer.toString(currentQuestion + 1));
 
@@ -122,6 +143,11 @@ public class HostPlayScreen extends AppCompatActivity {
 
         //game.setQuestions(questions);
         //game.setPlayers(players);
+=======
+        game.setQuestions(questions);
+        game.setPlayers(players);
+
+>>>>>>> some changes on laptop sync
         game.start();
 
     }
