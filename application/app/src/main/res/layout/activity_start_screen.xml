@@ -75,12 +75,16 @@
         android:layout_height="wrap_content"
         android:onClick="MusicLibrary"
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> merging master with mindau branch
         android:text="Music Library"
         android:layout_below="@+id/btJoin"
         android:layout_alignLeft="@+id/btJoin"
         android:layout_alignStart="@+id/btJoin"
         android:layout_alignRight="@+id/btJoin"
         android:layout_alignEnd="@+id/btJoin" />
+<<<<<<< HEAD
 =======
         android:text="Music Library" />
 
@@ -96,4 +100,6 @@
         android:onClick="GameRoomActivity"
         android:text="HOST WAIT ROOM(TEST)" />
 >>>>>>> #47,#37 issues. Working on multiplayer
+=======
+>>>>>>> merging master with mindau branch
 </RelativeLayout>

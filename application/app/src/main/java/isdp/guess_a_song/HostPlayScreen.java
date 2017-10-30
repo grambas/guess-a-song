@@ -1,11 +1,15 @@
 package isdp.guess_a_song;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> merging master with mindau branch
 import android.content.DialogInterface;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.CountDownTimer;
 import android.support.v7.app.AlertDialog;
+<<<<<<< HEAD
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,19 +34,30 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+=======
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.content.Intent;
+>>>>>>> merging master with mindau branch
 
 import java.util.List;
+import java.io.IOException;
 
 import isdp.guess_a_song.controller.Game;
-import isdp.guess_a_song.controller.PubNubClient;
-import isdp.guess_a_song.model.PubSubPojo;
 import isdp.guess_a_song.model.Question;
 import isdp.guess_a_song.model.Settings;
+import isdp.guess_a_song.controller.PubNubClient;
+import isdp.guess_a_song.model.PubSubPojo;
 import isdp.guess_a_song.model.UserProfile;
 import isdp.guess_a_song.pubsub.PresenceListAdapter;
 import isdp.guess_a_song.pubsub.PresencePnCallback;
 import isdp.guess_a_song.utils.Constants;
-
 
 public class HostPlayScreen extends AppCompatActivity {
 
@@ -70,6 +85,7 @@ public class HostPlayScreen extends AppCompatActivity {
     private PubNubClient client;
     private PresenceListAdapter mPresence;
     private PresencePnCallback mPresencePnCallback;
+<<<<<<< HEAD
 >>>>>>> #38 and #36 issues commit
 //    private Settings settings;
 //    private int gameID;
@@ -77,6 +93,18 @@ public class HostPlayScreen extends AppCompatActivity {
 //    private List<Question> questions;
 //    private List<UserProfile> players;
 >>>>>>> some changes on laptop sync
+=======
+
+    private TextView tvSongname;
+    private TextView tvTimer;
+    private TextView tvQuestion;
+    private ProgressBar pbTimer;
+    private ImageButton ibPlay;
+    private Button btNext;
+
+    private int currentQuestion = 0;
+    private MediaPlayer mediaPlayer;
+>>>>>>> merging master with mindau branch
 
 
     @Override
@@ -106,14 +134,18 @@ public class HostPlayScreen extends AppCompatActivity {
 =======
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
+<<<<<<< HEAD
 >>>>>>> #38 and #36 issues commit
 
+=======
+>>>>>>> merging master with mindau branch
         Settings settings =  bundle.getParcelable("game_settings");
         List<Question> questions = intent.getParcelableArrayListExtra("questions");
         List<UserProfile> players = intent.getParcelableArrayListExtra("players");
 
 
-        // INIT GAME INSTANCE
+
+        //INIT GAME INSTANCE
         game = game.getInstance();
         game.setSettings(settings);
 <<<<<<< HEAD
@@ -175,7 +207,6 @@ public class HostPlayScreen extends AppCompatActivity {
         game.setPlayers(players);
 
 
-
         //pubnub
         this.mPresence = new PresenceListAdapter(this);
         this.mPresencePnCallback = new PresencePnCallback(this.mPresence);
@@ -198,12 +229,129 @@ public class HostPlayScreen extends AppCompatActivity {
 
 
 
+<<<<<<< HEAD
 >>>>>>> #38 and #36 issues commit
+=======
+
+
+
+
+        tvSongname.setText(game.getQuestions().get(0).getSong().toString());
+        tvQuestion.setText("Question: " + Integer.toString(currentQuestion + 1));
+
+        final CountDownTimer countDownTimer = new CountDownTimer(game.getSettings().getGuess_time() * 1000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                tvTimer.setText(Long.toString(millisUntilFinished/1000));
+                if (mediaPlayer != null) {
+                    pbTimer.setProgress((int)(((double) mediaPlayer.getCurrentPosition() / (double) mediaPlayer.getDuration()) * 100));
+                }
+
+            }
+
+            @Override
+            public void onFinish() {
+                mediaPlayer.stop();
+            }
+        };
+
+        ibPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playSong(game.getQuestions().get(currentQuestion), countDownTimer);
+            }
+        });
+
+        btNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Multiplayer stuff
+
+                //Any restrictions ? Like the song has to be finished?
+
+
+                if (game.getQuestions().size() > currentQuestion+1) {
+                    currentQuestion++;
+                    setCurrentQuestion(countDownTimer, currentQuestion);
+                } else {
+                    //Multiplayer-stuff and score screen?
+                }
+            }
+        });
+
+>>>>>>> merging master with mindau branch
         game.start();
         Log.d(Constants.LOGT, game.toString());
 
 
+    }
 
+    //Managing the mediaplayer
+    //The song will be played, if nothing is currently playing
+    //If a song is playing, the song stops as well as the timer.
+    private void playSong(Question q, CountDownTimer timer) {
+        if (mediaPlayer == null) {
+            mediaPlayer = MediaPlayer.create(this, Uri.parse(q.getSong().getPath()));
+            mediaPlayer.start();
+            timer.start();
+        } else {
+            if (mediaPlayer.isPlaying()) {
+                mediaPlayer.stop();
+                timer.cancel();
+            } else {
+                mediaPlayer.reset();
+                try {
+                    mediaPlayer.setDataSource(this, Uri.parse(q.getSong().getPath()));
+                    mediaPlayer.prepare();
+                    mediaPlayer.start();
+                    timer.start();
+                } catch (IOException e) {
+                    Log.e("Error", "Cannot play song.");
+                }
+
+            }
+        }
+
+    }
+
+    private void setCurrentQuestion(CountDownTimer countDownTimer, int currentQuestion) {
+        countDownTimer.cancel();
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+        }
+
+        tvSongname.setText(game.getQuestions().get(currentQuestion).getSong().toString());
+        tvQuestion.setText("Question: " + Integer.toString(currentQuestion + 1));
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        //Asking the player to quit or something
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Do you really want to quit?");
+        builder.setMessage("This will disband the room.");
+        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (mediaPlayer != null) {
+                    mediaPlayer.stop();
+                    mediaPlayer.release();
+                }
+
+                //More multiplayer stuff (Like closing the room)
+
+                HostPlayScreen.super.onBackPressed();
+            }
+        });
+        builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //Doing nothing...
+                    }
+                }
+        );
+        builder.show();
     }
 
     //Managing the mediaplayer

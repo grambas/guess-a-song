@@ -16,7 +16,6 @@ import isdp.guess_a_song.utils.Constants;
 /**
  * Main game controller and instance
  * this class should be called in game creation last step
- * @author Mindaugas Milius
  */
 
 public class Game {
@@ -32,6 +31,7 @@ public class Game {
     List<Score> scoreList;
 =======
     List<UserProfile> players;
+<<<<<<< HEAD
     //Score score
 
     public List<Question> getQuestions() {
@@ -59,6 +59,9 @@ public class Game {
     }
 
 >>>>>>> some changes on laptop sync
+=======
+    List<Score> scoreList;
+>>>>>>> merging master with mindau branch
     int status;
 
     public static Game getInstance() {
@@ -83,14 +86,22 @@ public class Game {
     public void pause(){
         status  = Constants.GAME_STATUS_PAUSE;
     }
+<<<<<<< HEAD
+=======
+
+>>>>>>> merging master with mindau branch
     public String showScore(){
         String scoreString = "";
         for (Score sc:scoreList) {
             scoreString += (sc.toString() + "\n");
         }
+<<<<<<< HEAD
 
+=======
+>>>>>>> merging master with mindau branch
         return scoreString;
     }
+
     public void end(){
         status  = Constants.GAME_STATUS_FINISHED;
     }
@@ -104,8 +115,29 @@ public class Game {
         this.settings = settings;
     }
 
+    public List<Question> getQuestions() {
+        return Questions;
+    }
 
+    public void setQuestions(List<Question> questions) {
+        Questions = questions;
+    }
 
+    public List<UserProfile> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(List<UserProfile> players) {
+        this.players = players;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
     @Override
     public String toString() {
         return "Game{" +
@@ -115,4 +147,5 @@ public class Game {
                 ", status=" + status +
                 '}';
     }
+
 }
