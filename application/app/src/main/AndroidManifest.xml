@@ -14,14 +14,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat">
-        <activity android:name=".MainActivity" />
         <activity
             android:name=".StartScreen"
             android:label="@string/title_activity_database_test"
             android:theme="@style/Theme.AppCompat">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -33,7 +31,6 @@
         <activity android:name="._4GameRoom" />
         <activity android:name=".HostPlayScreen" />
         <activity android:name=".MusicLibrary"/>
-        <activity android:name=".PubNubMainActivity"></activity>
     </application>
 
 </manifest>

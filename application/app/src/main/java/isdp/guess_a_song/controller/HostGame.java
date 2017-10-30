@@ -18,12 +18,12 @@ import isdp.guess_a_song.utils.Constants;
  * this class should be called in game creation last step
  */
 
-public class Game {
+public class HostGame {
 
     //Static final attributes
-    private static final Game instance = new Game();
+    private static final HostGame instance = new HostGame();
 
-    // Game attributes
+    // HostGame attributes
     Settings settings;
     List<Question> Questions;
 
@@ -33,11 +33,11 @@ public class Game {
 
     int status;
 
-    public static Game getInstance() {
+    public static HostGame getInstance() {
         return instance;
     }
 
-    private Game() {
+    private HostGame() {
         status = Constants.GAME_STATUS_STARTED;
     }
 
@@ -103,7 +103,7 @@ public class Game {
     }
     @Override
     public String toString() {
-        return "Game{" +
+        return "HostGame{" +
                 ", settings=" + settings +
                 ", Questions=" + Questions +
                 ", players=" + players +

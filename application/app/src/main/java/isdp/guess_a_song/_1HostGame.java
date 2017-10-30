@@ -32,8 +32,8 @@ public class _1HostGame extends AppCompatActivity {
         songs_amount = (EditText)findViewById(R.id.etNumberQuestions);
 
         //TODO remove later. FOR DEBUGGING
-        guess_time.setText("1");
-        songs_amount.setText("1");
+        guess_time.setText(Constants.DEFAULT_GUESS_TIME);
+        songs_amount.setText(Constants.DEFAULT_SONGS_NUMBER);
 
         btNext.setOnClickListener(new View.OnClickListener() {
             @Override

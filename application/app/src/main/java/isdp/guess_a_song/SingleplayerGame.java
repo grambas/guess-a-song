@@ -23,7 +23,7 @@ import isdp.guess_a_song.utils.Constants;
  * A singleplayer version of the game for Sprint #1
  */
 
-// TODO here we need to call Game game = new game.getInstance() and set attributes
+// TODO here we need to call HostGame game = new game.getInstance() and set attributes
 
 public class SingleplayerGame extends AppCompatActivity {
 

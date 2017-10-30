@@ -1,8 +1,18 @@
-package isdp.guess_a_song.controller;
+package isdp.guess_a_song.model;
 
 /**
  * Created on 10/30/2017, 4:56 PM
  */
+
+
+/**
+ * This is data holder for json messages
+ * exchange. Converting JSON to Java class
+ * with basic methods. Please add other attributes by needs.
+ *
+ * @Author Mindaugas Milius
+**/
+
 
 public class Action {
     String action;

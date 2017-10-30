@@ -41,7 +41,7 @@ public class _3EditQuestion extends AppCompatActivity {
         game_settings = bundle.getParcelable("game_settings");
         songs = bundle.getParcelableArrayList("selected_songs");
 
-        Log.d("_3EditQuestion","Game type now is: " + game_settings.getGame_type());
+        Log.d("_3EditQuestion","HostGame type now is: " + game_settings.getGame_type());
         DatabaseHandler db = new DatabaseHandler(this);
 
         /*

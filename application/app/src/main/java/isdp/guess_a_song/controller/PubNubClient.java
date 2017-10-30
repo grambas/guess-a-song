@@ -14,8 +14,8 @@ import com.pubnub.api.models.consumer.presence.PNHereNowResult;
 import java.util.Arrays;
 import java.util.Map;
 
+import isdp.guess_a_song.model.Action;
 import isdp.guess_a_song.model.PresencePojo;
-import isdp.guess_a_song.model.PubSubPojo;
 import isdp.guess_a_song.model.UserProfile;
 import isdp.guess_a_song.pubsub.PresencePnCallback;
 import isdp.guess_a_song.utils.Constants;
@@ -55,30 +55,29 @@ public class PubNubClient{
     }
 
 
-    public void publish(final String gameID, PubSubPojo m) {
+    public void publish(final String gameID, Action m) {
         try {
-        pubnub.publish()
-                .message(m)
-                .channel(gameID)
-                .shouldStore(true)
-                .usePOST(this.usePost)
-                .async(new PNCallback<PNPublishResult>() {
-                    @Override
-                    public void onResponse(PNPublishResult result, PNStatus status) {
-                        if (status.isError()) {
-                            // something bad happened.
-                            Log.d(Constants.LOGT,user.getName()+ " Publish error");
+            pubnub.publish()
+                    .message(m)
+                    .channel(gameID)
+                    .shouldStore(true)
+                    .usePOST(this.usePost)
+                    .async(new PNCallback<PNPublishResult>() {
+                        @Override
+                        public void onResponse(PNPublishResult result, PNStatus status) {
+                            if (status.isError()) {
+                                // something bad happened.
+                                Log.d(Constants.LOGT,user.getName()+ " Publish error");
 
-                        } else {
-                           Log.d(Constants.LOGT, user.getName()+ " Published! result: " + result.toString());
+                            } else {
+                                //Log.d(Constants.LOGT, user.getName()+ " Published! result: " + result.toString());
+                            }
                         }
-                    }
-                });
+                    });
         } catch (Exception e) {
             Log.e(Constants.LOGT, "exception while publishing message", e);
         }
     }
-
     public void subscribe(String gameID,boolean withPre){
         if (withPre){
             this.pubnub.subscribe().withPresence().channels( Arrays.asList(gameID) ).execute();
@@ -90,7 +89,7 @@ public class PubNubClient{
         }
     }
 
-    public final void initChannels(final PresencePnCallback pr) {
+    public final void initChannelsHost(final PresencePnCallback pr) {
         this.pubnub.addListener(pr);
 
         this.pubnub.subscribe().channels( Arrays.asList(this.gameID) ).withPresence().execute();
@@ -102,7 +101,7 @@ public class PubNubClient{
                 }
 
                 try {
-                    Log.d(Constants.LOGT, user.getName()+" hereNow() " +result.toString());
+                    Log.d(Constants.LOGT, "HOST HERE NOW" + user.getName()+" hereNow() " +result.toString());
 
                     for (Map.Entry<String, PNHereNowChannelData> entry : result.getChannels().entrySet()) {
                         for (PNHereNowOccupantData occupant : entry.getValue().getOccupants()) {
@@ -115,5 +114,9 @@ public class PubNubClient{
 
             }
         });
+    }
+
+    public PubNub getPubnub() {
+        return pubnub;
     }
 }

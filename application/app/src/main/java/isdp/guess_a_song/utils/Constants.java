@@ -5,12 +5,27 @@ package isdp.guess_a_song.utils;
  */
 
 /**
- * This is the Game general constants
+ * This is the HostGame general constants
  *
  * @author Mindaugas Milius
  */
 
 public class Constants {
+
+
+    //messages
+
+    public final static String TRUE = "true";
+    public final static String FALSE = "false";
+    public final static String A_LOG_IN  = "log_in";
+    public final static String A_AUTH_RESPONSE = "auth_check";
+    public final static String A_START_GAME = "start_game";
+
+
+
+    public final static String DEFAULT_SONGS_NUMBER = "2";
+    public final static String DEFAULT_GUESS_TIME = "15";
+
 
     public final static String LOGT = "mylogger";
     public final static String HOST_USERNAME = "THE BOSS";
@@ -20,18 +35,18 @@ public class Constants {
     public final static boolean NO_PRESENCE = false;
 
 
-    // Game Types. Guess an Artist or guess a title
+    // HostGame Types. Guess an Artist or guess a title
     public final static int GAME_TYPE_ARTIST = 1;
     public final static int GAME_TYPE_TITLE = 2;
 
-    // Game statuses
+    // HostGame statuses
     public final static int GAME_STATUS_STARTED = 0;
     public final static int GAME_STATUS_FINISHED = 1;
     public final static int GAME_STATUS_ON_QUESTION = 2;
     public final static int GAME_STATUS_PAUSE = 3;
 
 
-    // Game ID/KEY random number size
+    // HostGame ID/KEY random number size
     public final static int RANDOM_MIN = 1000;
     public final static int RANDOM_MAX = 9999;
 

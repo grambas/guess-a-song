@@ -9,12 +9,19 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.pubnub.api.PubNub;
+import com.pubnub.api.callbacks.SubscribeCallback;
+import com.pubnub.api.enums.PNStatusCategory;
+import com.pubnub.api.models.consumer.PNStatus;
+import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
+import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
+
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
+import isdp.guess_a_song.model.Action;
 import isdp.guess_a_song.controller.PubNubClient;
-import isdp.guess_a_song.model.PubSubPojo;
 import isdp.guess_a_song.model.Question;
 import isdp.guess_a_song.model.Settings;
 import isdp.guess_a_song.model.UserProfile;
@@ -79,6 +86,49 @@ public class _4GameRoom extends AppCompatActivity {
 
 
 
+        client.getPubnub().addListener(new SubscribeCallback() {
+            @Override
+            public void status(PubNub pubnub, PNStatus status) {
+                if (status.getCategory() == PNStatusCategory.PNConnectedCategory){
+
+//                    pubnub.publish().channel("123456").message("status.getCategory() == PNStatusCategory.PNConnectedCategory").async(new PNCallback<PNPublishResult>() {
+//                        @Override
+//                        public void onResponse(PNPublishResult result, PNStatus status) {
+//                            // handle publish response
+//                        }
+//                    });
+                }
+            }
+
+            @Override
+            public void message(PubNub pubnub, PNMessageResult message) {
+                Log.d(Constants.LOGT, "HOST MESSAGE LISTENER "+ message.getMessage().toString());
+
+                Gson gson = new Gson();
+                Action action= gson.fromJson(message.getMessage(), Action.class);
+                //{ "action": "log_in",   "value": "4852","publisher": "TestPlayer1","recipient": "THE BOSS"}
+                if (action.getRecipient() != null && action.getRecipient().equals(Constants.HOST_USERNAME)){
+                    if(action.getAction().equals(Constants.A_LOG_IN)){
+                        if(action.getValue().equals(gamePIN)){
+                            Log.d(Constants.LOGT, "HOST MESSAGE LISTENER Player "+ action.getPublisher() + " auth true SUCCESS!");
+                            client.publish(gameID,new Action(Constants.A_AUTH_RESPONSE,Constants.TRUE,Constants.HOST_USERNAME,action.getPublisher()));
+                        }else{
+                            client.publish(gameID,new Action(Constants.A_AUTH_RESPONSE,Constants.FALSE,Constants.HOST_USERNAME,action.getPublisher()));
+                            Log.d(Constants.LOGT, "HOST MESSAGE LISTENER Player "+ action.getPublisher() + " auth false (bad pin)");
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void presence(PubNub pubnub, PNPresenceEventResult presence) {
+
+            }
+        });
+
+
+
+
 
         //SETTER
 
@@ -105,12 +155,12 @@ public class _4GameRoom extends AppCompatActivity {
 
         listView.setAdapter(mPresence);
 
-        client.initChannels(mPresencePnCallback);
+        client.initChannelsHost(mPresencePnCallback);
         client.subscribe(gameID,Constants.WITH_PRESENCE);
         // channel subscribed. Now waiting for players.
 
         //test publish
-        client.publish(gameID, new PubSubPojo("sender","msg","timstp"));
+        //client.publish(gameID, new PubSubPojo("sender","msg","timstp"));
     }
 
 
@@ -126,7 +176,8 @@ public class _4GameRoom extends AppCompatActivity {
         for (Map.Entry<String, PresencePojo> entry : tempor.entrySet())
         {
             //Log.d(Constants.LOGT, entry.getKey().toString() + "/" + entry.getValue().toString());
-            if (entry.getValue().getPresence() == "join") { //user joined{
+            //skip Console_Admin also
+            if (entry.getValue().getPresence() == "join" && !entry.getValue().getSender().equals("Console_Admin")) { //user joined{
                 players.add(new UserProfile(entry.getValue().getSender()));
             }
         }

@@ -32,7 +32,7 @@ public class AnswersGenerator {
      * @see Question
      */
     public static Question generate(DatabaseHandler db, Song s,int type){
-        int r = 0;
+
         Answer temp_ans;
 
         List<Song> answer_songs = db.getRandomSongs(s);

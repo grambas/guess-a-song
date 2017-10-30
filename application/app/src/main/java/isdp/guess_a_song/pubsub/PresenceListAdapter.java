@@ -53,9 +53,10 @@ public class PresenceListAdapter extends ArrayAdapter<PresencePojo> {
         if (latestPresence.containsKey(message.getSender())) {
             this.presenceList.remove(message.getSender());
         }
-
-        this.presenceList.add(0, message.getSender());
-        latestPresence.put(message.getSender(), message);
+        if(!message.getSender().equals("Console_Admin")){
+            this.presenceList.add(0, message.getSender());
+            latestPresence.put(message.getSender(), message);
+        }
 
         ((Activity) this.context).runOnUiThread(new Runnable() {
             @Override

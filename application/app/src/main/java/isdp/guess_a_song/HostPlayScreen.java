@@ -20,11 +20,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import isdp.guess_a_song.controller.Game;
+import isdp.guess_a_song.controller.HostGame;
 import isdp.guess_a_song.model.Question;
 import isdp.guess_a_song.model.Settings;
 import isdp.guess_a_song.controller.PubNubClient;
-import isdp.guess_a_song.model.PubSubPojo;
 import isdp.guess_a_song.model.UserProfile;
 import isdp.guess_a_song.pubsub.PresenceListAdapter;
 import isdp.guess_a_song.pubsub.PresencePnCallback;
@@ -33,7 +32,7 @@ import isdp.guess_a_song.utils.Constants;
 public class HostPlayScreen extends AppCompatActivity {
 
 
-    private Game game;
+    private HostGame game;
     private Settings settings;
     private int gameID;
     private int gamePIN;
@@ -144,13 +143,9 @@ public class HostPlayScreen extends AppCompatActivity {
 
         //listView.setAdapter(this.mPresence);
 
-        client.initChannels(mPresencePnCallback);
+        client.initChannelsHost(mPresencePnCallback);
         client.subscribe(game.getSettings().getGameIDString(),Constants.WITH_PRESENCE);
         // channel subscribed. Now waiting for players.
-
-        //test publish
-        client.publish(game.getSettings().getGameIDString(), new PubSubPojo("the BOSS","game started!","timstp"));
-
 
 
         tvSongname.setText(game.getQuestions().get(0).getSong().toString());
