@@ -1,53 +1,24 @@
 package isdp.guess_a_song;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> merging master with mindau branch
+
 import android.content.DialogInterface;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.CountDownTimer;
 import android.support.v7.app.AlertDialog;
-<<<<<<< HEAD
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-=======
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
-import android.widget.ListView;
->>>>>>> #38 and #36 issues commit
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
-
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
-=======
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.content.Intent;
->>>>>>> merging master with mindau branch
-
 import java.util.List;
-import java.io.IOException;
 
 import isdp.guess_a_song.controller.Game;
 import isdp.guess_a_song.model.Question;
@@ -63,37 +34,17 @@ public class HostPlayScreen extends AppCompatActivity {
 
 
     private Game game;
-<<<<<<< HEAD
-<<<<<<< HEAD
     private Settings settings;
     private int gameID;
     private int gamePIN;
     private ArrayList<Question> questions;
 
-    private TextView tvSongname;
-    private TextView tvTimer;
-    private TextView tvQuestion;
-    private ProgressBar pbTimer;
-    private ImageButton ibPlay;
-    private Button btNext;
 
-    private int currentQuestion = 0;
-    private MediaPlayer mediaPlayer;
-=======
-=======
     //PUBNUB
     private PubNubClient client;
     private PresenceListAdapter mPresence;
     private PresencePnCallback mPresencePnCallback;
-<<<<<<< HEAD
->>>>>>> #38 and #36 issues commit
-//    private Settings settings;
-//    private int gameID;
-//    private int gamePIN;
-//    private List<Question> questions;
-//    private List<UserProfile> players;
->>>>>>> some changes on laptop sync
-=======
+
 
     private TextView tvSongname;
     private TextView tvTimer;
@@ -104,7 +55,6 @@ public class HostPlayScreen extends AppCompatActivity {
 
     private int currentQuestion = 0;
     private MediaPlayer mediaPlayer;
->>>>>>> merging master with mindau branch
 
 
     @Override
@@ -121,24 +71,10 @@ public class HostPlayScreen extends AppCompatActivity {
 
 
         // GET DATA FROM PREVIOUS VIEW
-<<<<<<< HEAD
-        Bundle bundle = getIntent().getExtras();
-<<<<<<< HEAD
-        settings = (Settings) bundle.getParcelable("game_settings");
-        gameID = bundle.getInt("gameID");
-        gamePIN = bundle.getInt("gameID");
-        questions = (ArrayList) bundle.getParcelableArrayList("questions");
-        //players = (Settings) bundle.getParcelable("players");
-=======
->>>>>>> some changes on laptop sync
-=======
+
+
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
-<<<<<<< HEAD
->>>>>>> #38 and #36 issues commit
-
-=======
->>>>>>> merging master with mindau branch
         Settings settings =  bundle.getParcelable("game_settings");
         List<Question> questions = intent.getParcelableArrayListExtra("questions");
         List<UserProfile> players = intent.getParcelableArrayListExtra("players");
@@ -148,95 +84,8 @@ public class HostPlayScreen extends AppCompatActivity {
         //INIT GAME INSTANCE
         game = game.getInstance();
         game.setSettings(settings);
-<<<<<<< HEAD
 
-<<<<<<< HEAD
         tvSongname.setText(questions.get(0).getSong().toString());
-        tvQuestion.setText("Question: " + Integer.toString(currentQuestion + 1));
-
-        final CountDownTimer countDownTimer = new CountDownTimer(game.getSettings().getGuess_time() * 1000, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                tvTimer.setText(Long.toString(millisUntilFinished/1000));
-                if (mediaPlayer != null) {
-                    pbTimer.setProgress((int)(((double) mediaPlayer.getCurrentPosition() / (double) mediaPlayer.getDuration()) * 100));
-                }
-
-            }
-
-            @Override
-            public void onFinish() {
-                mediaPlayer.stop();
-            }
-        };
-
-        ibPlay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                playSong(questions.get(currentQuestion), countDownTimer);
-            }
-        });
-
-        btNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Multiplayer stuff
-
-                //Any restrictions ? Like the song has to be finished?
-
-
-                if (questions.size() > currentQuestion+1) {
-                    currentQuestion++;
-                    setCurrentQuestion(countDownTimer, currentQuestion);
-                } else {
-                    //Multiplayer-stuff and score screen?
-                }
-            }
-        });
-
-
-        //game.setQuestions(questions);
-        //game.setPlayers(players);
-=======
-        game.setQuestions(questions);
-        game.setPlayers(players);
-
->>>>>>> some changes on laptop sync
-=======
-        game.setQuestions(questions);
-        game.setPlayers(players);
-
-
-        //pubnub
-        this.mPresence = new PresenceListAdapter(this);
-        this.mPresencePnCallback = new PresencePnCallback(this.mPresence);
-        //ListView listView = (ListView) findViewById(R.id.presence_list);
-
-        //client
-        Log.d("mylogger",game.getSettings().toString());
-
-        Log.d("mylogger","gameidstring "+game.getSettings().getGameIDString());
-        client = new PubNubClient(new UserProfile(Constants.HOST_USERNAME),game.getSettings().getGameIDString());
-
-        //listView.setAdapter(this.mPresence);
-
-        client.initChannels(mPresencePnCallback);
-        client.subscribe(game.getSettings().getGameIDString(),Constants.WITH_PRESENCE);
-        // channel subscribed. Now waiting for players.
-
-        //test publish
-        client.publish(game.getSettings().getGameIDString(), new PubSubPojo("the BOSS","game started!","timstp"));
-
-
-
-<<<<<<< HEAD
->>>>>>> #38 and #36 issues commit
-=======
-
-
-
-
-        tvSongname.setText(game.getQuestions().get(0).getSong().toString());
         tvQuestion.setText("Question: " + Integer.toString(currentQuestion + 1));
 
         final CountDownTimer countDownTimer = new CountDownTimer(game.getSettings().getGuess_time() * 1000, 1000) {
@@ -279,12 +128,41 @@ public class HostPlayScreen extends AppCompatActivity {
             }
         });
 
->>>>>>> merging master with mindau branch
+        game.setQuestions(questions);
+        game.setPlayers(players);
+
+        //pubnub
+        this.mPresence = new PresenceListAdapter(this);
+        this.mPresencePnCallback = new PresencePnCallback(this.mPresence);
+        //ListView listView = (ListView) findViewById(R.id.presence_list);
+
+        //client
+        Log.d("mylogger",game.getSettings().toString());
+
+        Log.d("mylogger","gameidstring "+game.getSettings().getGameIDString());
+        client = new PubNubClient(new UserProfile(Constants.HOST_USERNAME),game.getSettings().getGameIDString());
+
+        //listView.setAdapter(this.mPresence);
+
+        client.initChannels(mPresencePnCallback);
+        client.subscribe(game.getSettings().getGameIDString(),Constants.WITH_PRESENCE);
+        // channel subscribed. Now waiting for players.
+
+        //test publish
+        client.publish(game.getSettings().getGameIDString(), new PubSubPojo("the BOSS","game started!","timstp"));
+
+
+
+        tvSongname.setText(game.getQuestions().get(0).getSong().toString());
+        tvQuestion.setText("Question: " + Integer.toString(currentQuestion + 1));
+
+
         game.start();
         Log.d(Constants.LOGT, game.toString());
 
 
     }
+
 
     //Managing the mediaplayer
     //The song will be played, if nothing is currently playing
@@ -321,74 +199,6 @@ public class HostPlayScreen extends AppCompatActivity {
         }
 
         tvSongname.setText(game.getQuestions().get(currentQuestion).getSong().toString());
-        tvQuestion.setText("Question: " + Integer.toString(currentQuestion + 1));
-
-    }
-
-    @Override
-    public void onBackPressed() {
-        //Asking the player to quit or something
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Do you really want to quit?");
-        builder.setMessage("This will disband the room.");
-        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (mediaPlayer != null) {
-                    mediaPlayer.stop();
-                    mediaPlayer.release();
-                }
-
-                //More multiplayer stuff (Like closing the room)
-
-                HostPlayScreen.super.onBackPressed();
-            }
-        });
-        builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //Doing nothing...
-                    }
-                }
-        );
-        builder.show();
-    }
-
-    //Managing the mediaplayer
-    //The song will be played, if nothing is currently playing
-    //If a song is playing, the song stops as well as the timer.
-    private void playSong(Question q, CountDownTimer timer) {
-        if (mediaPlayer == null) {
-            mediaPlayer = MediaPlayer.create(this, Uri.parse(q.getSong().getPath()));
-            mediaPlayer.start();
-            timer.start();
-        } else {
-            if (mediaPlayer.isPlaying()) {
-                mediaPlayer.stop();
-                timer.cancel();
-            } else {
-                mediaPlayer.reset();
-                try {
-                    mediaPlayer.setDataSource(this, Uri.parse(q.getSong().getPath()));
-                    mediaPlayer.prepare();
-                    mediaPlayer.start();
-                    timer.start();
-                } catch (IOException e) {
-                    Log.e("Error", "Cannot play song.");
-                }
-
-            }
-        }
-
-    }
-
-    private void setCurrentQuestion(CountDownTimer countDownTimer, int currentQuestion) {
-        countDownTimer.cancel();
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-        }
-
-        tvSongname.setText(questions.get(currentQuestion).getSong().toString());
         tvQuestion.setText("Question: " + Integer.toString(currentQuestion + 1));
 
     }

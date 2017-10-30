@@ -52,11 +52,7 @@ public class ScoreScreen extends AppCompatActivity{
 
         //INIT GAME INSTANCE
         game = game.getInstance();
-<<<<<<< HEAD
-        game.setID(gameID);
-        game.setPIN(gamePIN);
-=======
->>>>>>> merging master with mindau branch
+
         game.setSettings(settings);
 
         scoreText.setText(game.showScore());
