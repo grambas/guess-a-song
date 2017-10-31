@@ -21,19 +21,29 @@ public class PresencePojo {
     private final String sender;
     private final String presence;
     private final String timestamp;
+    private String name;
     private boolean auth;
 
     public PresencePojo(@JsonProperty("sender") String sender, @JsonProperty("presence") String presence, @JsonProperty("timestamp") String timestamp) {
         this.sender = sender;
         this.presence = presence;
         this.timestamp = timestamp;
+        this.name=null;
+        this.auth = false;
     }
-    public PresencePojo(@JsonProperty("sender") String sender, @JsonProperty("presence") String presence, @JsonProperty("timestamp") String timestamp,@JsonProperty("auth") boolean auth) {
-        this.sender = sender;
-        this.presence = presence;
-        this.timestamp = timestamp;
-        this.auth  = auth;
+
+    public void setAuth(boolean auth) {
+        this.auth = auth;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getSender() {
         return sender;
     }
@@ -73,6 +83,11 @@ public class PresencePojo {
         return Objects.hashCode(sender, presence, timestamp);
     }
 
+    public String getSenderOrName(){
+        if (this.name !=null)
+            return this.name;
+        return this.sender;
+    }
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(PresencePojo.class)

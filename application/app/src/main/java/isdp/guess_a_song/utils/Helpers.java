@@ -1,5 +1,7 @@
 package isdp.guess_a_song.utils;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 
 /**
@@ -26,6 +29,9 @@ import java.util.Random;
  * @Author Mindaugas Milius
  */
 public class Helpers {
+
+    private static String uniqueID = null;
+    private static final String PREF_UNIQUE_ID = "PREF_UNIQUE_ID";
     /**
      *
      * @param min min value for random number
@@ -75,6 +81,26 @@ public class Helpers {
     public static List<String> numberToStringList(String numb){
         return Arrays.asList(numb);
     }
+
+
+
+    public synchronized static String id(Context context) {
+        if (uniqueID == null) {
+            SharedPreferences sharedPrefs = context.getSharedPreferences(
+                    PREF_UNIQUE_ID, Context.MODE_PRIVATE);
+            uniqueID = sharedPrefs.getString(PREF_UNIQUE_ID, null);
+
+            if (uniqueID == null) {
+                uniqueID = UUID.randomUUID().toString();
+                SharedPreferences.Editor editor = sharedPrefs.edit();
+                editor.putString(PREF_UNIQUE_ID, uniqueID);
+                editor.commit();
+            }
+        }
+
+        return uniqueID;
+    }
+
 }
 
 

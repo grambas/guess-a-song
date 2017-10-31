@@ -11,13 +11,17 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.pubnub.api.PubNub;
+import com.pubnub.api.callbacks.PNCallback;
 import com.pubnub.api.callbacks.SubscribeCallback;
 import com.pubnub.api.enums.PNStatusCategory;
 import com.pubnub.api.models.consumer.PNStatus;
+import com.pubnub.api.models.consumer.presence.PNSetStateResult;
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 import isdp.guess_a_song.model.Action;
@@ -82,7 +86,10 @@ public class _4GameRoom extends AppCompatActivity {
         this.gamePIN = Helpers.randomNumberString(Constants.RANDOM_MIN,Constants.RANDOM_MAX);
 
         //client
-        client = new PubNubClient(new UserProfile(Constants.HOST_USERNAME),this.gameID);
+        String uniqueID= android.provider.Settings.Secure.getString(getApplicationContext().getContentResolver(),
+                android.provider.Settings.Secure.ANDROID_ID);
+        final UserProfile host = new UserProfile(Constants.HOST_USERNAME,uniqueID,true,true);
+        client = new PubNubClient(host,this.gameID,true);
 
 
 
@@ -90,6 +97,19 @@ public class _4GameRoom extends AppCompatActivity {
             @Override
             public void status(PubNub pubnub, PNStatus status) {
                 if (status.getCategory() == PNStatusCategory.PNConnectedCategory){
+
+                    pubnub.setPresenceState()
+                            .channels(Arrays.asList(gameID))
+                            //.uuid(userName)
+                            .state(host.getState())
+                            .async(new PNCallback<PNSetStateResult>() {
+                                @Override
+                                public void onResponse(final PNSetStateResult result, PNStatus status) {
+                                    Log.d(Constants.LOGT, "set auth state true OK");
+                                }
+                            });
+
+
 
 //                    pubnub.publish().channel("123456").message("status.getCategory() == PNStatusCategory.PNConnectedCategory").async(new PNCallback<PNPublishResult>() {
 //                        @Override
@@ -113,9 +133,10 @@ public class _4GameRoom extends AppCompatActivity {
 
                         if(action.getValue().equals(gamePIN)){
                             Log.d(Constants.LOGT, "HOST MESSAGE LISTENER Player "+ action.getPublisher() + " auth true SUCCESS!");
-                            client.publish(gameID,new Action(Constants.A_AUTH_RESPONSE,Constants.TRUE,Constants.HOST_USERNAME,action.getPublisher()));
+
+                            client.publish(gameID,new Action(Constants.A_AUTH_RESPONSE,Constants.TRUE,Constants.HOST_USERNAME,action.getPublisher()),signHostMeta());
                         }else{
-                            client.publish(gameID,new Action(Constants.A_AUTH_RESPONSE,Constants.FALSE,Constants.HOST_USERNAME,action.getPublisher()));
+                            client.publish(gameID,new Action(Constants.A_AUTH_RESPONSE,Constants.FALSE,Constants.HOST_USERNAME,action.getPublisher()),signHostMeta());
                             Log.d(Constants.LOGT, "HOST MESSAGE LISTENER Player "+ action.getPublisher() + " auth false (bad pin)");
                         }
                     }
@@ -183,7 +204,7 @@ public class _4GameRoom extends AppCompatActivity {
                 players.add(new UserProfile(entry.getValue().getSender()));
             }
         }
-        client.publish(gameID,new Action(Constants.A_START_GAME,Constants.TRUE,Constants.HOST_USERNAME,Constants.A_FOR_ALL));
+        client.publish(gameID,new Action(Constants.A_START_GAME,Constants.TRUE,Constants.HOST_USERNAME,Constants.A_FOR_ALL),signHostMeta());
 
 //        PresencePojo temp;
 //        for (int i=0;i<this.mPresence.getCount();i++){
@@ -206,6 +227,11 @@ public class _4GameRoom extends AppCompatActivity {
 
         startActivity(intent);
 
+    }
+    public Map<String, Object> signHostMeta(){
+        Map<String, Object> meta = new HashMap<>();
+        meta.put("from", Constants.HOST_USERNAME);
+        return meta;
     }
 
 }

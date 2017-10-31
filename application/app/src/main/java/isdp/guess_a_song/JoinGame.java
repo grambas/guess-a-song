@@ -2,17 +2,16 @@ package isdp.guess_a_song;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.pubnub.api.PNConfiguration;
 import com.pubnub.api.PubNub;
 import com.pubnub.api.callbacks.PNCallback;
 import com.pubnub.api.callbacks.SubscribeCallback;
@@ -28,105 +27,83 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 import isdp.guess_a_song.model.Action;
-import isdp.guess_a_song.controller.PlayerGame;
 import isdp.guess_a_song.controller.PubNubClient;
 import isdp.guess_a_song.model.UserProfile;
 import isdp.guess_a_song.utils.Constants;
-
 public class JoinGame extends AppCompatActivity {
 
     private EditText gameID_field;
     private EditText gamePIN_field;
     private EditText name_field;
     private TextView info_field;
-
     Button btnJoin;
     private ProgressBar spinner;
-
-    private PlayerGame game;
-
     private  String gameID;
     private  String gamePIN;
     private String userName;
     ImageView checkImg;
-
     private PubNubClient client;
+
+    UserProfile player;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        // INIT
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join_game);
         gameID_field= (EditText)findViewById(R.id.etGameId);
         gamePIN_field = (EditText) findViewById(R.id.etPin);
         name_field = (EditText) findViewById(R.id.etName);
         info_field = (TextView) findViewById(R.id.tvInfo);
-
         btnJoin = (Button) findViewById(R.id.btJoin);
-
         checkImg = (ImageView) findViewById(R.id.imageView);
-
-        this.game = new PlayerGame(0,0);
-
         spinner=(ProgressBar)findViewById(R.id.progressBar);
         checkImg.setVisibility(View.INVISIBLE);
         spinner.setVisibility(View.GONE);
 
-
+        //this.game = new PlayerGame(0,0);
+        //Some adjustments
         btnJoin.setVisibility(View.VISIBLE);
-        info_field.setText("Please fill all fields and click Jooin");
+        info_field.setText("Please fill all fields and click join");
 
 
 
     }
 
     public void join(View view) {
-
-        spinner.setVisibility(View.VISIBLE);
-
         gameID = gameID_field.getText().toString();
         gamePIN = gamePIN_field.getText().toString();
         userName = name_field.getText().toString();
 
-        spinner=(ProgressBar)findViewById(R.id.progressBar);
+        String uniqueID= Settings.Secure.getString(getApplicationContext().getContentResolver(),
+                Settings.Secure.ANDROID_ID);
 
-        this.client = new PubNubClient(new UserProfile(this.userName),this.gameID);
+        player = new UserProfile(userName,uniqueID,false,false);
+        //show spinner after button click
+        spinner.setVisibility(View.VISIBLE);
 
-        // channel subscribed. Now waiting for players.
+        //init PubNub Client
+        PNConfiguration pnConfiguration = new PNConfiguration();
 
-        if(userName==null){
-            this.client.getPubnub().unsubscribeAll();
-        }
-
-//        Map<String, JsonElement> r = this.client.getPresenceState();
-//
-//        for (Map.Entry<String, JsonElement> entry : r.entrySet())
-//        {
-//            System.out.println(entry.getKey() + "/" + entry.getValue());
-//            Log.v(Constants.LOGT, "key: (" +entry.getKey() + ") value: "+entry.getValue().toString());
-//
-//        }
+        this.client = new PubNubClient(player,this.gameID,false);
 
 
-
-
-        this.client.getRoomPlayers();
+        //this.client.getRoomPlayers();
 
         this.client.getPubnub().addListener(new SubscribeCallback() {
             @Override
             public void status(PubNub pubnub, PNStatus status) {
                 if (status.getCategory() == PNStatusCategory.PNConnectedCategory){
-                    //USER CONNECTED
-
-                    //{ "action": "auth_checl",   "value": "pin...","publisher": "nickname..","recipient": "THE BOSS"}
-                    pubnub.publish().channel(gameID).message(new Action(Constants.A_LOG_IN, gamePIN, userName, Constants.HOST_USERNAME) ).async(new PNCallback<PNPublishResult>() {
+                    // USER CONNECTED
+                    // Ask Host for authentication on connected
+                    //{ "action": "auth_check",   "value": "pin...","publisher": "nickname..","recipient": "THE BOSS"}
+                    Action ask_auth = new Action(Constants.A_LOG_IN, gamePIN, userName, Constants.HOST_USERNAME);
+                    pubnub.publish().channel(gameID).message( ask_auth ).async(new PNCallback<PNPublishResult>() {
                         @Override
                         public void onResponse(PNPublishResult result, PNStatus status) {
                             // handle publish response
@@ -143,23 +120,18 @@ public class JoinGame extends AppCompatActivity {
                     if(action.getRecipient().equals(userName) || action.getRecipient().equals(Constants.A_FOR_ALL) ){
                         if (action.getAction().equals(Constants.A_AUTH_RESPONSE)) {
                             if (action.getValue().equals(Constants.TRUE)) {
-
-                                JsonObject state = new JsonObject();
-                                state.addProperty("is_auth", true);
-
+                                //IF HOST sends to this user and action is authorisation and auth value is TRUE
+                                player.setAuth(true);
                                 pubnub.setPresenceState()
                                         .channels(Arrays.asList(gameID))
                                         //.uuid(userName)
-                                        .state(state)
+                                        .state(player.getState())
                                         .async(new PNCallback<PNSetStateResult>() {
                                             @Override
                                             public void onResponse(final PNSetStateResult result, PNStatus status) {
-                                                Log.d(Constants.LOGT, "*** state updated");
+                                                Log.d(Constants.LOGT, "set auth state true OK");
                                             }
                                         });
-
-
-                                Log.d(Constants.LOGT, "PLAYER MESSAGE LISTENER: AUTH SUCCESS");
                                 runOnUiThread(new Runnable() {
                                                   @Override
                                                   public void run() {
@@ -170,14 +142,19 @@ public class JoinGame extends AppCompatActivity {
                                                       gameID_field.setVisibility(View.GONE);
                                                       gamePIN_field.setVisibility(View.GONE);
                                                       info_field.setText("Authentication Success! The Host will start soon the game");
-
                                                   }
                                               });
-
-                                game.setAuth(1);
                             } else {
-
-                                Log.d(Constants.LOGT, "PLAYER MESSAGE LISTENER: AUTH FALSE");
+                                pubnub.setPresenceState()
+                                        .channels(Arrays.asList(gameID))
+                                        //.uuid(userName)
+                                        .state(player.getState())
+                                        .async(new PNCallback<PNSetStateResult>() {
+                                            @Override
+                                            public void onResponse(final PNSetStateResult result, PNStatus status) {
+                                                Log.d(Constants.LOGT, "set auth state false OK");
+                                            }
+                                        });
                                 client.getPubnub().unsubscribeAll();
 
                                 runOnUiThread(new Runnable() {
@@ -216,16 +193,13 @@ public class JoinGame extends AppCompatActivity {
 
             @Override
             public void presence(PubNub pubnub, PNPresenceEventResult presence) {
-                Log.d(Constants.LOGT, "[USER PRESENCE] event "+ presence.getEvent()+
-                        "state:=" +presence.getState()+ " uuid:= "+ presence.getUuid());
-
-
-
+                //Log.d(Constants.LOGT, "[USER PRESENCE] event "+ presence.getEvent()+
+                 //       "state:=" +presence.getState()+ " uuid:= "+ presence.getUuid());
             }
         });
 
 
-        this.client.subscribe(this.gameID,Constants.WITH_PRESENCE);
+        this.client.subscribe(this.gameID,Constants.NO_PRESENCE);
 
 
         //Intent for the join screen
@@ -254,17 +228,12 @@ public class JoinGame extends AppCompatActivity {
         );
         builder.show();
     }
-
-
-    private ObjectNode createState() {
-        JsonNodeFactory factory = JsonNodeFactory.instance;
-        ObjectNode payload = factory.objectNode();
-
-
-            payload.put("auth", 1);
-            payload.put("fullname", "Mindaugas");
-
-
-        return payload;
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(this.client.getPubnub()!=null){
+            this.client.getPubnub().unsubscribeAll();
+        }
     }
+
 }

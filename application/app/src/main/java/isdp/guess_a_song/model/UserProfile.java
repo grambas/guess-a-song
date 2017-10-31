@@ -3,9 +3,13 @@ package isdp.guess_a_song.model;
 /**
  * Created on 16/10/2017, 6:11 PM
  */
-
+import android.provider.Settings.Secure;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.google.gson.JsonObject;
+
+import java.util.UUID;
 
 /**
  * Player model
@@ -15,14 +19,44 @@ import android.os.Parcelable;
 
 public class UserProfile implements Parcelable{
     private String name;
+    private String uuid ;
+    private boolean auth;
+    private boolean isHost;
 
+    public UserProfile(String name, String id,boolean auth,boolean isHost) {
+        this.name = name;
+        this.auth = auth;
+        this.uuid = id;
+    }
+
+    public UserProfile(String name, boolean auth) {
+        this.name = name;
+        this.auth = auth;
+    }
     public UserProfile(String name) {
         this.name = name;
+        this.auth = false;
     }
     public UserProfile() {
         this.name = null;
+        this.auth = false;
     }
 
+    public String getUuid() {
+        return uuid;
+    }
+
+    public boolean isAuth() {
+        return auth;
+    }
+
+    public void setAuth(boolean auth) {
+        this.auth = auth;
+    }
+
+    public static Creator getCREATOR() {
+        return CREATOR;
+    }
 
     public String getName() {
         return name;
@@ -46,7 +80,7 @@ public class UserProfile implements Parcelable{
 
     public UserProfile(Parcel in){
         this.name = in.readString();
-
+        //this.auth = in.read
     }
 
     @Override
@@ -68,5 +102,10 @@ public class UserProfile implements Parcelable{
     };
 
     //end Parcelling
-
+    public JsonObject getState() {
+        JsonObject state = new JsonObject();
+        state.addProperty("is_auth", this.auth);
+        state.addProperty("name", this.name);
+        return state;
+    }
 }

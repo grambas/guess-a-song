@@ -45,7 +45,7 @@ public class PubNubClient{
     private UserProfile user;
     private boolean usePost;
 
-    public PubNubClient(UserProfile user,String gameID) {
+    public PubNubClient(UserProfile user,String gameID, boolean isHost) {
 
         this.gameID = gameID;
         this.user = user;
@@ -54,19 +54,27 @@ public class PubNubClient{
         PNConfiguration config = new PNConfiguration();
         config.setPublishKey(Constants.PKEY);
         config.setSubscribeKey(Constants.SKEY);
-        config.setUuid(this.user.getName());
         //config.setSecure(true);
+
+        if (isHost){
+            config.setUuid(this.user.getName());
+        }else{
+            config.setUuid(this.user.getUuid());
+            config.setFilterExpression("from == '" + Constants.HOST_USERNAME+"'");
+        }
+
         this.pubnub = new PubNub(config);
         Log.d(Constants.LOGT, user.getName() + " PubNub Client init");
 
     }
 
 
-    public void publish(final String gameID, Action m) {
+    public void publish(final String gameID, Action m,Map<String, Object> meta) {
         try {
             pubnub.publish()
                     .message(m)
                     .channel(gameID)
+                    .meta(meta)
                     .shouldStore(true)
                     .usePOST(this.usePost)
                     .async(new PNCallback<PNPublishResult>() {

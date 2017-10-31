@@ -50,7 +50,7 @@ public class PresenceListAdapter extends ArrayAdapter<PresencePojo> {
 
     @Override
     public void add(PresencePojo message) {
-        if (latestPresence.containsKey(message.getSender())) {
+        if (latestPresence.containsKey(message.getSender()) || latestPresence.containsKey(message.getName())) {
             this.presenceList.remove(message.getSender());
         }
         if(!message.getSender().equals("Console_Admin")){
@@ -89,8 +89,7 @@ public class PresenceListAdapter extends ArrayAdapter<PresencePojo> {
         } else {
             msgView = (PresenceMessageListRowUi) convertView.getTag();
         }
-
-        msgView.sender.setText(presenceMsg.getSender());
+        msgView.sender.setText(presenceMsg.getSenderOrName());
         msgView.presence.setText(presenceMsg.getPresence());
         msgView.timestamp.setText(presenceMsg.getTimestamp());
         msgView.auth.setText(String.valueOf(presenceMsg.isAuth()));

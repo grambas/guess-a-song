@@ -139,7 +139,7 @@ public class HostPlayScreen extends AppCompatActivity {
         Log.d(Constants.LOGT,game.getSettings().toString());
 
         Log.d(Constants.LOGT,"gameidstring "+game.getSettings().getGameIDString());
-        client = new PubNubClient(new UserProfile(Constants.HOST_USERNAME),game.getSettings().getGameIDString());
+        client = new PubNubClient(new UserProfile(Constants.HOST_USERNAME),game.getSettings().getGameIDString(),true);
 
         //listView.setAdapter(this.mPresence);
 
