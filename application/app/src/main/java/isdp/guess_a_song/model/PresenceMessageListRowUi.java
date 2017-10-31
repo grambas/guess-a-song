@@ -18,4 +18,5 @@ public class PresenceMessageListRowUi {
     public TextView sender;
     public TextView presence;
     public TextView timestamp;
+    public TextView auth;
 }

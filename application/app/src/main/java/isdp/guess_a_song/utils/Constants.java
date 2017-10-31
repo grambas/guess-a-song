@@ -29,6 +29,7 @@ public class Constants {
 
     public final static String LOGT = "mylogger";
     public final static String HOST_USERNAME = "THE BOSS";
+    public final static String DEMO_CHANNEL = "111111";
 
 
     public final static boolean WITH_PRESENCE = true;

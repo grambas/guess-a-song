@@ -44,17 +44,34 @@ public class PresencePnCallback extends SubscribeCallback {
 
     @Override
     public void presence(PubNub pubnub, PNPresenceEventResult presence) {
+        PresencePojo pm;
         try {
             Log.v(Constants.LOGT, "gotPresencePnCallback.java : (" +presence.toString() + ")");
+            String sender = presence.getUuid();
+            String presenceString = presence.getEvent().toString();
+            String timestamp = Helpers.getTimeStampUtc();
+
+
+            if (presence.getEvent().equals("state-change")) {
+                boolean is_auth = presence.getState()
+                        .getAsJsonObject()
+                        .get("is_auth")
+                        .getAsBoolean();
+                 pm = new PresencePojo(sender, presenceString, timestamp,is_auth);
+                presenceString  = "join + "+presenceString;
+                Log.d(Constants.LOGT, "HOST PRESENCE= "+pm.toString());
+            }else{
+                pm = new PresencePojo(sender, presenceString, timestamp);
+                Log.d(Constants.LOGT, "HOST PRESENCE= "+pm.toString());
+            }
+
+
+
+            presenceListAdapter.add(pm);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        String sender = presence.getUuid();
-        String presenceString = presence.getEvent().toString();
-        String timestamp = Helpers.getTimeStampUtc();
 
-        PresencePojo pm = new PresencePojo(sender, presenceString, timestamp);
-        presenceListAdapter.add(pm);
     }
 }

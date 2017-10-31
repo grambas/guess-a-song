@@ -20,7 +20,7 @@ public class PlayerGame {
     public PlayerGame(int status, int auth) {
         this.status = status;
         this.auth = auth;
-        this.user =  new UserProfile("No Name");
+        this.user =  new UserProfile();
 
     }
     public int getStatus() {

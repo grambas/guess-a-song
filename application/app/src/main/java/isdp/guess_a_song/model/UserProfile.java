@@ -19,6 +19,10 @@ public class UserProfile implements Parcelable{
     public UserProfile(String name) {
         this.name = name;
     }
+    public UserProfile() {
+        this.name = null;
+    }
+
 
     public String getName() {
         return name;

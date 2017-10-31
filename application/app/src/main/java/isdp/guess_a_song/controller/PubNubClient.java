@@ -2,16 +2,23 @@ package isdp.guess_a_song.controller;
 
 import android.util.Log;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.pubnub.api.PNConfiguration;
 import com.pubnub.api.PubNub;
 import com.pubnub.api.callbacks.PNCallback;
+import com.pubnub.api.endpoints.presence.GetState;
 import com.pubnub.api.models.consumer.PNPublishResult;
 import com.pubnub.api.models.consumer.PNStatus;
+import com.pubnub.api.models.consumer.presence.PNGetStateResult;
 import com.pubnub.api.models.consumer.presence.PNHereNowChannelData;
 import com.pubnub.api.models.consumer.presence.PNHereNowOccupantData;
 import com.pubnub.api.models.consumer.presence.PNHereNowResult;
+import com.pubnub.api.models.consumer.presence.PNSetStateResult;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import isdp.guess_a_song.model.Action;
@@ -115,7 +122,64 @@ public class PubNubClient{
             }
         });
     }
+    public Map<String, PresencePojo> getRoomPlayers(){
 
+        // Put elements to the map
+        final Map<String, PresencePojo> r = new LinkedHashMap<String, PresencePojo>();
+
+        this.pubnub.hereNow()
+                // tailor the next two lines to example
+                .channels(Arrays.asList(gameID))
+                .includeUUIDs(true)
+                .includeState(true)
+                .async(new PNCallback<PNHereNowResult>() {
+                    @Override
+                    public void onResponse(PNHereNowResult result, PNStatus status) {
+                        if (status.isError()) {
+                            // handle error
+                            return;
+                        }
+
+                        for (PNHereNowChannelData channelData : result.getChannels().values()) {
+                            Log.d(Constants.LOGT,"---");
+                            Log.d(Constants.LOGT,"channel:" + channelData.getChannelName());
+                            Log.d(Constants.LOGT,"occupancy: " + channelData.getOccupancy());
+                            Log.d(Constants.LOGT,"occupants:");
+                            for (PNHereNowOccupantData occupant : channelData.getOccupants()) {
+                                Log.d(Constants.LOGT,"uuid: " + occupant.getUuid() + " state: " + occupant.getState());
+                                r.put(occupant.getUuid(), new PresencePojo(occupant.getUuid(),"",""));
+                            }
+                        }
+                    }
+                });
+        return r;
+    }
+
+    public void setPresenceState(JsonObject state,String uuid){
+
+        this.pubnub.setPresenceState().uuid(uuid)
+                //.channels(Arrays.asList(gameID))
+                .state(state)
+                .async(new PNCallback<PNSetStateResult>() {
+                    @Override
+                    public void onResponse(final PNSetStateResult result, PNStatus status) {
+                    }
+                });
+    }
+    public Map<String, JsonElement> getPresenceState(){
+        final Map<String, JsonElement> r = new HashMap<>();
+        this.pubnub.getPresenceState()
+                .channels(Arrays.asList(this.gameID)) // channels to fetch state for
+                .uuid("suchUUID") // uuid of user to fetch, or for own uuid
+                .async(new PNCallback<PNGetStateResult>() {
+                    @Override
+                    public void onResponse(PNGetStateResult result, PNStatus status) {
+                        // handle response
+                        //r.putAll(result.getStateByUUID());
+                    }
+                });
+        return r;
+    }
     public PubNub getPubnub() {
         return pubnub;
     }

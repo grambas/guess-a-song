@@ -82,6 +82,8 @@ public class PresenceListAdapter extends ArrayAdapter<PresencePojo> {
             msgView.sender = (TextView) convertView.findViewById(R.id.sender);
             msgView.presence = (TextView) convertView.findViewById(R.id.value);
             msgView.timestamp = (TextView) convertView.findViewById(R.id.timestamp);
+            msgView.auth = (TextView) convertView.findViewById(R.id.auth);
+
 
             convertView.setTag(msgView);
         } else {
@@ -91,6 +93,7 @@ public class PresenceListAdapter extends ArrayAdapter<PresencePojo> {
         msgView.sender.setText(presenceMsg.getSender());
         msgView.presence.setText(presenceMsg.getPresence());
         msgView.timestamp.setText(presenceMsg.getTimestamp());
+        msgView.auth.setText(String.valueOf(presenceMsg.isAuth()));
 
         return convertView;
     }

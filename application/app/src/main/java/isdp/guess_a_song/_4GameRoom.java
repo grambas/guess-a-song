@@ -78,7 +78,7 @@ public class _4GameRoom extends AppCompatActivity {
         ListView listView = (ListView) findViewById(R.id.presence_list);
 
 
-        this.gameID = "123456";
+        this.gameID = Constants.DEMO_CHANNEL;
         this.gamePIN = Helpers.randomNumberString(Constants.RANDOM_MIN,Constants.RANDOM_MAX);
 
         //client
@@ -109,6 +109,8 @@ public class _4GameRoom extends AppCompatActivity {
                 //{ "action": "log_in",   "value": "4852","publisher": "TestPlayer1","recipient": "THE BOSS"}
                 if (action.getRecipient() != null && action.getRecipient().equals(Constants.HOST_USERNAME)){
                     if(action.getAction().equals(Constants.A_LOG_IN)){
+                        Log.d(Constants.LOGT, "Action value=  "+ action.getValue() + " host pin="+gamePIN);
+
                         if(action.getValue().equals(gamePIN)){
                             Log.d(Constants.LOGT, "HOST MESSAGE LISTENER Player "+ action.getPublisher() + " auth true SUCCESS!");
                             client.publish(gameID,new Action(Constants.A_AUTH_RESPONSE,Constants.TRUE,Constants.HOST_USERNAME,action.getPublisher()));
