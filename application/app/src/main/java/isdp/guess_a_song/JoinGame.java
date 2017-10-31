@@ -140,7 +140,7 @@ public class JoinGame extends AppCompatActivity {
                     Log.v(Constants.LOGT, "PLAYER MESSAGE LISTENER: (" +message.toString() + ")");
                     Gson gson = new Gson();
                     Action action= gson.fromJson(message.getMessage(), Action.class);
-                    if(action.getRecipient().equals(userName)  ){
+                    if(action.getRecipient().equals(userName) || action.getRecipient().equals(Constants.A_FOR_ALL) ){
                         if (action.getAction().equals(Constants.A_AUTH_RESPONSE)) {
                             if (action.getValue().equals(Constants.TRUE)) {
 
@@ -198,7 +198,14 @@ public class JoinGame extends AppCompatActivity {
                         }else if (action.getAction().equals(Constants.A_START_GAME)) {
                             if ( action.getValue().equals(Constants.TRUE) && action.getPublisher().equals(Constants.HOST_USERNAME)) {
                                //TODO START A GAME TRIGGER HERE
-                           }
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                       info_field.setText("Host started the game. Redirecting finds here!");
+                                    }
+                                });
+
+                            }
                         }
                     }
 

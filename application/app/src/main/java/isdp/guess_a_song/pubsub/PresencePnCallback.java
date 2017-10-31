@@ -57,8 +57,8 @@ public class PresencePnCallback extends SubscribeCallback {
                         .getAsJsonObject()
                         .get("is_auth")
                         .getAsBoolean();
-                 pm = new PresencePojo(sender, presenceString, timestamp,is_auth);
                 presenceString  = "join + "+presenceString;
+                pm = new PresencePojo(sender, presenceString, timestamp,is_auth);
                 Log.d(Constants.LOGT, "HOST PRESENCE= "+pm.toString());
             }else{
                 pm = new PresencePojo(sender, presenceString, timestamp);

@@ -20,6 +20,7 @@ public class Constants {
     public final static String A_LOG_IN  = "log_in";
     public final static String A_AUTH_RESPONSE = "auth_check";
     public final static String A_START_GAME = "start_game";
+    public final static String A_FOR_ALL = "all";
 
 
 

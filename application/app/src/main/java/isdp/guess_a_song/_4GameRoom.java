@@ -183,6 +183,7 @@ public class _4GameRoom extends AppCompatActivity {
                 players.add(new UserProfile(entry.getValue().getSender()));
             }
         }
+        client.publish(gameID,new Action(Constants.A_START_GAME,Constants.TRUE,Constants.HOST_USERNAME,Constants.A_FOR_ALL));
 
 //        PresencePojo temp;
 //        for (int i=0;i<this.mPresence.getCount();i++){
