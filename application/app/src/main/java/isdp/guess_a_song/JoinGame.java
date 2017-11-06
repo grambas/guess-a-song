@@ -31,6 +31,7 @@ import java.util.Arrays;
 
 import isdp.guess_a_song.model.Action;
 import isdp.guess_a_song.controller.PubNubClient;
+import isdp.guess_a_song.model.ActionSimple;
 import isdp.guess_a_song.model.UserProfile;
 import isdp.guess_a_song.utils.Constants;
 public class JoinGame extends AppCompatActivity {
@@ -102,7 +103,7 @@ public class JoinGame extends AppCompatActivity {
                     // USER CONNECTED
                     // Ask Host for authentication on connected
                     //{ "action": "auth_check",   "value": "pin...","publisher": "nickname..","recipient": "THE BOSS"}
-                    Action ask_auth = new Action(Constants.A_LOG_IN, gamePIN, userName, Constants.HOST_USERNAME);
+                    Action ask_auth = new ActionSimple(Constants.A_LOG_IN, gamePIN, userName, Constants.HOST_USERNAME);
                     pubnub.publish().channel(gameID).message( ask_auth ).async(new PNCallback<PNPublishResult>() {
                         @Override
                         public void onResponse(PNPublishResult result, PNStatus status) {
@@ -116,7 +117,7 @@ public class JoinGame extends AppCompatActivity {
                 try {
                     Log.v(Constants.LOGT, "PLAYER MESSAGE LISTENER: (" +message.toString() + ")");
                     Gson gson = new Gson();
-                    Action action= gson.fromJson(message.getMessage(), Action.class);
+                    ActionSimple action= gson.fromJson(message.getMessage(), ActionSimple.class);
                     if(action.getRecipient().equals(userName) || action.getRecipient().equals(Constants.A_FOR_ALL) ){
                         if (action.getAction().equals(Constants.A_AUTH_RESPONSE)) {
                             if (action.getValue().equals(Constants.TRUE)) {

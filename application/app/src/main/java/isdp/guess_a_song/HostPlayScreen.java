@@ -15,12 +15,27 @@ import android.widget.ImageButton;
 import android.content.Intent;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.pubnub.api.PubNub;
+import com.pubnub.api.callbacks.PNCallback;
+import com.pubnub.api.callbacks.SubscribeCallback;
+import com.pubnub.api.models.consumer.PNPublishResult;
+import com.pubnub.api.models.consumer.PNStatus;
+import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
+import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import isdp.guess_a_song.controller.HostGame;
+import isdp.guess_a_song.model.Action;
+import isdp.guess_a_song.model.ActionAnswer;
+import isdp.guess_a_song.model.ActionAsk;
 import isdp.guess_a_song.model.Question;
 import isdp.guess_a_song.model.Settings;
 import isdp.guess_a_song.controller.PubNubClient;
@@ -28,8 +43,9 @@ import isdp.guess_a_song.model.UserProfile;
 import isdp.guess_a_song.pubsub.PresenceListAdapter;
 import isdp.guess_a_song.pubsub.PresencePnCallback;
 import isdp.guess_a_song.utils.Constants;
+import isdp.guess_a_song.utils.Helpers;
 
-public class HostPlayScreen extends AppCompatActivity {
+public class HostPlayScreen extends AppCompatActivity implements Observer {
 
 
     private HostGame game;
@@ -38,6 +54,7 @@ public class HostPlayScreen extends AppCompatActivity {
     private int gamePIN;
     private ArrayList<Question> questions;
 
+    CountDownTimer countDownTimer;
 
     //PUBNUB
     private PubNubClient client;
@@ -47,10 +64,12 @@ public class HostPlayScreen extends AppCompatActivity {
 
     private TextView tvSongname;
     private TextView tvTimer;
-    private TextView tvQuestion;
+    private TextView tvAnswers;
     private ProgressBar pbTimer;
     private ImageButton ibPlay;
     private Button btNext;
+    private Button btShowScore;
+    private TextView tvAnsGot;
 
     private int currentQuestion = 0;
     private MediaPlayer mediaPlayer;
@@ -63,10 +82,12 @@ public class HostPlayScreen extends AppCompatActivity {
 
         tvSongname = (TextView) findViewById(R.id.tvSongname);
         tvTimer = (TextView) findViewById(R.id.tvTimer);
-        tvQuestion = (TextView) findViewById(R.id.tvCurrentQuestion);
+        tvAnswers = (TextView) findViewById(R.id.tvCurrentAnswers);
         ibPlay = (ImageButton) findViewById(R.id.ibPlay);
         pbTimer = (ProgressBar) findViewById(R.id.pbTimer);
         btNext = (Button) findViewById(R.id.btNextSong);
+        btShowScore = (Button) findViewById(R.id.btShowScore);
+        tvAnsGot = (TextView) findViewById(R.id.tvAnsGot);
 
 
         // GET DATA FROM PREVIOUS VIEW
@@ -83,88 +104,127 @@ public class HostPlayScreen extends AppCompatActivity {
         //INIT GAME INSTANCE
         game = game.getInstance();
         game.setSettings(settings);
+        game.setQuestions(questions);
+        game.setPlayers(players);
+        game.addObserver(this);
 
-        tvSongname.setText(questions.get(0).getSong().toString());
-        tvQuestion.setText("Question: " + Integer.toString(currentQuestion + 1));
 
-        final CountDownTimer countDownTimer = new CountDownTimer(game.getSettings().getGuess_time() * 1000, 1000) {
+        //pubnub
+        client = new PubNubClient(new UserProfile(Constants.HOST_USERNAME),game.getSettings().getGameIDString(),true);
+        this.mPresence = new PresenceListAdapter(this);
+        this.mPresencePnCallback = new PresencePnCallback(this.mPresence);
+        client.subscribe(game.getSettings().getGameIDString(),Constants.WITH_PRESENCE);
+
+        client.getPubnub().addListener(new SubscribeCallback() {
+            @Override
+            public void message(PubNub pubnub, PNMessageResult message) {
+
+                Gson gson = new Gson();
+                boolean processed = false;
+                ActionAnswer action= gson.fromJson(message.getMessage(), ActionAnswer.class);
+
+                if (action.getRecipient() != null && action.getRecipient().equals(Constants.HOST_USERNAME)){
+                    if(action.getAction().equals(Constants.A_ANSWER)){
+                        Log.d(Constants.LOGT, "ANSWER GOT "+ message.getMessage().toString());
+                        processed = game.processAnswer(action.getUuid(),action.getAnswerIndex(),action.getQuestionIndex());
+                        if (!processed){
+                            //Toast.makeText(HostPlayScreen.this, "Error in answer process", Toast.LENGTH_SHORT).show();
+                            Log.d(Constants.LOGT, "Error in answer process");
+                        }
+                    }
+                }
+            }
+            @Override
+            public void presence(PubNub pubnub, PNPresenceEventResult presence) {}
+            @Override
+            public void status(PubNub pubnub, PNStatus status) {}
+        });
+
+
+        game.start();
+
+        countDownTimer = new CountDownTimer(game.getSettings().getGuess_time() * 1000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 tvTimer.setText(Long.toString(millisUntilFinished/1000));
                 if (mediaPlayer != null) {
                     pbTimer.setProgress((int)(((double) mediaPlayer.getCurrentPosition() / (double) mediaPlayer.getDuration()) * 100));
                 }
-
             }
 
             @Override
             public void onFinish() {
                 mediaPlayer.stop();
+                game.setStatus(Constants.GAME_STATUS_TIME_OVER);
             }
         };
 
         ibPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                playSong(game.getQuestions().get(currentQuestion), countDownTimer);
+                handlePlay();
             }
         });
-
+        btShowScore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(Constants.LOGT, game.showScore());
+                Toast.makeText(HostPlayScreen.this, game.showScore(), Toast.LENGTH_SHORT).show();
+            }
+        });
         btNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Multiplayer stuff
-
                 //Any restrictions ? Like the song has to be finished?
+                if(game.getStatus() == Constants.GAME_STATUS_READY ||
+                        game.getStatus() == Constants.GAME_STATUS_TIME_OVER){
 
-
-                if (game.getQuestions().size() > currentQuestion+1) {
-                    currentQuestion++;
-                    setCurrentQuestion(countDownTimer, currentQuestion);
-                } else {
-                    //Multiplayer-stuff and score screen?
+                    if (game.next_q()) {
+                        game.setAns_amount(0);
+                        countDownTimer.cancel();
+                        if (mediaPlayer != null) {
+                            mediaPlayer.stop();
+                        }
+                        //tvSongname.setText(game.getCurrentQuestion().getSong().toString());
+                        //tvAnswers.setText("Question: " + game.getCurrentQuestion());
+                    } else {
+                        //Multiplayer-stuff and score screen?
+                        //no more qeustions
+                    }
+                }else{
+                    Toast.makeText(HostPlayScreen.this, "Status is not READY!", Toast.LENGTH_SHORT).show();
                 }
+
             }
         });
+    }
 
-        game.setQuestions(questions);
-        game.setPlayers(players);
+    private void handlePlay() {
 
-        //pubnub
-        this.mPresence = new PresenceListAdapter(this);
-        this.mPresencePnCallback = new PresencePnCallback(this.mPresence);
-        //ListView listView = (ListView) findViewById(R.id.presence_list);
+        Action msg = new ActionAsk(Constants.A_ASK,Constants.HOST_USERNAME,Constants.A_FOR_ALL,game.getCurrentQuestion().songsToPlayers());
+        client.getPubnub().publish()
+                .channel(this.game.getSettings().getGameIDString())
+                .meta(Helpers.signHostMeta())
+                .message( msg ).async(new PNCallback<PNPublishResult>() {
+            @Override
+            public void onResponse(PNPublishResult result, PNStatus status) {
+                // handle publish response
+                //check if succes and play song local
+                Log.d(Constants.LOGT,"now playing song from handler");
+                game.setStatus(Constants.GAME_STATUS_ON_QUESTION);
+                playSong(game.getCurrentQuestion().getSong().getPath(), countDownTimer);
 
-        //client
-        Log.d(Constants.LOGT,game.getSettings().toString());
-
-        Log.d(Constants.LOGT,"gameidstring "+game.getSettings().getGameIDString());
-        client = new PubNubClient(new UserProfile(Constants.HOST_USERNAME),game.getSettings().getGameIDString(),true);
-
-        //listView.setAdapter(this.mPresence);
-
-        client.initChannelsHost(mPresencePnCallback);
-        client.subscribe(game.getSettings().getGameIDString(),Constants.WITH_PRESENCE);
-        // channel subscribed. Now waiting for players.
-
-
-        tvSongname.setText(game.getQuestions().get(0).getSong().toString());
-        tvQuestion.setText("Question: " + Integer.toString(currentQuestion + 1));
-
-
-        game.start();
-        Log.d(Constants.LOGT, game.toString());
-
-
+            }
+        });
     }
 
 
     //Managing the mediaplayer
     //The song will be played, if nothing is currently playing
     //If a song is playing, the song stops as well as the timer.
-    private void playSong(Question q, CountDownTimer timer) {
+    private void playSong(String path, CountDownTimer timer) {
         if (mediaPlayer == null) {
-            mediaPlayer = MediaPlayer.create(this, Uri.parse(q.getSong().getPath()));
+            mediaPlayer = MediaPlayer.create(this, Uri.parse(path));
             mediaPlayer.start();
             timer.start();
         } else {
@@ -174,7 +234,7 @@ public class HostPlayScreen extends AppCompatActivity {
             } else {
                 mediaPlayer.reset();
                 try {
-                    mediaPlayer.setDataSource(this, Uri.parse(q.getSong().getPath()));
+                    mediaPlayer.setDataSource(this, Uri.parse(path));
                     mediaPlayer.prepare();
                     mediaPlayer.start();
                     timer.start();
@@ -184,20 +244,8 @@ public class HostPlayScreen extends AppCompatActivity {
 
             }
         }
-
     }
-
-    private void setCurrentQuestion(CountDownTimer countDownTimer, int currentQuestion) {
-        countDownTimer.cancel();
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-        }
-
-        tvSongname.setText(game.getQuestions().get(currentQuestion).getSong().toString());
-        tvQuestion.setText("Question: " + Integer.toString(currentQuestion + 1));
-
-    }
-
+    
     @Override
     public void onBackPressed() {
         //Asking the player to quit or something
@@ -211,9 +259,7 @@ public class HostPlayScreen extends AppCompatActivity {
                     mediaPlayer.stop();
                     mediaPlayer.release();
                 }
-
                 //More multiplayer stuff (Like closing the room)
-
                 HostPlayScreen.super.onBackPressed();
             }
         });
@@ -225,5 +271,26 @@ public class HostPlayScreen extends AppCompatActivity {
                 }
             );
         builder.show();
+    }
+
+
+    @Override
+    public void update(Observable observable, Object o) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                tvSongname.setText(game.getCurrentQuestion().getSong().toString());
+                tvAnswers.setText("Question: " + game.getCurrentQuestion());
+                tvAnsGot.setText("Question: " + game.getAns_amount());
+            }
+        });
+
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        game.deleteObserver(this);
     }
 }

@@ -22,24 +22,25 @@ public class UserProfile implements Parcelable{
     private String uuid ;
     private boolean auth;
     private boolean isHost;
+    int score;
 
     public UserProfile(String name, String id,boolean auth,boolean isHost) {
         this.name = name;
         this.auth = auth;
         this.uuid = id;
+        this.isHost = isHost;
+        this.score = 0;
     }
 
-    public UserProfile(String name, boolean auth) {
-        this.name = name;
-        this.auth = auth;
-    }
     public UserProfile(String name) {
         this.name = name;
         this.auth = false;
+        this.score= 0;
     }
     public UserProfile() {
         this.name = null;
         this.auth = false;
+        this.score= 0;
     }
 
     public String getUuid() {
@@ -54,10 +55,6 @@ public class UserProfile implements Parcelable{
         this.auth = auth;
     }
 
-    public static Creator getCREATOR() {
-        return CREATOR;
-    }
-
     public String getName() {
         return name;
     }
@@ -70,9 +67,13 @@ public class UserProfile implements Parcelable{
     public String toString() {
         return "UserProfile{" +
                 "name='" + name + '\'' +
+                "uuid='" + uuid + '\'' +
+                "auth='" + auth + '\'' +
+                "isHost='" + isHost + '\'' +
+                "score='" + score + '\'' +
+
                 '}';
     }
-
 
     /**
      *  Parcelling part
@@ -80,7 +81,30 @@ public class UserProfile implements Parcelable{
 
     public UserProfile(Parcel in){
         this.name = in.readString();
-        //this.auth = in.read
+        this.uuid = in.readString();
+        this.auth = in.readByte() != 0;     //myBoolean == true if byte != 0
+        this.isHost = in.readByte() != 0;     //myBoolean == true if byte != 0
+        this.score = in.readInt();
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public boolean isHost() {
+        return isHost;
+    }
+
+    public void setHost(boolean host) {
+        isHost = host;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void addScore(int change) {
+        this.score += change;
     }
 
     @Override
@@ -90,9 +114,14 @@ public class UserProfile implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+
         dest.writeString(this.name);
+        dest.writeString(this.uuid);
+        dest.writeByte((byte) (this.auth ? 1 : 0));     //if myBoolean == true, byte == 1
+        dest.writeByte((byte) (this.isHost ? 1 : 0));     //if myBoolean == true, byte == 1
+        dest.writeInt(this.score);
     }
-    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+    public static final Parcelable.Creator<UserProfile> CREATOR = new Parcelable.Creator<UserProfile>() {
         public UserProfile createFromParcel(Parcel in) {
             return new UserProfile(in);
         }

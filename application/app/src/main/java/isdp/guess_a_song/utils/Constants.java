@@ -20,12 +20,18 @@ public class Constants {
     public final static String A_LOG_IN  = "log_in";
     public final static String A_AUTH_RESPONSE = "auth_check";
     public final static String A_START_GAME = "start_game";
+    public final static String A_ASK = "ask";
+    public final static String A_ANSWER = "answer";
     public final static String A_FOR_ALL = "all";
 
 
 
     public final static String DEFAULT_SONGS_NUMBER = "2";
     public final static String DEFAULT_GUESS_TIME = "15";
+
+    public final static int REWARD_CORRECT = 2;
+    public final static int REWARD_WRONG = -1;
+
 
 
     public final static String LOGT = "mylogger";
@@ -46,6 +52,8 @@ public class Constants {
     public final static int GAME_STATUS_FINISHED = 1;
     public final static int GAME_STATUS_ON_QUESTION = 2;
     public final static int GAME_STATUS_PAUSE = 3;
+    public final static int GAME_STATUS_TIME_OVER = 4;
+    public final static int GAME_STATUS_READY = 5;
 
 
     // HostGame ID/KEY random number size

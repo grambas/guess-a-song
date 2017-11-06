@@ -14,15 +14,13 @@ package isdp.guess_a_song.model;
 **/
 
 
-public class Action {
+public abstract class Action {
     String action;
-    String value;
     String publisher;
     String recipient;
 
-    public Action(String action, String value, String publisher, String recipient) {
+    public Action(String action, String publisher, String recipient) {
         this.action = action;
-        this.value = value;
         this.publisher = publisher;
         this.recipient = recipient;
     }
@@ -43,13 +41,6 @@ public class Action {
         this.action = action;
     }
 
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
 
     public String getPublisher() {
         return publisher;
@@ -63,7 +54,6 @@ public class Action {
     public String toString() {
         return "Action{" +
                 "action='" + action + '\'' +
-                ", value='" + value + '\'' +
                 ", publisher='" + publisher + '\'' +
                 ", recipient='" + recipient + '\'' +
                 '}';

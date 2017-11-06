@@ -12,8 +12,10 @@ import org.joda.time.format.ISODateTimeFormat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
@@ -101,6 +103,12 @@ public class Helpers {
         return uniqueID;
     }
 
+
+    public static Map<String, Object> signHostMeta(){
+        Map<String, Object> meta = new HashMap<>();
+        meta.put("from", Constants.HOST_USERNAME);
+        return meta;
+    }
 }
 
 

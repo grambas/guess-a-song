@@ -26,6 +26,7 @@ import java.util.Map;
 
 import isdp.guess_a_song.model.Action;
 import isdp.guess_a_song.controller.PubNubClient;
+import isdp.guess_a_song.model.ActionSimple;
 import isdp.guess_a_song.model.Question;
 import isdp.guess_a_song.model.Settings;
 import isdp.guess_a_song.model.UserProfile;
@@ -96,7 +97,7 @@ public class _4GameRoom extends AppCompatActivity {
         client.getPubnub().addListener(new SubscribeCallback() {
             @Override
             public void status(PubNub pubnub, PNStatus status) {
-                if (status.getCategory() == PNStatusCategory.PNConnectedCategory){
+                if (status != null && status.getCategory() == PNStatusCategory.PNConnectedCategory){
 
                     pubnub.setPresenceState()
                             .channels(Arrays.asList(gameID))
@@ -125,7 +126,7 @@ public class _4GameRoom extends AppCompatActivity {
                 Log.d(Constants.LOGT, "HOST MESSAGE LISTENER "+ message.getMessage().toString());
 
                 Gson gson = new Gson();
-                Action action= gson.fromJson(message.getMessage(), Action.class);
+                ActionSimple action= gson.fromJson(message.getMessage(), ActionSimple.class);
                 //{ "action": "log_in",   "value": "4852","publisher": "TestPlayer1","recipient": "THE BOSS"}
                 if (action.getRecipient() != null && action.getRecipient().equals(Constants.HOST_USERNAME)){
                     if(action.getAction().equals(Constants.A_LOG_IN)){
@@ -134,9 +135,9 @@ public class _4GameRoom extends AppCompatActivity {
                         if(action.getValue().equals(gamePIN)){
                             Log.d(Constants.LOGT, "HOST MESSAGE LISTENER Player "+ action.getPublisher() + " auth true SUCCESS!");
 
-                            client.publish(gameID,new Action(Constants.A_AUTH_RESPONSE,Constants.TRUE,Constants.HOST_USERNAME,action.getPublisher()),signHostMeta());
+                            client.publish(gameID,new ActionSimple(Constants.A_AUTH_RESPONSE,Constants.TRUE,Constants.HOST_USERNAME,action.getPublisher()),Helpers.signHostMeta());
                         }else{
-                            client.publish(gameID,new Action(Constants.A_AUTH_RESPONSE,Constants.FALSE,Constants.HOST_USERNAME,action.getPublisher()),signHostMeta());
+                            client.publish(gameID,new ActionSimple(Constants.A_AUTH_RESPONSE,Constants.FALSE,Constants.HOST_USERNAME,action.getPublisher()),Helpers.signHostMeta());
                             Log.d(Constants.LOGT, "HOST MESSAGE LISTENER Player "+ action.getPublisher() + " auth false (bad pin)");
                         }
                     }
@@ -173,7 +174,7 @@ public class _4GameRoom extends AppCompatActivity {
         });
 
 
-        this.game_settings.setGameID(123456);
+        this.game_settings.setGameID(Integer.parseInt(Constants.DEMO_CHANNEL));
         this.game_settings.setGamePIN(Integer.parseInt(this.gamePIN));
 
         listView.setAdapter(mPresence);
@@ -192,19 +193,26 @@ public class _4GameRoom extends AppCompatActivity {
     public void startGame(View view) {
 
         Intent intent = new Intent(this, HostPlayScreen.class);
+        boolean isHost;
+        UserProfile u_temp;
         //send game settings and game questions (instead of songs) to next activity
 
         //fetch all logged in users to list
         Map<String, PresencePojo> tempor = this.mPresence.getItems();
         for (Map.Entry<String, PresencePojo> entry : tempor.entrySet())
         {
-            //Log.d(Constants.LOGT, entry.getKey().toString() + "/" + entry.getValue().toString());
+            //skip if not auth
             //skip Console_Admin also
-            if (entry.getValue().getPresence() == "join" && !entry.getValue().getSender().equals("Console_Admin")) { //user joined{
-                players.add(new UserProfile(entry.getValue().getSender()));
+            //skip ghost
+            if (entry.getValue().isAuth()
+                    && !entry.getValue().getSender().equals("Console_Admin")
+                    && !entry.getValue().getSender().equals(Constants.HOST_USERNAME)) { //user joined{
+                u_temp = new UserProfile(entry.getValue().getName(),entry.getValue().getSender(),entry.getValue().isAuth(),false);
+                Log.d(Constants.LOGT,"Addin User from Join ROOM:"+u_temp.toString());
+                players.add(u_temp);
             }
         }
-        client.publish(gameID,new Action(Constants.A_START_GAME,Constants.TRUE,Constants.HOST_USERNAME,Constants.A_FOR_ALL),signHostMeta());
+        client.publish(gameID,new ActionSimple(Constants.A_START_GAME,Constants.TRUE,Constants.HOST_USERNAME,Constants.A_FOR_ALL),Helpers.signHostMeta());
 
 //        PresencePojo temp;
 //        for (int i=0;i<this.mPresence.getCount();i++){
@@ -228,10 +236,6 @@ public class _4GameRoom extends AppCompatActivity {
         startActivity(intent);
 
     }
-    public Map<String, Object> signHostMeta(){
-        Map<String, Object> meta = new HashMap<>();
-        meta.put("from", Constants.HOST_USERNAME);
-        return meta;
-    }
+
 
 }

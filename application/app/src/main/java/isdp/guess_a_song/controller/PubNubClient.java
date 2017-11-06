@@ -80,10 +80,9 @@ public class PubNubClient{
                     .async(new PNCallback<PNPublishResult>() {
                         @Override
                         public void onResponse(PNPublishResult result, PNStatus status) {
-                            if (status.isError()) {
+                            if (status != null && status.isError()) {
                                 // something bad happened.
                                 Log.d(Constants.LOGT,user.getName()+ " Publish error");
-
                             } else {
                                 //Log.d(Constants.LOGT, user.getName()+ " Published! result: " + result.toString());
                             }
@@ -111,7 +110,7 @@ public class PubNubClient{
         this.pubnub.hereNow().channels( Arrays.asList(this.gameID) ).async(new PNCallback<PNHereNowResult>() {
             @Override
             public void onResponse(PNHereNowResult result, PNStatus status) {
-                if (status.isError()) {
+                if (status != null && status.isError()) {
                     return;
                 }
 

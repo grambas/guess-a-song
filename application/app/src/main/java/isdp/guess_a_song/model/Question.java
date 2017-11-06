@@ -2,6 +2,9 @@ package isdp.guess_a_song.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -42,8 +45,6 @@ public class Question implements Parcelable {
         this.answers.add( new Answer("Wrong Answer",false));
         this.answers.add( new Answer("Wrong Answer",false));
         this.answers.add( new Answer(son.getTitle(),true));
-
-
         this.type = ty;
         this.song = son;
     }
@@ -113,6 +114,15 @@ public class Question implements Parcelable {
 
     public void shuffle(){
         Collections.shuffle(this.answers);
+    }
+
+    public HashMap<Integer, String>  songsToPlayers(){
+        HashMap<Integer, String> r = new HashMap<Integer, String>();
+        r.put(0,answers.get(0).getText());
+        r.put(1,answers.get(1).getText());
+        r.put(2,answers.get(2).getText());
+        r.put(3,answers.get(3).getText());
+        return r;
     }
 
     public boolean isCorrect(int i){

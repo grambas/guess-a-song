@@ -11,17 +11,17 @@ import android.os.Parcelable;
 
 public class Score implements Parcelable {
 
-    private int playerID;
+    private String playerUUID;
     private int points;
 
     //Constructors
-    public Score(int PID, int startPoints){
-        this.playerID = PID;
+    public Score(String PID, int startPoints){
+        this.playerUUID = PID;
         this.points = startPoints;
     }
 
-    public Score(int PID){
-        this.playerID = PID;
+    public Score(String PID){
+        this.playerUUID = PID;
         this.points = 0;
     }
 
@@ -35,11 +35,11 @@ public class Score implements Parcelable {
         points += change;
     }
 
-    public int getPlayerID(){
-        return playerID;
+    public String getPlayerUUID(){
+        return playerUUID;
     }
 
-    //No method to set playerID since that shouldn't change once an instance is created
+    //No method to set playerUUID since that shouldn't change once an instance is created
 
 
     //Parcelling
@@ -51,13 +51,13 @@ public class Score implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(playerID);
+        dest.writeString(playerUUID);
         dest.writeInt(points);
     }
 
     public Score(Parcel in){
         this.points = in.readInt();
-        this.playerID = in.readInt();
+        this.playerUUID = in.readString();
     }
 
     public static final Parcelable.Creator<Score> CREATOR = new Parcelable.Creator<Score>() {
@@ -71,6 +71,6 @@ public class Score implements Parcelable {
     };
     //end Parcelling
 
-    public String toString(){ return ("Player ID: " + playerID + " Score: " + points);}
+    public String toString(){ return ("Player ID: " + playerUUID + " Score: " + points);}
 
 }
