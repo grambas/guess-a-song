@@ -70,6 +70,5 @@ public class PresencePnCallback extends SubscribeCallback {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 }

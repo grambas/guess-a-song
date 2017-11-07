@@ -17,6 +17,7 @@ import android.os.Parcelable;
 public class Question implements Parcelable {
 
     private ArrayList<Answer> answers = new ArrayList<Answer>();
+    private HashMap<String,Integer> player_answers;
 
     /* 1 is song, 2 is artist* (changed to 1,2 because, radio button gives
     * 1,2 by default in game creation set settings step) also let's use Constant type
@@ -34,8 +35,24 @@ public class Question implements Parcelable {
         this.answers = ans;
         this.type = ty;
         this.song = son;
+        this.player_answers = new HashMap<String,Integer>();
     }
 
+    public HashMap<String, Integer> getPlayer_answers() {
+        return player_answers;
+    }
+
+    public void setPlayer_answers(HashMap<String, Integer> player_answers) {
+        this.player_answers = player_answers;
+    }
+
+    public boolean isNotAnswered(String uuid,int guess){
+        if(player_answers.containsKey(uuid)){
+            return false;
+        }
+        player_answers.put(uuid,guess);
+        return true;
+    }
     /*Just the song. Auto builds the question*/
     /*Right now, doesn't generate proper random wrong answers. Will add functionality later.*/
     public Question(Song son,int ty){

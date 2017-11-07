@@ -13,9 +13,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.content.Intent;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.google.gson.Gson;
 import com.pubnub.api.PubNub;
@@ -65,11 +67,13 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
     private TextView tvSongname;
     private TextView tvTimer;
     private TextView tvAnswers;
+    private TextView tvStatus;
     private ProgressBar pbTimer;
     private ImageButton ibPlay;
     private Button btNext;
     private Button btShowScore;
     private TextView tvAnsGot;
+    private ListView listView;
 
     private int currentQuestion = 0;
     private MediaPlayer mediaPlayer;
@@ -83,11 +87,11 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
         tvSongname = (TextView) findViewById(R.id.tvSongname);
         tvTimer = (TextView) findViewById(R.id.tvTimer);
         tvAnswers = (TextView) findViewById(R.id.tvCurrentAnswers);
+        tvStatus = (TextView) findViewById(R.id.tvCurrentStatus);
         ibPlay = (ImageButton) findViewById(R.id.ibPlay);
         pbTimer = (ProgressBar) findViewById(R.id.pbTimer);
         btNext = (Button) findViewById(R.id.btNextSong);
         btShowScore = (Button) findViewById(R.id.btShowScore);
-        tvAnsGot = (TextView) findViewById(R.id.tvAnsGot);
 
 
         // GET DATA FROM PREVIOUS VIEW
@@ -107,14 +111,20 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
         game.setQuestions(questions);
         game.setPlayers(players);
         game.addObserver(this);
+        game.start();
 
 
         //pubnub
         client = new PubNubClient(new UserProfile(Constants.HOST_USERNAME),game.getSettings().getGameIDString(),true);
         this.mPresence = new PresenceListAdapter(this);
         this.mPresencePnCallback = new PresencePnCallback(this.mPresence);
-        client.subscribe(game.getSettings().getGameIDString(),Constants.WITH_PRESENCE);
+        client.initChannelsHost(mPresencePnCallback);
+        listView = (ListView) findViewById(R.id.presence_list);
+        listView.setAdapter(this.mPresence);
 
+
+
+        //listView.setAdapter(mPresence);
         client.getPubnub().addListener(new SubscribeCallback() {
             @Override
             public void message(PubNub pubnub, PNMessageResult message) {
@@ -126,10 +136,13 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
                 if (action.getRecipient() != null && action.getRecipient().equals(Constants.HOST_USERNAME)){
                     if(action.getAction().equals(Constants.A_ANSWER)){
                         Log.d(Constants.LOGT, "ANSWER GOT "+ message.getMessage().toString());
-                        processed = game.processAnswer(action.getUuid(),action.getAnswerIndex(),action.getQuestionIndex());
-                        if (!processed){
-                            //Toast.makeText(HostPlayScreen.this, "Error in answer process", Toast.LENGTH_SHORT).show();
-                            Log.d(Constants.LOGT, "Error in answer process");
+                        Log.d(Constants.LOGT, "ERROR!!!  Status was  "+ game.getHumanStatus());
+                        if(game.getStatus()== Constants.GAME_STATUS_ON_QUESTION){
+                            processed = game.processAnswer(action.getUuid(),action.getAnswerIndex(),action.getQuestionIndex());
+                            if (!processed){
+                                //Toast.makeText(HostPlayScreen.this, "Error in answer process", Toast.LENGTH_SHORT).show();
+                                Log.d(Constants.LOGT, "Error in answer process");
+                            }
                         }
                     }
                 }
@@ -141,7 +154,6 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
         });
 
 
-        game.start();
 
         countDownTimer = new CountDownTimer(game.getSettings().getGuess_time() * 1000, 1000) {
             @Override
@@ -169,6 +181,7 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
             @Override
             public void onClick(View v) {
                 Log.d(Constants.LOGT, game.showScore());
+
                 Toast.makeText(HostPlayScreen.this, game.showScore(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -180,16 +193,13 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
                         game.getStatus() == Constants.GAME_STATUS_TIME_OVER){
 
                     if (game.next_q()) {
-                        game.setAns_amount(0);
                         countDownTimer.cancel();
                         if (mediaPlayer != null) {
                             mediaPlayer.stop();
                         }
-                        //tvSongname.setText(game.getCurrentQuestion().getSong().toString());
-                        //tvAnswers.setText("Question: " + game.getCurrentQuestion());
                     } else {
-                        //Multiplayer-stuff and score screen?
-                        //no more qeustions
+                        Toast.makeText(HostPlayScreen.this, "No more questions!", Toast.LENGTH_SHORT).show();
+
                     }
                 }else{
                     Toast.makeText(HostPlayScreen.this, "Status is not READY!", Toast.LENGTH_SHORT).show();
@@ -245,7 +255,17 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
             }
         }
     }
-    
+    public void onToggleClicked(View view) {
+        // Is the toggle on?
+        boolean on = ((ToggleButton) view).isChecked();
+
+        if (on) {
+            listView.setVisibility(View.VISIBLE);
+        } else {
+            listView.setVisibility(View.GONE);
+
+        }
+    }
     @Override
     public void onBackPressed() {
         //Asking the player to quit or something
@@ -280,14 +300,11 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
             @Override
             public void run() {
                 tvSongname.setText(game.getCurrentQuestion().getSong().toString());
-                tvAnswers.setText("Question: " + game.getCurrentQuestion());
-                tvAnsGot.setText("Question: " + game.getAns_amount());
+                tvAnswers.setText("Answered: " + game.getAns_amount());
+                tvStatus.setText("Status: " + game.getHumanStatus());
             }
         });
-
-
     }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();

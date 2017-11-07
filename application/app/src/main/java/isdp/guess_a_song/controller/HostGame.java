@@ -6,6 +6,7 @@ import android.util.Log;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Observable;
+import java.util.Set;
 
 import isdp.guess_a_song.model.Question;
 import isdp.guess_a_song.model.Score;
@@ -27,12 +28,10 @@ public class HostGame extends Observable {
     //Static final attributes
     private static final HostGame instance = new HostGame();
 
-    // HostGame attributes
     Settings settings;
     List<Question> questions;
-
-    //HashMap<String, Score> scoreMap;
     HashMap<String, UserProfile> players;
+    HashMap<Integer, Set<String>> already_answered;
 
     //Score score
 
@@ -49,6 +48,7 @@ public class HostGame extends Observable {
         currentIndex = 0;
        // scoreMap = null;
         players = new HashMap<String,UserProfile>();
+
         questions = null;
         settings = null;
         ans_amount = 0;
@@ -63,13 +63,7 @@ public class HostGame extends Observable {
         setChanged();
         notifyObservers();
     }
-//    public HashMap<String, Score> getScoreMap() {
-//        return scoreMap;
-//    }
-//
-//    public void setScoreMap(HashMap<String, Score> scoreMap) {
-//        this.scoreMap = scoreMap;
-//    }
+
 
     public void setCurrentIndex(int currentIndex) {
         this.currentIndex = currentIndex;
@@ -85,7 +79,8 @@ public class HostGame extends Observable {
     }
 
     public boolean next_q(){
-        if (currentIndex == questions.size() ) {
+        ans_amount = 0;
+        if (currentIndex == questions.size()-1 ) {
             return false;
         }
         currentIndex++;
@@ -144,19 +139,21 @@ public class HostGame extends Observable {
             this.players.put(value.getUuid(),value);
         }
     }
-//TODO CHECK IF ANSWERED Q
     public boolean processAnswer(String player,int guess,int guess_index){
         boolean result = true;
         if(currentIndex == guess_index && players.containsKey(player)){
-            if( getCurrentQuestion().isCorrect(guess)){
-                players.get(player).addScore(Constants.REWARD_CORRECT);
-            }else{
-                //decrement?
-                players.get(player).addScore(Constants.REWARD_WRONG);
+            if(getCurrentQuestion().isNotAnswered(player,guess)){
+                if( getCurrentQuestion().isCorrect(guess)){
+                    players.get(player).addScore(Constants.REWARD_CORRECT);
+                }else{
+                    //decrement?
+                    players.get(player).addScore(Constants.REWARD_WRONG);
+                }
+                ans_amount++;
+                setChanged();
+                notifyObservers();
             }
-            ans_amount++;
-            setChanged();
-            notifyObservers();
+
         }else{
            result = false;
         }
@@ -172,6 +169,24 @@ public class HostGame extends Observable {
         this.status = status;
         setChanged();
         notifyObservers();
+    }
+
+    public String getHumanStatus(){
+        if (status == Constants.GAME_STATUS_STARTED){
+            return "Started";
+        }else  if(status == Constants.GAME_STATUS_FINISHED){
+            return "Finished";
+        }else  if(status == Constants.GAME_STATUS_ON_QUESTION){
+            return "On question";
+        }else  if(status == Constants.GAME_STATUS_PAUSE){
+            return "Paused";
+        }else  if(status == Constants.GAME_STATUS_TIME_OVER){
+            return "Time over";
+        }else  if(status == Constants.GAME_STATUS_READY){
+            return "Ready";
+        }else{
+            return "not defined";
+        }
     }
     @Override
     public String toString() {

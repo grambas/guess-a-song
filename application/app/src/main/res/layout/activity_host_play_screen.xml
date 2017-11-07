@@ -7,10 +7,10 @@
     tools:context="isdp.guess_a_song.HostPlayScreen">
 
     <TextView
-        android:id="@+id/tvCurrentOnline"
+        android:id="@+id/tvCurrentStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Online:"
+        android:text="Status:"
         tools:layout_editor_absoluteX="16dp"
         tools:layout_editor_absoluteY="16dp"
         android:layout_alignParentTop="true"
@@ -27,6 +27,14 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
+
+
+    <ListView
+        android:id="@+id/presence_list"
+        android:layout_marginTop="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 
     <ProgressBar
         android:id="@+id/pbTimer"
@@ -67,7 +75,8 @@
         tools:layout_editor_absoluteX="267dp"
         tools:layout_editor_absoluteY="447dp"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true" />
+        android:layout_alignParentLeft="true"
+        />
     <Button
         android:id="@+id/btNextSong"
         android:layout_width="wrap_content"
@@ -92,4 +101,17 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+
+
+    <ToggleButton
+        android:id="@+id/togglebutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="true"
+
+        android:layout_alignParentLeft="true"
+        android:textOff="Show Players"
+        android:textOn="Hide Players"
+        android:onClick="onToggleClicked"
+        android:layout_above="@+id/btShowScore" />
 </RelativeLayout>
