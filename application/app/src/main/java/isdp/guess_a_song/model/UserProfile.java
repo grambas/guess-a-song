@@ -2,11 +2,10 @@ package isdp.guess_a_song.model;
 
 /**
  * Created on 16/10/2017, 6:11 PM
+ * Updated on 11/9/2017
  */
-import android.provider.Settings.Secure;
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import com.google.gson.JsonObject;
 
 import java.util.UUID;
@@ -14,7 +13,7 @@ import java.util.UUID;
 /**
  * Player model
  * Parcelable model
- * @Author Mindaugas Milius
+ * @Author Mindaugas Milius and Andrew Burns
  */
 
 public class UserProfile implements Parcelable{
@@ -36,13 +35,16 @@ public class UserProfile implements Parcelable{
         this.name = name;
         this.auth = false;
         this.score= 0;
+        this.uuid = java.util.UUID.randomUUID().toString();
     }
     public UserProfile() {
         this.name = null;
         this.auth = false;
         this.score= 0;
+        this.uuid = java.util.UUID.randomUUID().toString();
     }
 
+    //Getters and setters
     public String getUuid() {
         return uuid;
     }
@@ -61,6 +63,37 @@ public class UserProfile implements Parcelable{
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public boolean isHost() {
+        return isHost;
+    }
+
+    public void setHost(boolean host) {
+        isHost = host;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void addScore(int change) {
+        this.score += change;
+    }
+
+    //other functions
+    public void generateNewUUID(){
+        this.uuid = java.util.UUID.randomUUID().toString();
+    }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     @Override
@@ -87,30 +120,6 @@ public class UserProfile implements Parcelable{
         this.score = in.readInt();
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
-
-    public boolean isHost() {
-        return isHost;
-    }
-
-    public void setHost(boolean host) {
-        isHost = host;
-    }
-
-    public int getScore() {
-        return score;
-    }
-
-    public void addScore(int change) {
-        this.score += change;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
