@@ -12,4 +12,5 @@
     <string name="game_id">ID:</string>
     <string name="game_pin">PIN:</string>
     <string name="game_start">Start!</string>
+    <string name="title_activity_edit_profile">EditProfile</string>
 </resources>
