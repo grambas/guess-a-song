@@ -56,37 +56,25 @@
         android:hint="Songtime (in seconds):"
         android:inputType="time" />
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:ems="10"
-        android:id="@+id/etOtherSettings"
-        android:layout_below="@+id/etTimeSong"
-        android:layout_alignLeft="@+id/etTimeSong"
-        android:layout_alignStart="@+id/etTimeSong"
-        android:layout_alignRight="@+id/etTimeSong"
-        android:layout_alignEnd="@+id/etTimeSong"
-        android:hint="Other settings..." />
 
     <RadioGroup
         android:id="@+id/etGameType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/etOtherSettings"
-        android:layout_alignLeft="@+id/etOtherSettings"
-        android:layout_alignRight="@+id/etOtherSettings"
-        android:layout_alignStart="@+id/etOtherSettings"
-        android:layout_below="@+id/etOtherSettings"
+        android:layout_alignEnd="@+id/etTimeSong"
+        android:layout_alignLeft="@+id/etTimeSong"
+        android:layout_alignRight="@+id/etTimeSong"
+        android:layout_alignStart="@+id/etTimeSong"
+        android:layout_below="@+id/etTimeSong"
         android:layout_marginTop="38dp">
 
         <RadioButton
             android:id="@+id/rbGuessArtist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/radioGroup"
-            android:layout_alignLeft="@+id/etOtherSettings"
-            android:layout_alignStart="@+id/etOtherSettings"
+            android:layout_alignBottom="@+id/etTimeSong"
+            android:layout_alignLeft="@+id/etTimeSong"
+            android:layout_alignStart="@+id/etTimeSong"
             android:layout_weight="1"
             android:checked="true"
             android:text="Guess artist name" />
@@ -107,11 +95,11 @@
         android:id="@+id/btStep1Next"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/etOtherSettings"
-        android:layout_alignLeft="@+id/etOtherSettings"
+        android:layout_alignEnd="@+id/etTimeSong"
+        android:layout_alignLeft="@+id/etTimeSong"
         android:layout_alignParentBottom="true"
-        android:layout_alignRight="@+id/etOtherSettings"
-        android:layout_alignStart="@+id/etOtherSettings"
+        android:layout_alignRight="@+id/etTimeSong"
+        android:layout_alignStart="@+id/etTimeSong"
         android:text="Next" />
 
 </RelativeLayout>

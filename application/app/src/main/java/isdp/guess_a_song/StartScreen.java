@@ -31,8 +31,4 @@ public class StartScreen extends AppCompatActivity {
         Intent intent = new Intent(this, MusicLibrary.class);
         startActivity(intent);
     }
-    public void GameRoomActivity(View v) {
-        Intent intent = new Intent(this, _4GameRoom.class);
-        startActivity(intent);
-    }
 }

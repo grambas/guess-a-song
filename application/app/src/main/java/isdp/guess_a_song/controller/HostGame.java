@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Observable;
 import java.util.Set;
+import java.util.concurrent.locks.Condition;
 
 import isdp.guess_a_song.model.Question;
 import isdp.guess_a_song.model.Score;
@@ -141,6 +142,7 @@ public class HostGame extends Observable {
     }
     public boolean processAnswer(String player,int guess,int guess_index){
         boolean result = true;
+        Log.d(Constants.LOGT, "processAnswer: "+ player);
         if(currentIndex == guess_index && players.containsKey(player)){
             if(getCurrentQuestion().isNotAnswered(player,guess)){
                 if( getCurrentQuestion().isCorrect(guess)){

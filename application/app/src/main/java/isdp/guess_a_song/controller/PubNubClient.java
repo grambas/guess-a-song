@@ -41,7 +41,7 @@ import isdp.guess_a_song.utils.Helpers;
 public class PubNubClient{
 
     private PubNub pubnub;
-    private String gameID;
+    public String gameID;
     private UserProfile user;
     private boolean usePost;
 
@@ -60,7 +60,7 @@ public class PubNubClient{
             config.setUuid(this.user.getName());
         }else{
             config.setUuid(this.user.getUuid());
-            config.setFilterExpression("from == '" + Constants.HOST_USERNAME+"'");
+           // config.setFilterExpression("from == '" + Constants.HOST_USERNAME+"'");
         }
 
         this.pubnub = new PubNub(config);
@@ -68,8 +68,11 @@ public class PubNubClient{
 
     }
 
+    public String getGameID() {
+        return gameID;
+    }
 
-    public void publish(final String gameID, Action m,Map<String, Object> meta) {
+    public void publish(Action m, Map<String, Object> meta) {
         try {
             pubnub.publish()
                     .message(m)
@@ -92,7 +95,7 @@ public class PubNubClient{
             Log.e(Constants.LOGT, "exception while publishing message", e);
         }
     }
-    public void subscribe(String gameID,boolean withPre){
+    public void subscribe(boolean withPre){
         if (withPre){
             this.pubnub.subscribe().withPresence().channels( Arrays.asList(gameID) ).execute();
             Log.d(Constants.LOGT, user.getName()+" Subscribed with Presence");
@@ -190,4 +193,13 @@ public class PubNubClient{
     public PubNub getPubnub() {
         return pubnub;
     }
+
+    public UserProfile getUser() {
+        return user;
+    }
+
+    public String getUsername() {
+        return this.user.getName();
+    }
+
 }
