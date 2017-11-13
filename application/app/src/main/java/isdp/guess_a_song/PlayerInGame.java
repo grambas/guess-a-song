@@ -3,7 +3,6 @@ package isdp.guess_a_song;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.Activity;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -31,6 +30,8 @@ public class PlayerInGame extends Activity {
     PubNubClient client;
     HashMap<Integer, String> currentQ;
     ActionAsk currentAsk;
+    UserProfile player;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +43,7 @@ public class PlayerInGame extends Activity {
         btnAnswers[2] = (Button) findViewById(R.id.btnAnswer3);
         btnAnswers[3] = (Button) findViewById(R.id.btnAnswer4);
 
-        //HIDE BUTTONS ON START
+        //HIDE BUTTONS ON START AND ADD LISTENER
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -54,27 +55,19 @@ public class PlayerInGame extends Activity {
         });
 
         //GET GAMEID FROM JOIN ACTIVITY
-        //TODO username will be taken from other place
         Intent iin = getIntent();
         Bundle b = iin.getExtras();
         String gameID = null;
-        String userName = null;
         if (b != null) {
             gameID = (String) b.get("gameID");
-            userName = (String) b.get("userName");
-
         }
-        //TODO CHANGE LATER
-        String uniqueID = Settings.Secure.getString(getApplicationContext().getContentResolver(),
-                Settings.Secure.ANDROID_ID);
-
-
-        this.client = new PubNubClient(new UserProfile(userName, uniqueID, false, false), gameID, false);
+        this.player = new UserProfile();
+        this.player.loadProfile(getApplicationContext());
+        this.client = new PubNubClient(player, gameID, false);
 
         this.client.getPubnub().addListener(new SubscribeCallback() {
             @Override
-            public void status(PubNub pubnub, PNStatus status) {
-            }
+            public void status(PubNub pubnub, PNStatus status) {}
 
             @Override
             public void message(PubNub pubnub, PNMessageResult message) {
@@ -109,11 +102,10 @@ public class PlayerInGame extends Activity {
             }
 
             @Override
-            public void presence(PubNub pubnub, PNPresenceEventResult presence) {
-            }
+            public void presence(PubNub pubnub, PNPresenceEventResult presence) {}
         });
 
-        this.client.getPubnub().subscribe().channels(Arrays.asList(gameID)).execute();
+        this.client.getPubnub().subscribe().channels(Arrays.asList(client.getGameID())).execute();
     }
 
     // Create an anonymous implementation of OnClickListener

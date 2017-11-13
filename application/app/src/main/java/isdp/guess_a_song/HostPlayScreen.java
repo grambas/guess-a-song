@@ -49,9 +49,7 @@ import isdp.guess_a_song.utils.Constants;
 public class HostPlayScreen extends AppCompatActivity implements Observer {
 
 
-    private HostGame game;
-    private int gameID;
-    private int gamePIN;
+    private HostGame game;;
     private ArrayList<Question> questions;
 
     CountDownTimer countDownTimer;
@@ -73,7 +71,7 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
     private TextView tvAnsGot;
     private ListView listView;
 
-    private int currentQuestion = 0;
+    //private int currentQuestion = 0;
     private MediaPlayer mediaPlayer;
 
 
@@ -82,6 +80,7 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_host_play_screen);
 
+        //INIT GUI FIELDS
         tvSongname = (TextView) findViewById(R.id.tvSongname);
         tvTimer = (TextView) findViewById(R.id.tvTimer);
         tvAnswers = (TextView) findViewById(R.id.tvCurrentAnswers);
@@ -118,8 +117,6 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
         listView = (ListView) findViewById(R.id.presence_list);
         listView.setAdapter(this.mPresence);
 
-
-        //listView.setAdapter(mPresence);
         client.getPubnub().addListener(new SubscribeCallback() {
             @Override
             public void message(PubNub pubnub, PNMessageResult message) {
