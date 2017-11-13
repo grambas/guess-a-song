@@ -5,9 +5,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.SparseBooleanArray;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -21,6 +23,8 @@ public class _2SelectSongs extends AppCompatActivity {
 
     private ListView listView;
     private Button btNext;
+    private TextView selectedView;
+    int totalSelected;
     Settings game_settings;
 
     @Override
@@ -29,6 +33,10 @@ public class _2SelectSongs extends AppCompatActivity {
         setContentView(R.layout.activity_select_songs);
 
         game_settings = getIntent().getExtras().getParcelable("game_settings");
+
+        selectedView = (TextView) findViewById(R.id.tvSelectSongs);
+        selectedView.setText("Total Selected 0 of " +game_settings.getSongs_amount());
+
 
 
         Toast.makeText(_2SelectSongs.this, game_settings.toString(), Toast.LENGTH_LONG).show();
@@ -47,13 +55,14 @@ public class _2SelectSongs extends AppCompatActivity {
         listView.setAdapter(songAdapter);
 
         //Limit checking
-        /*
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 int cntChoice = listView.getCheckedItemCount();
+                selectedView.setText("Total Selected" + String.valueOf(cntChoice)+ " of " +game_settings.getSongs_amount());
 
-                if (cntChoice > limit) {
+                if (cntChoice > game_settings.getSongs_amount()) {
                     SparseBooleanArray sparseBooleanArray = listView.getCheckedItemPositions();
                     for (int i = 0; i < listView.getCount(); i++) {
                         if (sparseBooleanArray.get(i)) {
@@ -64,7 +73,7 @@ public class _2SelectSongs extends AppCompatActivity {
                 }
             }
         });
-        */
+
 
 
         btNext = (Button) findViewById(R.id.btNext);

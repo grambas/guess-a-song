@@ -135,9 +135,9 @@ public class _4GameRoom extends AppCompatActivity {
                         if(action.getValue().equals(gamePIN)){
                             Log.d(Constants.LOGT, "HOST MESSAGE LISTENER Player "+ action.getPublisher() + " auth true SUCCESS!");
 
-                            client.publish(gameID,new ActionSimple(Constants.A_AUTH_RESPONSE,Constants.TRUE,Constants.HOST_USERNAME,action.getPublisher()),Helpers.signHostMeta());
+                            client.publish(new ActionSimple(Constants.A_AUTH_RESPONSE,Constants.TRUE,Constants.HOST_USERNAME,action.getPublisher()),Helpers.signHostMeta());
                         }else{
-                            client.publish(gameID,new ActionSimple(Constants.A_AUTH_RESPONSE,Constants.FALSE,Constants.HOST_USERNAME,action.getPublisher()),Helpers.signHostMeta());
+                            client.publish(new ActionSimple(Constants.A_AUTH_RESPONSE,Constants.FALSE,Constants.HOST_USERNAME,action.getPublisher()),Helpers.signHostMeta());
                             Log.d(Constants.LOGT, "HOST MESSAGE LISTENER Player "+ action.getPublisher() + " auth false (bad pin)");
                         }
                     }
@@ -180,7 +180,7 @@ public class _4GameRoom extends AppCompatActivity {
         listView.setAdapter(mPresence);
 
         client.initChannelsHost(mPresencePnCallback);
-        client.subscribe(gameID,Constants.WITH_PRESENCE);
+        client.subscribe(Constants.WITH_PRESENCE);
         // channel subscribed. Now waiting for players.
 
         //test publish
@@ -212,7 +212,7 @@ public class _4GameRoom extends AppCompatActivity {
                 players.add(u_temp);
             }
         }
-        client.publish(gameID,new ActionSimple(Constants.A_START_GAME,Constants.TRUE,Constants.HOST_USERNAME,Constants.A_FOR_ALL),Helpers.signHostMeta());
+        client.publish(new ActionSimple(Constants.A_START_GAME,Constants.TRUE,Constants.HOST_USERNAME,Constants.A_FOR_ALL),Helpers.signHostMeta());
 
 //        PresencePojo temp;
 //        for (int i=0;i<this.mPresence.getCount();i++){

@@ -135,6 +135,9 @@ public class _3EditQuestion extends AppCompatActivity {
                     for (final Question q : questions) {
                        q.shuffle();
                     }
+                    for(int i = 0; i < 3; i++){
+
+                    }
 
                     // TODO Validate if every song has 3 answers
                     // TODO Change activity, store data in intents, etc.

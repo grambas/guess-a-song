@@ -1,6 +1,7 @@
 package isdp.guess_a_song;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
@@ -10,8 +11,6 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.pubnub.api.PNConfiguration;
 import com.pubnub.api.PubNub;
 import com.pubnub.api.callbacks.PNCallback;
 import com.pubnub.api.callbacks.SubscribeCallback;
@@ -92,8 +91,6 @@ public class JoinGame extends AppCompatActivity {
         //show spinner after button click
         spinner.setVisibility(View.VISIBLE);
 
-        //init PubNub Client
-        PNConfiguration pnConfiguration = new PNConfiguration();
 
         this.client = new PubNubClient(player,this.gameID,false);
 
@@ -186,6 +183,11 @@ public class JoinGame extends AppCompatActivity {
                                        info_field.setText("Host started the game. Redirecting finds here!");
                                     }
                                 });
+                                Intent intent = new Intent(JoinGame.this, PlayerInGame.class);
+                                intent.putExtra("gameID", gameID);
+                                intent.putExtra("userName", userName);
+                                client.getPubnub().unsubscribeAll();
+                                startActivity(intent);
 
                             }
                         }
@@ -204,8 +206,7 @@ public class JoinGame extends AppCompatActivity {
         });
 
 
-        this.client.subscribe(this.gameID,Constants.NO_PRESENCE);
-
+        this.client.subscribe(Constants.NO_PRESENCE);
 
         //Intent for the join screen
     }
