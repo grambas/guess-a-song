@@ -31,7 +31,8 @@
         android:layout_alignRight="@+id/tvGuessSong"
         android:layout_alignEnd="@+id/tvGuessSong"
         android:layout_alignLeft="@+id/tvGuessSong"
-        android:layout_alignStart="@+id/tvGuessSong" />
+        android:layout_alignStart="@+id/tvGuessSong"
+        android:onClick="profile"/>
 
     <Button
         android:text="Host game"

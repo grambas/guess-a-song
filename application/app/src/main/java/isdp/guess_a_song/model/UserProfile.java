@@ -4,12 +4,16 @@ package isdp.guess_a_song.model;
  * Created on 16/10/2017, 6:11 PM
  * Updated on 11/9/2017
  */
+import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
 import com.google.gson.JsonObject;
+import android.content.Context;
+
 
 import java.util.UUID;
 
+import static android.content.Context.MODE_PRIVATE;
 /**
  * Player model
  * Parcelable model
@@ -21,7 +25,7 @@ public class UserProfile implements Parcelable{
     private String uuid ;
     private boolean auth;
     private boolean isHost;
-    int score;
+    private int score;
 
     public UserProfile(String name, String id,boolean auth,boolean isHost) {
         this.name = name;
@@ -38,10 +42,6 @@ public class UserProfile implements Parcelable{
         this.uuid = java.util.UUID.randomUUID().toString();
     }
     public UserProfile() {
-        this.name = null;
-        this.auth = false;
-        this.score= 0;
-        this.uuid = java.util.UUID.randomUUID().toString();
     }
 
     //Getters and setters
@@ -90,6 +90,39 @@ public class UserProfile implements Parcelable{
         this.uuid = java.util.UUID.randomUUID().toString();
     }
 
+    public void saveProfile(Context con){
+        SharedPreferences pref = con.getApplicationContext().getSharedPreferences("GASpref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+
+        //prep key/value pair contents
+        editor.putString("profileName", this.name);
+        editor.putString("UUID", this.uuid);
+        editor.putBoolean("auth", this.auth);
+        editor.putBoolean("isHost", this.isHost);
+        editor.putInt("score", this.score);
+
+        //commit saved changes to SHaredPreferences
+        editor.commit();
+    }
+
+    public void loadProfile(Context con){
+
+        SharedPreferences pref = con.getApplicationContext().getSharedPreferences("GASpref", MODE_PRIVATE);
+
+        //retrieve saved profile from SharedPreferences
+        this.name = pref.getString("profileName", this.name);
+        this.uuid = pref.getString("UUID", this.uuid);
+        this.auth = pref.getBoolean("auth", this.auth);
+        this.isHost = pref.getBoolean("isHost", this.isHost);
+        this.score = pref.getInt("score", this.score);
+
+        if(this.uuid == null){
+            this.name = "GAS Player";
+            this.auth = false;
+            this.score= 0;
+            this.uuid = java.util.UUID.randomUUID().toString();
+        }
+    }
 
     @Override
     public int describeContents() {

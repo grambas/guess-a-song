@@ -35,4 +35,9 @@ public class StartScreen extends AppCompatActivity {
         Intent intent = new Intent(this, _4GameRoom.class);
         startActivity(intent);
     }
+
+    public void profile(View v) {
+        Intent intent = new Intent(this, EditProfile.class);
+        startActivity(intent);
+    }
 }

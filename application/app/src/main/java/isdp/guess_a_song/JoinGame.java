@@ -38,7 +38,7 @@ public class JoinGame extends AppCompatActivity {
 
     private EditText gameID_field;
     private EditText gamePIN_field;
-    private EditText name_field;
+    private TextView name_field;
     private TextView info_field;
     Button btnJoin;
     private ProgressBar spinner;
@@ -59,7 +59,7 @@ public class JoinGame extends AppCompatActivity {
         setContentView(R.layout.activity_join_game);
         gameID_field= (EditText)findViewById(R.id.etGameId);
         gamePIN_field = (EditText) findViewById(R.id.etPin);
-        name_field = (EditText) findViewById(R.id.etName);
+        name_field = (TextView) findViewById(R.id.etName);
         info_field = (TextView) findViewById(R.id.tvInfo);
         btnJoin = (Button) findViewById(R.id.btJoin);
         checkImg = (ImageView) findViewById(R.id.imageView);
@@ -67,6 +67,9 @@ public class JoinGame extends AppCompatActivity {
         checkImg.setVisibility(View.INVISIBLE);
         spinner.setVisibility(View.GONE);
 
+        player = new UserProfile();
+        player.loadProfile(getApplicationContext());
+        name_field.setText("Name: " + player.getName());
         //this.game = new PlayerGame(0,0);
         //Some adjustments
         btnJoin.setVisibility(View.VISIBLE);
@@ -84,7 +87,8 @@ public class JoinGame extends AppCompatActivity {
         String uniqueID= Settings.Secure.getString(getApplicationContext().getContentResolver(),
                 Settings.Secure.ANDROID_ID);
 
-        player = new UserProfile(userName,uniqueID,false,false);
+
+        //player = new UserProfile(userName,uniqueID,false,false);
         //show spinner after button click
         spinner.setVisibility(View.VISIBLE);
 
