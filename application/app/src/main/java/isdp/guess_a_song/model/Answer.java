@@ -41,6 +41,14 @@ public class Answer  implements Parcelable {
         this.text = text;
     }
 
+    @Override
+    public String toString() {
+        return "Answer{" +
+                "text='" + text + '\'' +
+                ", correct=" + correct +
+                '}';
+    }
+
     /**
      *  Parcelling part
      */

@@ -11,14 +11,14 @@
     tools:context="isdp.guess_a_song.StartScreen">
 
     <TextView
-        android:text="Guess a song"
+        android:id="@+id/tvGuessSong"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="38dp"
-        android:id="@+id/tvGuessSong"
-        android:textSize="36sp"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="38dp"
+        android:text="Guess a Song"
+        android:textSize="36sp" />
 
     <Button
         android:text="Profile"
@@ -31,7 +31,8 @@
         android:layout_alignRight="@+id/tvGuessSong"
         android:layout_alignEnd="@+id/tvGuessSong"
         android:layout_alignLeft="@+id/tvGuessSong"
-        android:layout_alignStart="@+id/tvGuessSong" />
+        android:layout_alignStart="@+id/tvGuessSong"
+        android:onClick="profile"/>
 
     <Button
         android:text="Host game"
@@ -49,13 +50,13 @@
         android:id="@+id/btSP"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/btJoin"
-        android:layout_alignLeft="@+id/btJoin"
-        android:layout_alignRight="@+id/btJoin"
-        android:layout_alignStart="@+id/btJoin"
-        android:layout_below="@+id/btJoin"
-        android:onClick="spGame"
-        android:text="Singleplayer Game" />
+        android:layout_alignEnd="@+id/MusicLibrary"
+        android:layout_alignLeft="@+id/MusicLibrary"
+        android:layout_alignRight="@+id/MusicLibrary"
+        android:layout_alignStart="@+id/MusicLibrary"
+        android:layout_below="@+id/MusicLibrary"
+        android:text="Singleplayer Game (Disabled for Sprint 2)"
+        android:visibility="invisible" />
 
     <Button
         android:id="@+id/btJoin"
@@ -73,11 +74,19 @@
         android:id="@+id/MusicLibrary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/btSP"
-        android:layout_alignLeft="@+id/btSP"
-        android:layout_alignRight="@+id/btSP"
-        android:layout_alignStart="@+id/btSP"
-        android:layout_below="@+id/btSP"
         android:onClick="MusicLibrary"
-        android:text="Music Library" />
+
+
+        android:text="Music Library"
+        android:layout_below="@+id/btJoin"
+        android:layout_alignLeft="@+id/btJoin"
+        android:layout_alignStart="@+id/btJoin"
+        android:layout_alignRight="@+id/btJoin"
+        android:layout_alignEnd="@+id/btJoin" /><![CDATA[
+
+
+    >>>>>>> #47,#37 issues. Working on multiplayer
+=======
+>>>>>>> merging master with mindau branch
+]]>
 </RelativeLayout>

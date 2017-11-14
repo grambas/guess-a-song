@@ -2,8 +2,14 @@ package isdp.guess_a_song.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
+
+import isdp.guess_a_song.utils.Constants;
 
 /**
  * Question model as described in the UML.
@@ -14,6 +20,7 @@ import android.os.Parcelable;
 public class Question implements Parcelable {
 
     private ArrayList<Answer> answers = new ArrayList<Answer>();
+    private HashMap<String,Integer> player_answers = new HashMap<String,Integer>();
 
     /* 1 is song, 2 is artist* (changed to 1,2 because, radio button gives
     * 1,2 by default in game creation set settings step) also let's use Constant type
@@ -33,6 +40,23 @@ public class Question implements Parcelable {
         this.song = son;
     }
 
+    public HashMap<String, Integer> getPlayer_answers() {
+        return player_answers;
+    }
+
+    public void setPlayer_answers(HashMap<String, Integer> player_answers) {
+        this.player_answers = player_answers;
+    }
+
+    public boolean isNotAnswered(String uuid,int guess){
+        Log.d(Constants.LOGT, "isNotAnswered: "+ uuid);
+
+        if(player_answers.containsKey(uuid)){
+            return false;
+        }
+        player_answers.put(uuid,guess);
+        return true;
+    }
     /*Just the song. Auto builds the question*/
     /*Right now, doesn't generate proper random wrong answers. Will add functionality later.*/
     public Question(Song son,int ty){
@@ -42,8 +66,6 @@ public class Question implements Parcelable {
         this.answers.add( new Answer("Wrong Answer",false));
         this.answers.add( new Answer("Wrong Answer",false));
         this.answers.add( new Answer(son.getTitle(),true));
-
-
         this.type = ty;
         this.song = son;
     }
@@ -113,6 +135,15 @@ public class Question implements Parcelable {
 
     public void shuffle(){
         Collections.shuffle(this.answers);
+    }
+
+    public HashMap<Integer, String>  songsToPlayers(){
+        HashMap<Integer, String> r = new HashMap<Integer, String>();
+        r.put(0,answers.get(0).getText());
+        r.put(1,answers.get(1).getText());
+        r.put(2,answers.get(2).getText());
+        r.put(3,answers.get(3).getText());
+        return r;
     }
 
     public boolean isCorrect(int i){

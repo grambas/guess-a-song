@@ -1,10 +1,8 @@
 package isdp.guess_a_song.controller;
 
-import android.content.Context;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import isdp.guess_a_song.db.DatabaseHandler;
@@ -16,10 +14,25 @@ import isdp.guess_a_song.model.Song;
  * Created on 10/9/2017, 2:29 PM
  */
 
+
+/**
+ * This is an answer generator for songs
+ * @Author Mindaugas Milius
+ */
+
+
 public class AnswersGenerator {
 
+    /**
+     *
+     * @param db
+     * @param s
+     * @param type game type (guess Artist or Title)
+     * @return Full Question object with answers
+     * @see Question
+     */
     public static Question generate(DatabaseHandler db, Song s,int type){
-        int r = 0;
+
         Answer temp_ans;
 
         List<Song> answer_songs = db.getRandomSongs(s);

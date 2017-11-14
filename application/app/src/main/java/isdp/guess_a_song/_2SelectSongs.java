@@ -3,13 +3,13 @@ package isdp.guess_a_song;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -19,10 +19,12 @@ import isdp.guess_a_song.db.DatabaseHandler;
 import isdp.guess_a_song.model.Settings;
 import isdp.guess_a_song.model.Song;
 
-public class SelectSongs extends AppCompatActivity {
+public class _2SelectSongs extends AppCompatActivity {
 
     private ListView listView;
     private Button btNext;
+    private TextView selectedView;
+    int totalSelected;
     Settings game_settings;
 
     @Override
@@ -32,8 +34,12 @@ public class SelectSongs extends AppCompatActivity {
 
         game_settings = getIntent().getExtras().getParcelable("game_settings");
 
+        selectedView = (TextView) findViewById(R.id.tvSelectSongs);
+        selectedView.setText("Total Selected 0 of " +game_settings.getSongs_amount());
 
-        Toast.makeText(SelectSongs.this, game_settings.toString(), Toast.LENGTH_LONG).show();
+
+
+        //Toast.makeText(_2SelectSongs.this, game_settings.toString(), Toast.LENGTH_LONG).show();
 
 
         //Songs still have to be parsed
@@ -49,24 +55,32 @@ public class SelectSongs extends AppCompatActivity {
         listView.setAdapter(songAdapter);
 
         //Limit checking
-        /*
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 int cntChoice = listView.getCheckedItemCount();
 
-                if (cntChoice > limit) {
-                    SparseBooleanArray sparseBooleanArray = listView.getCheckedItemPositions();
-                    for (int i = 0; i < listView.getCount(); i++) {
-                        if (sparseBooleanArray.get(i)) {
-                            listView.setItemChecked(i, false);
-                            break;
-                        }
-                    }
+                if(cntChoice > game_settings.getSongs_amount() ){
+                    listView.setItemChecked(position, false);
+                    cntChoice--;
                 }
+
+                selectedView.setText("Total Selected " + String.valueOf(cntChoice)+ " of " +game_settings.getSongs_amount());
+
+
+//                if (cntChoice > game_settings.getSongs_amount()) {
+//                    SparseBooleanArray sparseBooleanArray = listView.getCheckedItemPositions();
+//                    for (int i = 0; i < listView.getCount(); i++) {
+//                        if (sparseBooleanArray.get(i)) {
+//                            listView.setItemChecked(i, false);
+//                            break;
+//                        }
+//                    }
+//                }
             }
         });
-        */
+
 
 
         btNext = (Button) findViewById(R.id.btNext);
@@ -89,9 +103,9 @@ public class SelectSongs extends AppCompatActivity {
                     }
                 }
 
-                Toast.makeText(SelectSongs.this, selected, Toast.LENGTH_LONG).show();
+                Toast.makeText(_2SelectSongs.this, selected, Toast.LENGTH_LONG).show();
 
-                Intent intent = new Intent(SelectSongs.this, EditQuestion.class);
+                Intent intent = new Intent(_2SelectSongs.this, _3EditQuestion.class);
 
                 intent.putParcelableArrayListExtra("selected_songs",selected_songs);
                 intent.putExtra("game_settings", game_settings);

@@ -8,7 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="isdp.guess_a_song.EditQuestion">
+    tools:context="isdp.guess_a_song._3EditQuestion">
 
     <TextView
         android:text="Edit questions"
@@ -44,7 +44,18 @@
         android:layout_alignStart="@+id/etSecondAnswer"
         android:layout_alignRight="@+id/etSecondAnswer"
         android:layout_alignEnd="@+id/etSecondAnswer" />
-
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/etFourthAnswer"
+        android:hint="3.:"
+        android:layout_below="@+id/etThirdAnswer"
+        android:layout_alignLeft="@+id/etThirdAnswer"
+        android:layout_alignStart="@+id/etThirdAnswer"
+        android:layout_alignRight="@+id/etThirdAnswer"
+        android:layout_alignEnd="@+id/etThirdAnswer" />
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

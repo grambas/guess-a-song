@@ -8,7 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="isdp.guess_a_song.SelectSongs">
+    tools:context="isdp.guess_a_song._2SelectSongs">
 
     <TextView
         android:text="Create a game"
