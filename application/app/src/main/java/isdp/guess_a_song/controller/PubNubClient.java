@@ -118,7 +118,7 @@ public class PubNubClient{
                 }
 
                 try {
-                    Log.d(Constants.LOGT, "HOST HERE NOW" + user.getName()+" hereNow() " +result.toString());
+                   // Log.d(Constants.LOGT, "HOST HERE NOW" + user.getName()+" hereNow() " +result.toString());
 
                     for (Map.Entry<String, PNHereNowChannelData> entry : result.getChannels().entrySet()) {
                         for (PNHereNowOccupantData occupant : entry.getValue().getOccupants()) {

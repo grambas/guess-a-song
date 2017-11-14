@@ -10,6 +10,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.pubnub.api.PubNub;
 import com.pubnub.api.callbacks.PNCallback;
 import com.pubnub.api.callbacks.SubscribeCallback;
@@ -41,6 +43,7 @@ public class _4GameRoom extends AppCompatActivity {
 
     private String gameID;
     private String gamePIN;
+    private boolean isStarted;
 
     private TextView tvGameId;
     private TextView tvPIN;
@@ -67,7 +70,7 @@ public class _4GameRoom extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.host_wait_room);
-
+        isStarted = false;
         //gui objects
         this.tvGameId = (TextView) findViewById(R.id.tvGameId);
         this.tvPIN = (TextView) findViewById(R.id.tvGamePIN);
@@ -97,49 +100,64 @@ public class _4GameRoom extends AppCompatActivity {
             @Override
             public void status(PubNub pubnub, PNStatus status) {
                 if (status != null && status.getCategory() == PNStatusCategory.PNConnectedCategory){
-
+                    //set auth state true for host automatically
                     pubnub.setPresenceState()
                             .channels(Arrays.asList(gameID))
                             //.uuid(userName)
                             .state(host.getState())
                             .async(new PNCallback<PNSetStateResult>() {
                                 @Override
-                                public void onResponse(final PNSetStateResult result, PNStatus status) {
-                                    Log.d(Constants.LOGT, "set auth state true OK");
-                                }
+                                public void onResponse(final PNSetStateResult result, PNStatus status) {}
                             });
 
-
-
-//                    pubnub.publish().channel("123456").message("status.getCategory() == PNStatusCategory.PNConnectedCategory").async(new PNCallback<PNPublishResult>() {
-//                        @Override
-//                        public void onResponse(PNPublishResult result, PNStatus status) {
-//                            // handle publish response
-//                        }
-//                    });
                 }
             }
 
             @Override
             public void message(PubNub pubnub, PNMessageResult message) {
-                Log.d(Constants.LOGT, "HOST MESSAGE LISTENER "+ message.getMessage().toString());
-
+                String action = null;
+                String recipient=null;
+                JsonObject obj = null;
+                JsonElement actionElm;
+                JsonElement recipientElm;
                 Gson gson = new Gson();
-                ActionSimple action= gson.fromJson(message.getMessage(), ActionSimple.class);
-                //{ "action": "log_in",   "value": "4852","publisher": "TestPlayer1","recipient": "THE BOSS"}
-                if (action.getRecipient() != null && action.getRecipient().equals(Constants.HOST_USERNAME)){
-                    if(action.getAction().equals(Constants.A_LOG_IN)){
-                        Log.d(Constants.LOGT, "Action value=  "+ action.getValue() + " host pin="+gamePIN);
 
-                        if(action.getValue().equals(gamePIN)){
-                            Log.d(Constants.LOGT, "HOST MESSAGE LISTENER Player "+ action.getPublisher() + " auth true SUCCESS!");
+                try {
+                    obj = message.getMessage().getAsJsonObject();
+                    actionElm = obj.get("action");
+                    action = actionElm.getAsString();
+                    recipientElm = obj.get("recipient");
+                    recipient = recipientElm.getAsString();
+                    Log.d(Constants.LOGT, "_4GameRoom Listener: got ACTION:" + action);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-                            client.publish(new ActionSimple(Constants.A_AUTH_RESPONSE,Constants.TRUE,Constants.HOST_USERNAME,action.getPublisher()),Helpers.signHostMeta());
+                if(recipient.equals(Constants.HOST_USERNAME)){
+                    Log.d(Constants.LOGT, recipient+"=="+Constants.HOST_USERNAME);
+                }else{
+                    Log.d(Constants.LOGT, recipient+"!="+Constants.HOST_USERNAME);
+                }
+                //IF MSG IS LOGIN REQUEST
+                if (recipient.equals(Constants.HOST_USERNAME)) {
+                    //IF PIN IS GOOD
+                    if (action.equals(Constants.A_LOG_IN)) {
+                        ActionSimple msgLogIn = gson.fromJson(message.getMessage(), ActionSimple.class);
+                        if (msgLogIn.getValue().equals(gamePIN)) {
+                            if (isStarted) {
+                                client.publish(new ActionSimple(Constants.A_START_GAME, String.valueOf(game_settings.getGuess_time()), Constants.HOST_USERNAME, msgLogIn.getPublisher()), Helpers.signHostMeta());
+                                Log.d(Constants.LOGT, "_4GameRoom Listener: "+ msgLogIn.getPublisher() + " auth true + direct redirect to game)");
+                            } else {
+                                client.publish(new ActionSimple(Constants.A_AUTH_RESPONSE, Constants.TRUE, Constants.HOST_USERNAME, msgLogIn.getPublisher()), Helpers.signHostMeta());
+                                Log.d(Constants.LOGT, "_4GameRoom Listener: "+ msgLogIn.getPublisher() + " auth true + wait for start)");
+                            }
+                        //IF PIN IS BAD
                         }else{
-                            client.publish(new ActionSimple(Constants.A_AUTH_RESPONSE,Constants.FALSE,Constants.HOST_USERNAME,action.getPublisher()),Helpers.signHostMeta());
-                            Log.d(Constants.LOGT, "HOST MESSAGE LISTENER Player "+ action.getPublisher() + " auth false (bad pin)");
+                            client.publish(new ActionSimple(Constants.A_AUTH_RESPONSE,Constants.FALSE,Constants.HOST_USERNAME,msgLogIn.getPublisher()),Helpers.signHostMeta());
+                            Log.d(Constants.LOGT, "_4GameRoom Listener: "+ msgLogIn.getPublisher() + " auth false (bad pin)");
                         }
                     }
+
                 }
             }
 
@@ -149,27 +167,13 @@ public class _4GameRoom extends AppCompatActivity {
             }
         });
 
-
-
-
-
-        //SETTER
-
-
-        // generate  game ID & PIN
-        // FOR TESTING ALWAYS SAME CHANNEL (ROOM)
-        // String gameID = Helpers.randomNumberString(Constants.RANDOM_MIN,Constants.RANDOM_MAX);
-
-
         //set view fields with data
         this.tvGameId.setText("ID: "+gameID);
         this.tvPIN.setText("PIN: "+gamePIN);
 
         start.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                startGame(v);
-            }
+            public void onClick(View v) { startGame(v); }
         });
 
 
@@ -177,22 +181,16 @@ public class _4GameRoom extends AppCompatActivity {
         this.game_settings.setGamePIN(Integer.parseInt(this.gamePIN));
 
         listView.setAdapter(mPresence);
-
         client.initChannelsHost(mPresencePnCallback);
         client.subscribe(Constants.WITH_PRESENCE);
-        // channel subscribed. Now waiting for players.
-
-        //test publish
-        //client.publish(gameID, new PubSubPojo("sender","msg","timstp"));
     }
 
 
 
 
     public void startGame(View view) {
-
+        isStarted = true;
         Intent intent = new Intent(this, HostPlayScreen.class);
-        boolean isHost;
         UserProfile u_temp;
         //send game settings and game questions (instead of songs) to next activity
 
@@ -205,25 +203,16 @@ public class _4GameRoom extends AppCompatActivity {
             //skip ghost
             if (entry.getValue().isAuth()
                     && !entry.getValue().getSender().equals("Console_Admin")
-                    && !entry.getValue().getSender().equals(Constants.HOST_USERNAME)) { //user joined{
+                    && !entry.getValue().getSender().equals(Constants.HOST_USERNAME)) {
                 u_temp = new UserProfile(entry.getValue().getName(),entry.getValue().getSender(),entry.getValue().isAuth(),false);
-                Log.d(Constants.LOGT,"Addin User from Join ROOM:"+u_temp.toString());
                 players.add(u_temp);
             }
         }
         client.publish(new ActionSimple(Constants.A_START_GAME,String.valueOf(game_settings.getGuess_time()),Constants.HOST_USERNAME,Constants.A_FOR_ALL),Helpers.signHostMeta());
 
-//        PresencePojo temp;
-//        for (int i=0;i<this.mPresence.getCount();i++){
-//            temp  = this.mPresence.getItem(i);
-//            if (temp.getPresence() == "join") { //user joined
-//                players.add(new UserProfile(temp.getSender()));
-//            }
-//        }
-
-        Log.d(Constants.LOGT, "START GAME CLICKER! COLLECTING DATA");
-        Log.d(Constants.LOGT, "Questions="+questions.toString());
-        Log.d(Constants.LOGT, "Users with event=join"+players.toString());
+        Log.d(Constants.LOGT, "START GAME CLICKED! COLLECTING DATA");
+        Log.d(Constants.LOGT, "Questions= "+questions.toString());
+        Log.d(Constants.LOGT, "Players= "+players.toString());
 
         intent.putExtra("game_settings", game_settings);
 
@@ -231,9 +220,7 @@ public class _4GameRoom extends AppCompatActivity {
         b.putParcelableArrayList("questions", questions); // Be sure questions is not null here
         b.putParcelableArrayList("players", players); // Be sure players is not null here
         intent.putExtras(b);
-
         startActivity(intent);
-
     }
 
 

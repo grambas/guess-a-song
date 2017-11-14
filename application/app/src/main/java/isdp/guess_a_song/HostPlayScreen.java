@@ -20,6 +20,8 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.pubnub.api.PubNub;
 import com.pubnub.api.callbacks.PNCallback;
 import com.pubnub.api.callbacks.SubscribeCallback;
@@ -27,6 +29,9 @@ import com.pubnub.api.models.consumer.PNPublishResult;
 import com.pubnub.api.models.consumer.PNStatus;
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,6 +43,7 @@ import isdp.guess_a_song.controller.HostGame;
 import isdp.guess_a_song.model.Action;
 import isdp.guess_a_song.model.ActionAnswer;
 import isdp.guess_a_song.model.ActionAsk;
+import isdp.guess_a_song.model.ActionSimple;
 import isdp.guess_a_song.model.Question;
 import isdp.guess_a_song.model.Settings;
 import isdp.guess_a_song.controller.PubNubClient;
@@ -45,6 +51,7 @@ import isdp.guess_a_song.model.UserProfile;
 import isdp.guess_a_song.pubsub.PresenceListAdapter;
 import isdp.guess_a_song.pubsub.PresencePnCallback;
 import isdp.guess_a_song.utils.Constants;
+import isdp.guess_a_song.utils.Helpers;
 
 public class HostPlayScreen extends AppCompatActivity implements Observer {
 
@@ -129,20 +136,30 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
 
                 Gson gson = new Gson();
                 boolean processed = false;
-                ActionAnswer action = gson.fromJson(message.getMessage(), ActionAnswer.class);
+                String action = null;
+                JsonObject obj=null;
+                JsonElement actionElm=null;
+                try {
+                    obj = message.getMessage().getAsJsonObject();
+                    actionElm = obj.get("action");
+                    action = actionElm.getAsString();
+                    Log.d(Constants.LOGT,"HostPlayerScreen: action: "+action);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-                if (action.getRecipient() != null && action.getRecipient().equals(Constants.HOST_USERNAME)) {
-                    if (action.getAction().equals(Constants.A_ANSWER)) {
-                        Log.d(Constants.LOGT, "ANSWER GOT " + message.getMessage().toString());
-                        Log.d(Constants.LOGT, "ERROR!!!  Status was  " + game.getHumanStatus());
-                        if (game.getStatus() == Constants.GAME_STATUS_ON_QUESTION) {
-                            processed = game.processAnswer(action.getUuid(), action.getAnswerIndex(), action.getQuestionIndex());
-                            if (!processed) {
-                                Log.d(Constants.LOGT, "Error in answer process");
-                            }
+                if(action.equals(Constants.A_ANSWER)){
+                    ActionAnswer msgAnswer =  gson.fromJson(message.getMessage(), ActionAnswer.class);
+                    if (game.getStatus() == Constants.GAME_STATUS_ON_QUESTION) {
+                        processed = game.processAnswer(msgAnswer.getUuid(), msgAnswer.getAnswerIndex(), msgAnswer.getQuestionIndex());
+                        if (!processed) {
+                            Log.d(Constants.LOGT, "Error in answer process");
                         }
                     }
                 }
+//                else{
+//                    Log.d(Constants.LOGT, "HostPlayerScreen: msg skiped: "+message.getMessage().toString());
+//                }
             }
 
             @Override

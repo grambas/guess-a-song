@@ -11,6 +11,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.pubnub.api.PubNub;
 import com.pubnub.api.callbacks.PNCallback;
 import com.pubnub.api.callbacks.SubscribeCallback;
@@ -90,36 +92,45 @@ public class PlayerInGame extends Activity {
 
             @Override
             public void message(PubNub pubnub, PNMessageResult message) {
+
+                Gson gson = new Gson();
+                String action = null;
+                String recipient = null;
+                JsonObject obj=null;
+                JsonElement actionElm=null;
+                JsonElement recipientElm=null;
+
                 try {
-                    Log.v(Constants.LOGT, "PLAYER MESSAGE LISTENER: (" + message.toString() + ")");
-                    Gson gson = new Gson();
-                    currentAsk = gson.fromJson(message.getMessage(), ActionAsk.class);
-
-                    if (currentAsk.getRecipient().equals(client.getUser().getName()) || currentAsk.getRecipient().equals(Constants.A_FOR_ALL)) {
-
-                        if (currentAsk.getAction().equals(Constants.A_ASK)) {
-
-                            currentQ = currentAsk.getQuestion();
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    progressBar.setProgress(100);
-                                    myCountDownTimer =  new MyCountDownTimer(guessTime * 1000, 1000);
-                                    myCountDownTimer.start();
-                                    for (int i = 0; i < 4; i++) {
-                                        //set answers on buttons and change visibility
-                                        btnAnswers[i].setText(currentQ.get(i).toString());
-                                        btnAnswers[i].setVisibility(View.VISIBLE);
-                                    }
-                                }
-                            });//
-                        }
-
-                    }
-
+                    obj = message.getMessage().getAsJsonObject();
+                    actionElm = obj.get("action");
+                    recipientElm = obj.get("recipient");
+                    action = actionElm.getAsString();
+                    recipient = recipientElm.getAsString();
+                    Log.d(Constants.LOGT,"PlayerInGame: action="+action + ",recipient="+recipient);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
+                if (recipient.equals(client.getUser().getName()) || recipient.equals(Constants.A_FOR_ALL)) {
+                    if (action.equals(Constants.A_ASK)) {
+                        currentAsk = gson.fromJson(message.getMessage(), ActionAsk.class);
+                        currentQ = currentAsk.getQuestion();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                progressBar.setProgress(100);
+                                myCountDownTimer =  new MyCountDownTimer(guessTime * 1000, 1000);
+                                myCountDownTimer.start();
+                                for (int i = 0; i < 4; i++) {
+                                    //set answers on buttons and change visibility
+                                    btnAnswers[i].setText(currentQ.get(i).toString());
+                                    btnAnswers[i].setVisibility(View.VISIBLE);
+                                }
+                            }
+                        });//
+                    }
+                }
+
             }
 
             @Override
@@ -187,7 +198,7 @@ public class PlayerInGame extends Activity {
             textCounter.setText(Long.toString(millisUntilFinished / 1000));
             int progress = (int) (millisUntilFinished/1000);
             long pos=100L * progress/guessTime;
-            Log.d(Constants.LOGT, "pos: "+pos);
+            //Log.d(Constants.LOGT, "pos: "+pos);
             progressBar.setProgress((int) pos);
         }
 
