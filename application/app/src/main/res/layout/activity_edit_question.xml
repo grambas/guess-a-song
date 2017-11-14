@@ -44,7 +44,18 @@
         android:layout_alignStart="@+id/etSecondAnswer"
         android:layout_alignRight="@+id/etSecondAnswer"
         android:layout_alignEnd="@+id/etSecondAnswer" />
-
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/etFourthAnswer"
+        android:hint="3.:"
+        android:layout_below="@+id/etThirdAnswer"
+        android:layout_alignLeft="@+id/etThirdAnswer"
+        android:layout_alignStart="@+id/etThirdAnswer"
+        android:layout_alignRight="@+id/etThirdAnswer"
+        android:layout_alignEnd="@+id/etThirdAnswer" />
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

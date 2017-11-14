@@ -64,7 +64,7 @@ public class JoinGame extends AppCompatActivity {
         checkImg.setVisibility(View.INVISIBLE);
         spinner.setVisibility(View.GONE);
 
-        player = new UserProfile();
+        player = new UserProfile(Constants.DEFAULT_PLAYER_NAME,null,false,false);
         player.loadProfile(getApplicationContext());
 
         name_field.setText("Name: " + player.getName());
@@ -168,8 +168,8 @@ public class JoinGame extends AppCompatActivity {
                                 });
                             }
 
-                        }else if (action.getAction().equals(Constants.A_START_GAME)) {
-                            if ( action.getValue().equals(Constants.TRUE) && action.getPublisher().equals(Constants.HOST_USERNAME)) {
+                        }else if (action.getAction().equals(Constants.A_START_GAME) && action.getPublisher().equals(Constants.HOST_USERNAME)) {
+                            Log.d(Constants.LOGT,"Action Start game got and from HOST");
                                 //START GAME
                                 runOnUiThread(new Runnable() {
                                     @Override
@@ -177,14 +177,15 @@ public class JoinGame extends AppCompatActivity {
                                        info_field.setText("Host started the game. Redirecting finds here!");
                                     }
                                 });
+
                                 Intent intent = new Intent(JoinGame.this, PlayerInGame.class);
                                 intent.putExtra("gameID", gameID);
+                                intent.putExtra("guessTime", Integer.parseInt(action.getValue()));//guestime
                                 client.getPubnub().unsubscribeAll();
                                 startActivity(intent);
-                            }
+                                finish();
                         }
                     }
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

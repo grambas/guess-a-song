@@ -31,6 +31,7 @@
         <activity android:name="._4GameRoom" />
         <activity android:name=".HostPlayScreen" />
         <activity android:name=".MusicLibrary" />
+        <activity android:name=".PlayerInGame" />
         <activity
             android:name=".EditProfile"
             android:label="@string/title_activity_edit_profile"

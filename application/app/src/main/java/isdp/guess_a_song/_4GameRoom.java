@@ -87,9 +87,8 @@ public class _4GameRoom extends AppCompatActivity {
         this.gamePIN = Helpers.randomNumberString(Constants.RANDOM_MIN,Constants.RANDOM_MAX);
 
         //client
-        String uniqueID= android.provider.Settings.Secure.getString(getApplicationContext().getContentResolver(),
-                android.provider.Settings.Secure.ANDROID_ID);
-        final UserProfile host = new UserProfile(Constants.HOST_USERNAME,uniqueID,true,true);
+        final UserProfile host = new UserProfile(Constants.HOST_USERNAME,null,true,true);
+        host.loadProfile(getApplicationContext());
         client = new PubNubClient(host,this.gameID,true);
 
 
@@ -212,7 +211,7 @@ public class _4GameRoom extends AppCompatActivity {
                 players.add(u_temp);
             }
         }
-        client.publish(new ActionSimple(Constants.A_START_GAME,Constants.TRUE,Constants.HOST_USERNAME,Constants.A_FOR_ALL),Helpers.signHostMeta());
+        client.publish(new ActionSimple(Constants.A_START_GAME,String.valueOf(game_settings.getGuess_time()),Constants.HOST_USERNAME,Constants.A_FOR_ALL),Helpers.signHostMeta());
 
 //        PresencePojo temp;
 //        for (int i=0;i<this.mPresence.getCount();i++){

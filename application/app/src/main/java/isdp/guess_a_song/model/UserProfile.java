@@ -9,9 +9,13 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import com.google.gson.JsonObject;
 import android.content.Context;
+import android.provider.Settings;
 
 
 import java.util.UUID;
+
+import isdp.guess_a_song.utils.Constants;
+import isdp.guess_a_song.utils.Helpers;
 
 import static android.content.Context.MODE_PRIVATE;
 /**
@@ -27,20 +31,15 @@ public class UserProfile implements Parcelable{
     private boolean isHost;
     private int score;
 
-    public UserProfile(String name, String id,boolean auth,boolean isHost) {
+    public UserProfile(String name,String uuid,boolean auth,boolean isHost) {
         this.name = name;
         this.auth = auth;
-        this.uuid = id;
+        this.uuid = uuid;
         this.isHost = isHost;
         this.score = 0;
     }
 
-    public UserProfile(String name) {
-        this.name = name;
-        this.auth = false;
-        this.score= 0;
-        this.uuid = java.util.UUID.randomUUID().toString();
-    }
+
     public UserProfile() {
     }
 
@@ -117,13 +116,18 @@ public class UserProfile implements Parcelable{
         this.score = pref.getInt("score", this.score);
 
         if(this.uuid == null){
-            this.name = "GAS Player";
+            String randomNumber = Helpers.randomNumberString(0,99);
+            this.name = Constants.DEFAULT_PLAYER_NAME+" "+randomNumber;
             this.auth = false;
             this.score= 0;
-            this.uuid = java.util.UUID.randomUUID().toString();
+            this.uuid = Settings.Secure.getString(con.getContentResolver(),
+                    Settings.Secure.ANDROID_ID);
         }
     }
-
+    public String getUUID(Context con){
+        return Settings.Secure.getString(con.getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+    }
     @Override
     public int describeContents() {
         return 0;

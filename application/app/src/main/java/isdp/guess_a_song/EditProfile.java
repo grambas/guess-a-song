@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import isdp.guess_a_song.model.UserProfile;
 
@@ -42,6 +43,10 @@ public class EditProfile extends AppCompatActivity {
                 String content = nameField.getText().toString();
                 profile.setName(content);
                 profile.saveProfile(getApplicationContext());
+                Toast.makeText(EditProfile.this, "Profile successfully saved!", Toast.LENGTH_SHORT).show();
+                onBackPressed();
+
+
             }
         });
     }

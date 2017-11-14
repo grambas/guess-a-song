@@ -38,7 +38,7 @@ import isdp.guess_a_song.model.Song;
 public class MusicLibrary extends AppCompatActivity {
 
     private static final int MY_PERMISSION_REQUEST = 1;
-    private List<Song> songs_list = new ArrayList<>();
+    private List<Song> classMusicList = new ArrayList<>();
     private ArrayAdapter<Song> songsAdapter;
     private DatabaseHandler db;
     private ListView listView;
@@ -129,7 +129,7 @@ public class MusicLibrary extends AppCompatActivity {
         btSync.setOnClickListener(btSyncListener);
 
         listView = (ListView) findViewById(R.id.listView);
-        songsAdapter = new ArrayAdapter<Song>(this, android.R.layout.simple_list_item_1, songs_list);
+        songsAdapter = new ArrayAdapter<Song>(this, android.R.layout.simple_list_item_1, classMusicList);
         //get songs from db
         dbSongsToView();
         listView.setAdapter(this.songsAdapter);
@@ -142,10 +142,10 @@ public class MusicLibrary extends AppCompatActivity {
      *
      * @return
      */
-    public List<Song> getStorageMusic() {
+    public static List<Song> getStorageMusic(ContentResolver cr) {
         List<Song> found_songs = new ArrayList<Song>();
         Song curr;
-        ContentResolver contentResolver = getContentResolver();
+        ContentResolver contentResolver =cr;
         Uri songUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor songCursor = contentResolver.query(songUri, null, null, null, null);
 
@@ -163,7 +163,7 @@ public class MusicLibrary extends AppCompatActivity {
 
                 curr = new Song(currentSongName, currentArtist, currentTitle, currentLocation, 1);
                 found_songs.add(new Song(currentSongName, currentArtist, currentTitle, currentLocation, 1));
-                Log.d("getStorageMusic()", curr.toStringFull());
+                //Log.d("getStorageMusic()", curr.toStringFull());
 
             } while (songCursor.moveToNext());
         }
@@ -178,8 +178,8 @@ public class MusicLibrary extends AppCompatActivity {
     public void dbSongsToView() {
 
         List<Song> all_songs = db.getAllSongs(1);
-        songs_list.clear();
-        songs_list.addAll(all_songs);
+        classMusicList.clear();
+        classMusicList.addAll(all_songs);
         songsAdapter.notifyDataSetChanged();
 
 
@@ -190,35 +190,38 @@ public class MusicLibrary extends AppCompatActivity {
      * and sync the DB
      */
     //TODO remove log messages
-    public void syncSongToDB() {
-        List<Song> fresh_list = getStorageMusic();
+    public static List<Song> syncSongToDB(ContentResolver cr,DatabaseHandler db) {
+        List<Song> fresh_list = getStorageMusic(cr);
+        List<Song> songs_list = new ArrayList<>();
+
 
         List<Song> temp_to_del = new ArrayList<Song>(db.getAllSongs(1));
         List<Song> temp_to_add = new ArrayList<Song>(fresh_list);
-        Log.d(tag, "songs_list= " + songs_list.toString());
-        Log.d(tag, "fresh_list= " + fresh_list.toString());
+//        Log.d(tag, "songs_list= " + songs_list.toString());
+//        Log.d(tag, "fresh_list= " + fresh_list.toString());
 
 
         //remove from temporary list all active songs in storage
         temp_to_del.removeAll(fresh_list);
-        Log.d(tag, "temp_to_del(after removeAll)= " + temp_to_del.toString());
-        Log.d(tag, "songs_list= " + songs_list.toString());
+//        Log.d(tag, "temp_to_del(after removeAll)= " + temp_to_del.toString());
+//        Log.d(tag, "songs_list= " + songs_list.toString());
 
         temp_to_add.removeAll(songs_list);
-        Log.d(tag, "temp_to_add(after removeAll)= " + temp_to_add.toString());
-
-        Log.d(tag, "For temp to del call ...");
+//        Log.d(tag, "temp_to_add(after removeAll)= " + temp_to_add.toString());
+//
+//        Log.d(tag, "For temp to del call ...");
 
         //delete from db all songs witch are not in storage
         for (final Song song : temp_to_del) {
             db.deleteSong(song);
         }
-        Log.d(tag, "For temp to add call ...");
+//        Log.d(tag, "For temp to add call ...");
         //add all songs from fresh list witch are not in songs_list
         for (final Song song : temp_to_add) {
             db.addSong(song);
         }
-        Log.d(tag, "DONE!");
+//        Log.d(tag, "DONE!");
+        return  songs_list;
     }
 
     /**
@@ -252,7 +255,8 @@ public class MusicLibrary extends AppCompatActivity {
     private View.OnClickListener btSyncListener = new View.OnClickListener() {
         @Override
         public void onClick(final View v) {
-            syncSongToDB();
+            ContentResolver contentResolver = getContentResolver();
+            classMusicList = syncSongToDB(contentResolver,db);
             dbSongsToView();
         }
     };

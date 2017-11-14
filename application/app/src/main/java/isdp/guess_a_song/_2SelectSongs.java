@@ -39,7 +39,7 @@ public class _2SelectSongs extends AppCompatActivity {
 
 
 
-        Toast.makeText(_2SelectSongs.this, game_settings.toString(), Toast.LENGTH_LONG).show();
+        //Toast.makeText(_2SelectSongs.this, game_settings.toString(), Toast.LENGTH_LONG).show();
 
 
         //Songs still have to be parsed
@@ -60,17 +60,24 @@ public class _2SelectSongs extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 int cntChoice = listView.getCheckedItemCount();
-                selectedView.setText("Total Selected" + String.valueOf(cntChoice)+ " of " +game_settings.getSongs_amount());
 
-                if (cntChoice > game_settings.getSongs_amount()) {
-                    SparseBooleanArray sparseBooleanArray = listView.getCheckedItemPositions();
-                    for (int i = 0; i < listView.getCount(); i++) {
-                        if (sparseBooleanArray.get(i)) {
-                            listView.setItemChecked(i, false);
-                            break;
-                        }
-                    }
+                if(cntChoice > game_settings.getSongs_amount() ){
+                    listView.setItemChecked(position, false);
+                    cntChoice--;
                 }
+
+                selectedView.setText("Total Selected " + String.valueOf(cntChoice)+ " of " +game_settings.getSongs_amount());
+
+
+//                if (cntChoice > game_settings.getSongs_amount()) {
+//                    SparseBooleanArray sparseBooleanArray = listView.getCheckedItemPositions();
+//                    for (int i = 0; i < listView.getCount(); i++) {
+//                        if (sparseBooleanArray.get(i)) {
+//                            listView.setItemChecked(i, false);
+//                            break;
+//                        }
+//                    }
+//                }
             }
         });
 

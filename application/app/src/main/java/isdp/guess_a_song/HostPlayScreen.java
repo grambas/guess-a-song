@@ -106,11 +106,17 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
         game.setQuestions(questions);
         game.setPlayers(players);
         game.addObserver(this);
+        // Shuffle answers
+        for (final Question q : game.getQuestions()) {
+            q.shuffle();
+        }
         game.start();
 
+        final UserProfile host = new UserProfile();
+        host.loadProfile(getApplicationContext());
 
         //pubnub
-        client = new PubNubClient(new UserProfile(Constants.HOST_USERNAME), game.getSettings().getGameIDString(), true);
+        client = new PubNubClient(host, game.getSettings().getGameIDString(), true);
         this.mPresence = new PresenceListAdapter(this);
         this.mPresencePnCallback = new PresencePnCallback(this.mPresence);
         client.initChannelsHost(mPresencePnCallback);
@@ -158,6 +164,13 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
             @Override
             public void onFinish() {
                 mediaPlayer.stop();
+                pbTimer.setProgress(0);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        tvTimer.setVisibility(View.INVISIBLE);
+                    }
+                });
                 game.setStatus(Constants.GAME_STATUS_TIME_OVER);
             }
         };
@@ -221,6 +234,14 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
                 if(!status.isError()){
                     Log.d(Constants.LOGT, "now playing song from handler");
                     game.setStatus(Constants.GAME_STATUS_ON_QUESTION);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            tvTimer.setVisibility(View.VISIBLE);
+                        }
+                    });
+
                     playSong(game.getCurrentQuestion().getSong().getPath(), countDownTimer);
 
                 }

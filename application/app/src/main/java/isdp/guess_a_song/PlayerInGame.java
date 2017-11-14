@@ -3,9 +3,12 @@ package isdp.guess_a_song;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.Activity;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.pubnub.api.PubNub;
@@ -27,23 +30,37 @@ import isdp.guess_a_song.utils.Constants;
 
 public class PlayerInGame extends Activity {
     Button[] btnAnswers = new Button[4];
+    int guessTime;
     PubNubClient client;
     HashMap<Integer, String> currentQ;
     ActionAsk currentAsk;
     UserProfile player;
 
 
+    //countdown
+    Button buttonStart;
+    ProgressBar progressBar;
+    TextView textCounter;
+    MyCountDownTimer myCountDownTimer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player_in_game);
+
+        buttonStart = (Button)findViewById(R.id.start);
+        progressBar = (ProgressBar)findViewById(R.id.progressbar);
+        progressBar.setMax(100);
+        textCounter = (TextView)findViewById(R.id.counter);
 
         btnAnswers[0] = (Button) findViewById(R.id.btnAnswer1);
         btnAnswers[1] = (Button) findViewById(R.id.btnAnswer2);
         btnAnswers[2] = (Button) findViewById(R.id.btnAnswer3);
         btnAnswers[3] = (Button) findViewById(R.id.btnAnswer4);
 
-        //HIDE BUTTONS ON START AND ADD LISTENER
+
+
+    //HIDE BUTTONS ON START AND ADD LISTENER
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -60,7 +77,9 @@ public class PlayerInGame extends Activity {
         String gameID = null;
         if (b != null) {
             gameID = (String) b.get("gameID");
+            guessTime = (int) b.get("guessTime");
         }
+
         this.player = new UserProfile();
         this.player.loadProfile(getApplicationContext());
         this.client = new PubNubClient(player, gameID, false);
@@ -81,10 +100,12 @@ public class PlayerInGame extends Activity {
                         if (currentAsk.getAction().equals(Constants.A_ASK)) {
 
                             currentQ = currentAsk.getQuestion();
-
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
+                                    progressBar.setProgress(100);
+                                    myCountDownTimer =  new MyCountDownTimer(guessTime * 1000, 1000);
+                                    myCountDownTimer.start();
                                     for (int i = 0; i < 4; i++) {
                                         //set answers on buttons and change visibility
                                         btnAnswers[i].setText(currentQ.get(i).toString());
@@ -154,4 +175,27 @@ public class PlayerInGame extends Activity {
 
         }
     };
+    public class MyCountDownTimer extends CountDownTimer {
+
+        public MyCountDownTimer(long millisInFuture, long countDownInterval) {
+            super(millisInFuture, countDownInterval);
+        }
+
+        @Override
+        public void onTick(long millisUntilFinished) {
+
+            textCounter.setText(Long.toString(millisUntilFinished / 1000));
+            int progress = (int) (millisUntilFinished/1000);
+            long pos=100L * progress/guessTime;
+            Log.d(Constants.LOGT, "pos: "+pos);
+            progressBar.setProgress((int) pos);
+        }
+
+        @Override
+        public void onFinish() {
+            textCounter.setText("Finished");
+            progressBar.setProgress(0);
+        }
+
+    }
 }
