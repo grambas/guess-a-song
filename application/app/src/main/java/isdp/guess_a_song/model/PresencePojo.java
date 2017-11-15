@@ -24,12 +24,12 @@ public class PresencePojo {
     private String name;
     private boolean auth;
 
-    public PresencePojo(@JsonProperty("sender") String sender, @JsonProperty("presence") String presence, @JsonProperty("timestamp") String timestamp) {
+    public PresencePojo(@JsonProperty("sender") String sender, @JsonProperty("name") String name, @JsonProperty("auth") boolean auth,@JsonProperty("presence") String presence, @JsonProperty("timestamp") String timestamp) {
         this.sender = sender;
         this.presence = presence;
         this.timestamp = timestamp;
-        this.name=null;
-        this.auth = false;
+        this.name=name;
+        this.auth = auth;
     }
 
     public void setAuth(boolean auth) {
@@ -84,7 +84,7 @@ public class PresencePojo {
     }
 
     public String getSenderOrName(){
-        if (this.name !=null)
+        if (this.name != null)
             return this.name;
         return this.sender;
     }

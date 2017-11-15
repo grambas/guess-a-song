@@ -2,6 +2,7 @@ package isdp.guess_a_song.controller;
 
 import android.util.Log;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.pubnub.api.PNConfiguration;
@@ -86,8 +87,6 @@ public class PubNubClient{
                             if (status != null && status.isError()) {
                                 // something bad happened.
                                 Log.d(Constants.LOGT,user.getName()+ " Publish error");
-                            } else {
-                                //Log.d(Constants.LOGT, user.getName()+ " Published! result: " + result.toString());
                             }
                         }
                     });
@@ -95,6 +94,7 @@ public class PubNubClient{
             Log.e(Constants.LOGT, "exception while publishing message", e);
         }
     }
+
     public void subscribe(boolean withPre){
         if (withPre){
             this.pubnub.subscribe().withPresence().channels( Arrays.asList(gameID) ).execute();
@@ -110,7 +110,12 @@ public class PubNubClient{
         this.pubnub.addListener(pr);
 
         this.pubnub.subscribe().channels( Arrays.asList(this.gameID) ).withPresence().execute();
-        this.pubnub.hereNow().channels( Arrays.asList(this.gameID) ).async(new PNCallback<PNHereNowResult>() {
+        hereNow(pr);
+
+    }
+
+    public void hereNow(final PresencePnCallback pr){
+        this.pubnub.hereNow().includeState(true).includeUUIDs(true).channels( Arrays.asList(this.gameID) ).async(new PNCallback<PNHereNowResult>() {
             @Override
             public void onResponse(PNHereNowResult result, PNStatus status) {
                 if (status != null && status.isError()) {
@@ -118,11 +123,17 @@ public class PubNubClient{
                 }
 
                 try {
-                   // Log.d(Constants.LOGT, "HOST HERE NOW" + user.getName()+" hereNow() " +result.toString());
+                    Log.d(Constants.LOGT, "HOST HERE NOW" +result.toString());
 
                     for (Map.Entry<String, PNHereNowChannelData> entry : result.getChannels().entrySet()) {
                         for (PNHereNowOccupantData occupant : entry.getValue().getOccupants()) {
-                            pr.getAdapter().add(new PresencePojo(occupant.getUuid(), "join", Helpers.getTimeStampUtc()));
+                            JsonObject state=occupant.getState().getAsJsonObject();
+                            boolean auth = state.get("is_auth").getAsBoolean();
+                            String name = state.get("name").getAsString();
+
+                            Log.d(Constants.LOGT, "HOST HERE NOW sate" +state.toString());
+
+                            pr.getAdapter().add(new PresencePojo(occupant.getUuid(), name,auth,"online", Helpers.getTimeStampUtc()));
                         }
                     }
                 } catch (Exception e) {
@@ -157,7 +168,7 @@ public class PubNubClient{
                             Log.d(Constants.LOGT,"occupants:");
                             for (PNHereNowOccupantData occupant : channelData.getOccupants()) {
                                 Log.d(Constants.LOGT,"uuid: " + occupant.getUuid() + " state: " + occupant.getState());
-                                r.put(occupant.getUuid(), new PresencePojo(occupant.getUuid(),"",""));
+                                //r.put(occupant.getUuid(), new PresencePojo(occupant.getUuid(),"",""));
                             }
                         }
                     }

@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import isdp.guess_a_song.R;
-import isdp.guess_a_song.model.PresenceMessageListRowUi;
+//import isdp.guess_a_song.model.PresenceMessageListRowUi;
 import isdp.guess_a_song.model.PresencePojo;
 
 /**
@@ -50,9 +50,10 @@ public class PresenceListAdapter extends ArrayAdapter<PresencePojo> {
 
     @Override
     public void add(PresencePojo message) {
-        if (latestPresence.containsKey(message.getSender()) || latestPresence.containsKey(message.getName())) {
-            this.presenceList.remove(message.getSender());
+        if ( latestPresence.containsKey(message.getSender()) ) {
+            this.presenceList.remove(message.getSender());//remove to update later
         }
+        //Ignore Console_Admin
         if(!message.getSender().equals("Console_Admin")){
             this.presenceList.add(0, message.getSender());
             latestPresence.put(message.getSender(), message);
@@ -74,6 +75,7 @@ public class PresenceListAdapter extends ArrayAdapter<PresencePojo> {
 
         PresenceMessageListRowUi msgView;
 
+
         if (convertView == null) {
             msgView = new PresenceMessageListRowUi();
 
@@ -83,17 +85,15 @@ public class PresenceListAdapter extends ArrayAdapter<PresencePojo> {
             msgView.presence = (TextView) convertView.findViewById(R.id.value);
             msgView.timestamp = (TextView) convertView.findViewById(R.id.timestamp);
             msgView.auth = (TextView) convertView.findViewById(R.id.auth);
-
-
             convertView.setTag(msgView);
         } else {
             msgView = (PresenceMessageListRowUi) convertView.getTag();
         }
         msgView.sender.setText(presenceMsg.getSenderOrName());
-        msgView.presence.setText(presenceMsg.getPresence());
-        msgView.timestamp.setText(presenceMsg.getTimestamp());
-        msgView.auth.setText(String.valueOf(presenceMsg.isAuth()));
 
+        msgView.presence.setText(presenceMsg.getPresence());
+        msgView.timestamp.setText("Status: "+presenceMsg.getTimestamp());
+        msgView.auth.setText("Authenticated: "+String.valueOf(presenceMsg.isAuth()));
         return convertView;
     }
 
@@ -107,4 +107,10 @@ public class PresenceListAdapter extends ArrayAdapter<PresencePojo> {
         this.latestPresence.clear();
         notifyDataSetChanged();
     }
+}
+class PresenceMessageListRowUi {
+    public TextView sender;
+    public TextView presence;
+    public TextView timestamp;
+    public TextView auth;
 }

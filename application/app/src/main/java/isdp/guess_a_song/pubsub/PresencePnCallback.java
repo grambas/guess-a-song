@@ -54,18 +54,13 @@ public class PresencePnCallback extends SubscribeCallback {
             String timestamp = Helpers.getTimeStampUtc();
 
             if(presence.getState() != null){
-                is_auth = presence.getState()
-                        .getAsJsonObject()
-                        .get("is_auth")
-                        .getAsBoolean();
+                is_auth = presence.getState().getAsJsonObject().get("is_auth").getAsBoolean();
                 name = presence.getState().getAsJsonObject().get("name").getAsString();
             }
 
-            pm = new PresencePojo(sender, presenceString, timestamp);
+            pm = new PresencePojo(sender, name,is_auth,presenceString, timestamp);
             pm.setAuth(is_auth);
             pm.setName(name);
-
-            Log.d(Constants.LOGT, "HOST PRESENCE= " + pm.toString());
             presenceListAdapter.add(pm);
         } catch (Exception e) {
             e.printStackTrace();

@@ -38,7 +38,13 @@ public class UserProfile implements Parcelable{
         this.isHost = isHost;
         this.score = 0;
     }
-
+    public UserProfile(String name) {
+        this.name = name;
+        this.auth = false;
+        this.uuid = null;
+        this.isHost = false;
+        this.score = 0;
+    }
 
     public UserProfile() {
     }
@@ -49,6 +55,9 @@ public class UserProfile implements Parcelable{
     }
 
     public boolean isAuth() {
+        if(isHost){
+            return true;
+        }
         return auth;
     }
 
@@ -57,6 +66,9 @@ public class UserProfile implements Parcelable{
     }
 
     public String getName() {
+        if(isHost){
+            return Constants.HOST_USERNAME;
+        }
         return name;
     }
 
@@ -179,8 +191,9 @@ public class UserProfile implements Parcelable{
     //end Parcelling
     public JsonObject getState() {
         JsonObject state = new JsonObject();
+
         state.addProperty("is_auth", this.auth);
-        state.addProperty("name", this.name);
+        state.addProperty("name", getName());
         return state;
     }
 }
