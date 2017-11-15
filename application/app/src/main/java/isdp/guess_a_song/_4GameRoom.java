@@ -56,6 +56,7 @@ public class _4GameRoom extends AppCompatActivity {
     private PubNubClient client;
     private PresenceListAdapter mPresence;
     private PresencePnCallback mPresencePnCallback;
+    private ListView listView;
 
 
     /**
@@ -83,15 +84,18 @@ public class _4GameRoom extends AppCompatActivity {
         //pubnub
         this.mPresence = new PresenceListAdapter(this);
         this.mPresencePnCallback = new PresencePnCallback(this.mPresence);
-        ListView listView = (ListView) findViewById(R.id.presence_list);
+        this.listView = (ListView) findViewById(R.id.presence_list);
 
 
-        this.gameID = Constants.DEMO_CHANNEL;
+        //this.gameID = Constants.DEMO_CHANNEL;
+        this.gameID =  Helpers.randomNumberString(Constants.RANDOM_MIN,Constants.RANDOM_MAX);
         this.gamePIN = Helpers.randomNumberString(Constants.RANDOM_MIN,Constants.RANDOM_MAX);
 
         //client
-        final UserProfile host = new UserProfile(Constants.HOST_USERNAME,null,true,true);
+        final UserProfile host = new UserProfile(Constants.HOST_USERNAME);
         host.loadProfile(getApplicationContext());
+        host.setAuth(true);
+        host.setHost(true);
         client = new PubNubClient(host,this.gameID,true);
 
 
@@ -107,7 +111,8 @@ public class _4GameRoom extends AppCompatActivity {
                             .state(host.getState())
                             .async(new PNCallback<PNSetStateResult>() {
                                 @Override
-                                public void onResponse(final PNSetStateResult result, PNStatus status) {}
+                                public void onResponse(final PNSetStateResult result, PNStatus status) {
+                                }
                             });
 
                 }
@@ -177,7 +182,7 @@ public class _4GameRoom extends AppCompatActivity {
         });
 
 
-        this.game_settings.setGameID(Integer.parseInt(Constants.DEMO_CHANNEL));
+        this.game_settings.setGameID(Integer.parseInt(gameID));
         this.game_settings.setGamePIN(Integer.parseInt(this.gamePIN));
 
         listView.setAdapter(mPresence);
@@ -190,6 +195,7 @@ public class _4GameRoom extends AppCompatActivity {
 
     public void startGame(View view) {
         isStarted = true;
+        client.getPubnub().unsubscribeAll();
         Intent intent = new Intent(this, HostPlayScreen.class);
         UserProfile u_temp;
         //send game settings and game questions (instead of songs) to next activity
@@ -200,10 +206,10 @@ public class _4GameRoom extends AppCompatActivity {
         {
             //skip if not auth
             //skip Console_Admin also
-            //skip ghost
+            //skip host
             if (entry.getValue().isAuth()
                     && !entry.getValue().getSender().equals("Console_Admin")
-                    && !entry.getValue().getSender().equals(Constants.HOST_USERNAME)) {
+                    && !entry.getValue().getName().equals(Constants.HOST_USERNAME)) {
                 u_temp = new UserProfile(entry.getValue().getName(),entry.getValue().getSender(),entry.getValue().isAuth(),false);
                 players.add(u_temp);
             }
@@ -221,7 +227,13 @@ public class _4GameRoom extends AppCompatActivity {
         b.putParcelableArrayList("players", players); // Be sure players is not null here
         intent.putExtras(b);
         startActivity(intent);
+        finish();
     }
 
-
+    //Activity destroy
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        client.getPubnub().unsubscribeAll();
+    }
 }

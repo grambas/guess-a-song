@@ -16,8 +16,10 @@ import com.google.gson.JsonObject;
 import com.pubnub.api.PubNub;
 import com.pubnub.api.callbacks.PNCallback;
 import com.pubnub.api.callbacks.SubscribeCallback;
+import com.pubnub.api.enums.PNStatusCategory;
 import com.pubnub.api.models.consumer.PNPublishResult;
 import com.pubnub.api.models.consumer.PNStatus;
+import com.pubnub.api.models.consumer.presence.PNSetStateResult;
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
 
@@ -33,6 +35,7 @@ import isdp.guess_a_song.utils.Constants;
 public class PlayerInGame extends Activity {
     Button[] btnAnswers = new Button[4];
     int guessTime;
+    String gameID;
     PubNubClient client;
     HashMap<Integer, String> currentQ;
     ActionAsk currentAsk;
@@ -76,7 +79,6 @@ public class PlayerInGame extends Activity {
         //GET GAMEID FROM JOIN ACTIVITY
         Intent iin = getIntent();
         Bundle b = iin.getExtras();
-        String gameID = null;
         if (b != null) {
             gameID = (String) b.get("gameID");
             guessTime = (int) b.get("guessTime");
@@ -84,11 +86,28 @@ public class PlayerInGame extends Activity {
 
         this.player = new UserProfile();
         this.player.loadProfile(getApplicationContext());
+        this.player.setAuth(true);
+        this.player.setHost(false);
         this.client = new PubNubClient(player, gameID, false);
 
         this.client.getPubnub().addListener(new SubscribeCallback() {
             @Override
-            public void status(PubNub pubnub, PNStatus status) {}
+            public void status(PubNub pubnub, PNStatus status) {
+                if (status.getCategory() == PNStatusCategory.PNConnectedCategory) {
+                    pubnub.setPresenceState()
+                            .channels(Arrays.asList(gameID))
+                            //.uuid(userName)
+                            .state(player.getState())
+                            .async(new PNCallback<PNSetStateResult>() {
+                                @Override
+                                public void onResponse(final PNSetStateResult result, PNStatus status) {
+                                    Log.d(Constants.LOGT, "set auth state true OK");
+                                }
+                            });
+                }
+
+
+            }
 
             @Override
             public void message(PubNub pubnub, PNMessageResult message) {
@@ -97,15 +116,12 @@ public class PlayerInGame extends Activity {
                 String action = null;
                 String recipient = null;
                 JsonObject obj=null;
-                JsonElement actionElm=null;
-                JsonElement recipientElm=null;
 
                 try {
                     obj = message.getMessage().getAsJsonObject();
-                    actionElm = obj.get("action");
-                    recipientElm = obj.get("recipient");
-                    action = actionElm.getAsString();
-                    recipient = recipientElm.getAsString();
+                    recipient = obj.get("recipient").getAsString();
+                    action =obj.get("action").getAsString();
+
                     Log.d(Constants.LOGT,"PlayerInGame: action="+action + ",recipient="+recipient);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -208,5 +224,12 @@ public class PlayerInGame extends Activity {
             progressBar.setProgress(0);
         }
 
+    }
+
+    //Activity destroy
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        client.getPubnub().unsubscribeAll();
     }
 }

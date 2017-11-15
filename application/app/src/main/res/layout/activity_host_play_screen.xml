@@ -71,7 +71,7 @@
         android:id="@+id/btShowScore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Score (log)"
+        android:text="Info / Refresh"
         tools:layout_editor_absoluteX="267dp"
         tools:layout_editor_absoluteY="447dp"
         android:layout_alignParentBottom="true"

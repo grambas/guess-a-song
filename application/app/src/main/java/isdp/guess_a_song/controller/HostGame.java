@@ -136,9 +136,13 @@ public class HostGame extends Observable {
 
     public void setPlayers( List<UserProfile> players) {
         for (UserProfile value : players) {
-            Log.d(Constants.LOGT, value.toString());
-            this.players.put(value.getUuid(),value);
+            if(!value.isAuth()){
+                this.players.put(value.getUuid(),value);
+            }
         }
+    }
+    public void addPlayers( UserProfile player) {
+        players.put(player.getUuid(),player);
     }
     public boolean processAnswer(String player,int guess,int guess_index){
         boolean result = true;

@@ -64,9 +64,10 @@ public class JoinGame extends AppCompatActivity {
         checkImg.setVisibility(View.INVISIBLE);
         spinner.setVisibility(View.GONE);
 
-        player = new UserProfile(Constants.DEFAULT_PLAYER_NAME,null,false,false);
+        player = new UserProfile(Constants.DEFAULT_PLAYER_NAME);
         player.loadProfile(getApplicationContext());
-
+        player.setHost(false);
+        player.setAuth(false);
         name_field.setText("Name: " + player.getName());
         //this.game = new PlayerGame(0,0);
         //Some adjustments
@@ -233,4 +234,11 @@ public class JoinGame extends AppCompatActivity {
         }
     }
 
+
+    //Activity destroy
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        client.getPubnub().unsubscribeAll();
+    }
 }
