@@ -1,4 +1,4 @@
-package isdp.guess_a_song;
+package isdp.guess_a_song.ui.playing;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,6 +26,7 @@ import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import isdp.guess_a_song.R;
 import isdp.guess_a_song.controller.PubNubClient;
 import isdp.guess_a_song.model.ActionAnswer;
 import isdp.guess_a_song.model.ActionAsk;

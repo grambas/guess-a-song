@@ -1,11 +1,10 @@
-package isdp.guess_a_song;
+package isdp.guess_a_song.ui;
 
 /* Edit Profile Screen
     Andrew Burns
  */
 
 import android.os.Bundle;
-import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import isdp.guess_a_song.R;
 import isdp.guess_a_song.model.UserProfile;
 
 public class EditProfile extends AppCompatActivity {

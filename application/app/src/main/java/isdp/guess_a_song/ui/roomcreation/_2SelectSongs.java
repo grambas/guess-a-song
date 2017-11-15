@@ -1,4 +1,4 @@
-package isdp.guess_a_song;
+package isdp.guess_a_song.ui.roomcreation;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +15,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import isdp.guess_a_song.R;
 import isdp.guess_a_song.db.DatabaseHandler;
 import isdp.guess_a_song.model.Settings;
 import isdp.guess_a_song.model.Song;

@@ -1,4 +1,4 @@
-package isdp.guess_a_song;
+package isdp.guess_a_song.ui;
 
 
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +20,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import isdp.guess_a_song.R;
 import isdp.guess_a_song.db.DatabaseHandler;
 import isdp.guess_a_song.model.Song;
 
