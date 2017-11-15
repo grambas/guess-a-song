@@ -1,4 +1,4 @@
-package isdp.guess_a_song;
+package isdp.guess_a_song.ui.roomcreation;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,10 +23,9 @@ import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
-import isdp.guess_a_song.model.Action;
+import isdp.guess_a_song.R;
 import isdp.guess_a_song.controller.PubNubClient;
 import isdp.guess_a_song.model.ActionSimple;
 import isdp.guess_a_song.model.Question;
@@ -35,6 +34,8 @@ import isdp.guess_a_song.model.UserProfile;
 import isdp.guess_a_song.pubsub.PresenceListAdapter;
 import isdp.guess_a_song.pubsub.PresencePnCallback;
 import isdp.guess_a_song.model.PresencePojo;
+import isdp.guess_a_song.ui.experimental.GameCreationTab;
+import isdp.guess_a_song.ui.playing.HostPlayScreen;
 import isdp.guess_a_song.utils.Constants;
 import isdp.guess_a_song.utils.Helpers;
 
@@ -190,7 +191,7 @@ public class _4GameRoom extends AppCompatActivity {
 
     public void startGame(View view) {
         isStarted = true;
-        Intent intent = new Intent(this, HostPlayScreen.class);
+        Intent intent = new Intent(this, GameCreationTab.class);
         UserProfile u_temp;
         //send game settings and game questions (instead of songs) to next activity
 

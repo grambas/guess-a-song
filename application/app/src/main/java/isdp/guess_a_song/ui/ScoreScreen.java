@@ -1,9 +1,10 @@
-package isdp.guess_a_song;
+package isdp.guess_a_song.ui;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
+import isdp.guess_a_song.R;
 import isdp.guess_a_song.controller.HostGame;
 import isdp.guess_a_song.model.Settings;
 

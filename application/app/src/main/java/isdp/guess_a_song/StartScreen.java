@@ -11,6 +11,13 @@ import android.view.View;
 import android.widget.Toast;
 
 import isdp.guess_a_song.db.DatabaseHandler;
+import isdp.guess_a_song.ui.EditProfile;
+import isdp.guess_a_song.ui.JoinGame;
+import isdp.guess_a_song.ui.MusicLibrary;
+import isdp.guess_a_song.ui.experimental.GameCreationTab;
+import isdp.guess_a_song.ui.playing.SingleplayerGame;
+import isdp.guess_a_song.ui.roomcreation._1HostGame;
+import isdp.guess_a_song.ui.roomcreation._4GameRoom;
 
 public class StartScreen extends AppCompatActivity {
     private static final int MY_PERMISSION_REQUEST = 1;

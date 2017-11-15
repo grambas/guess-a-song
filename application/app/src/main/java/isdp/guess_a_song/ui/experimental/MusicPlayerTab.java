@@ -1,18 +1,18 @@
-package isdp.guess_a_song;
+package isdp.guess_a_song.ui.experimental;
 
-
-import android.content.DialogInterface;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.CountDownTimer;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.content.Intent;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -30,36 +30,37 @@ import com.pubnub.api.models.consumer.PNStatus;
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
+import isdp.guess_a_song.R;
 import isdp.guess_a_song.controller.HostGame;
+import isdp.guess_a_song.controller.PubNubClient;
 import isdp.guess_a_song.model.Action;
 import isdp.guess_a_song.model.ActionAnswer;
 import isdp.guess_a_song.model.ActionAsk;
-import isdp.guess_a_song.model.ActionSimple;
 import isdp.guess_a_song.model.Question;
 import isdp.guess_a_song.model.Settings;
-import isdp.guess_a_song.controller.PubNubClient;
 import isdp.guess_a_song.model.UserProfile;
 import isdp.guess_a_song.pubsub.PresenceListAdapter;
 import isdp.guess_a_song.pubsub.PresencePnCallback;
 import isdp.guess_a_song.utils.Constants;
-import isdp.guess_a_song.utils.Helpers;
 
-public class HostPlayScreen extends AppCompatActivity implements Observer {
+/**
+ * Created by Maxi on 15.11.2017.
+ */
 
+
+
+public class MusicPlayerTab extends Fragment implements Observer {
 
     private HostGame game;;
     private ArrayList<Question> questions;
 
-    CountDownTimer countDownTimer;
+    private CountDownTimer countDownTimer;
 
     //PUBNUB
     private PubNubClient client;
@@ -78,29 +79,46 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
     private TextView tvAnsGot;
     private ListView listView;
 
+    private PlayerOnlineTab playerOnlineTab;
+
     //private int currentQuestion = 0;
     private MediaPlayer mediaPlayer;
+    private GameCreationTab gameCreationTab;
+    private PagerAdapter pagerAdapter;
 
+    public void setGameCreationTab(GameCreationTab gameCreationTab) {
+        this.gameCreationTab = gameCreationTab;
+    }
+
+    public void setPlayerOnlineTab(PlayerOnlineTab playerOnlineTab) {
+        this.playerOnlineTab = playerOnlineTab;
+    }
+
+    public void setPagerAdapter(PagerAdapter pagerAdapter) {
+        this.pagerAdapter = pagerAdapter;
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_host_play_screen);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.activity_host_play_screen, container, false);
+    }
 
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         //INIT GUI FIELDS
-        tvSongname = (TextView) findViewById(R.id.tvSongname);
-        tvTimer = (TextView) findViewById(R.id.tvTimer);
-        tvAnswers = (TextView) findViewById(R.id.tvCurrentAnswers);
-        tvStatus = (TextView) findViewById(R.id.tvCurrentStatus);
-        ibPlay = (ImageButton) findViewById(R.id.ibPlay);
-        pbTimer = (ProgressBar) findViewById(R.id.pbTimer);
-        btNext = (Button) findViewById(R.id.btNextSong);
-        btShowScore = (Button) findViewById(R.id.btShowScore);
+        tvSongname = (TextView) getView().findViewById(R.id.tvSongname);
+        tvTimer = (TextView) getView().findViewById(R.id.tvTimer);
+        tvAnswers = (TextView) getView().findViewById(R.id.tvCurrentAnswers);
+        tvStatus = (TextView) getView().findViewById(R.id.tvCurrentStatus);
+        ibPlay = (ImageButton) getView().findViewById(R.id.ibPlay);
+        pbTimer = (ProgressBar) getView().findViewById(R.id.pbTimer);
+        btNext = (Button) getView().findViewById(R.id.btNextSong);
+        btShowScore = (Button) getView().findViewById(R.id.btShowScore);
 
 
         // GET DATA FROM PREVIOUS VIEW
 
-        Intent intent = getIntent();
+        Intent intent = getActivity().getIntent();
         Bundle bundle = intent.getExtras();
         Settings settings = bundle.getParcelable("game_settings");
         List<Question> questions = intent.getParcelableArrayListExtra("questions");
@@ -120,15 +138,13 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
         game.start();
 
         final UserProfile host = new UserProfile();
-        host.loadProfile(getApplicationContext());
+        host.loadProfile(getView().getContext().getApplicationContext());
 
         //pubnub
         client = new PubNubClient(host, game.getSettings().getGameIDString(), true);
-        this.mPresence = new PresenceListAdapter(this);
-        this.mPresencePnCallback = new PresencePnCallback(this.mPresence);
+        this.mPresencePnCallback = new PresencePnCallback(gameCreationTab.getPresenceListAdapter());
         client.initChannelsHost(mPresencePnCallback);
-        listView = (ListView) findViewById(R.id.presence_list);
-        listView.setAdapter(this.mPresence);
+        listView = (ListView) getView().findViewById(R.id.presence_list);
 
         client.getPubnub().addListener(new SubscribeCallback() {
             @Override
@@ -182,7 +198,7 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
             public void onFinish() {
                 mediaPlayer.stop();
                 pbTimer.setProgress(0);
-                runOnUiThread(new Runnable() {
+                getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         tvTimer.setVisibility(View.INVISIBLE);
@@ -203,7 +219,7 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
             public void onClick(View v) {
                 Log.d(Constants.LOGT, game.showScore());
 
-                Toast.makeText(HostPlayScreen.this, game.showScore(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getView().getContext(), game.showScore(), Toast.LENGTH_SHORT).show();
             }
         });
         btNext.setOnClickListener(new View.OnClickListener() {
@@ -219,11 +235,11 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
                             mediaPlayer.stop();
                         }
                     } else {
-                        Toast.makeText(HostPlayScreen.this, "No more questions!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getView().getContext(), "No more questions!", Toast.LENGTH_SHORT).show();
 
                     }
                 } else {
-                    Toast.makeText(HostPlayScreen.this, "Status is not READY!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getView().getContext(), "Status is not READY!", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -252,7 +268,7 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
                     Log.d(Constants.LOGT, "now playing song from handler");
                     game.setStatus(Constants.GAME_STATUS_ON_QUESTION);
 
-                    runOnUiThread(new Runnable() {
+                    getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             tvTimer.setVisibility(View.VISIBLE);
@@ -273,9 +289,10 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
     //If a song is playing, the song stops as well as the timer.
     private void playSong(String path, CountDownTimer timer) {
         if (mediaPlayer == null) {
-            mediaPlayer = MediaPlayer.create(this, Uri.parse(path));
+            mediaPlayer = MediaPlayer.create(getContext(), Uri.parse(path));
             mediaPlayer.start();
             timer.start();
+            gameCreationTab.setMediaPlayer(mediaPlayer);
         } else {
             if (mediaPlayer.isPlaying()) {
                 mediaPlayer.stop();
@@ -283,7 +300,7 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
             } else {
                 mediaPlayer.reset();
                 try {
-                    mediaPlayer.setDataSource(this, Uri.parse(path));
+                    mediaPlayer.setDataSource(getContext(), Uri.parse(path));
                     mediaPlayer.prepare();
                     mediaPlayer.start();
                     timer.start();
@@ -306,37 +323,12 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        //Asking the player to quit or something
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Do you really want to quit?");
-        builder.setMessage("This will disband the room.");
-        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (mediaPlayer != null) {
-                    mediaPlayer.stop();
-                    mediaPlayer.release();
-                }
-                //More multiplayer stuff (Like closing the room)
-                HostPlayScreen.super.onBackPressed();
-            }
-        });
-        builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //Doing nothing...
-                    }
-                }
-        );
-        builder.show();
-    }
+
 
 
     @Override
     public void update(Observable observable, Object o) {
-        runOnUiThread(new Runnable() {
+        getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 tvSongname.setText(game.getCurrentQuestion().getSong().toString());
@@ -347,7 +339,7 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
     }
 
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         super.onDestroy();
         game.deleteObserver(this);
         client.getPubnub().unsubscribeAll();

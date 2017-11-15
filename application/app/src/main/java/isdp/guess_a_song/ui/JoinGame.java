@@ -1,4 +1,4 @@
-package isdp.guess_a_song;
+package isdp.guess_a_song.ui;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -27,10 +27,12 @@ import android.widget.TextView;
 
 import java.util.Arrays;
 
+import isdp.guess_a_song.R;
 import isdp.guess_a_song.model.Action;
 import isdp.guess_a_song.controller.PubNubClient;
 import isdp.guess_a_song.model.ActionSimple;
 import isdp.guess_a_song.model.UserProfile;
+import isdp.guess_a_song.ui.playing.PlayerInGame;
 import isdp.guess_a_song.utils.Constants;
 public class JoinGame extends AppCompatActivity {
 
