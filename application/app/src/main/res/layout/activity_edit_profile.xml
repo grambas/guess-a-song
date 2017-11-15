@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="isdp.guess_a_song.EditProfile">
+    tools:context="isdp.guess_a_song.ui.EditProfile">
 
     <Button
         android:id="@+id/profileSaveButton"

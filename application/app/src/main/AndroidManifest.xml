@@ -23,17 +23,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="._1HostGame" />
-        <activity android:name="._2SelectSongs" />
-        <activity android:name=".JoinGame" />
-        <activity android:name=".SingleplayerGame" />
-        <activity android:name="._3EditQuestion" />
-        <activity android:name="._4GameRoom" />
-        <activity android:name=".HostPlayScreen" />
-        <activity android:name=".MusicLibrary" />
-        <activity android:name=".PlayerInGame" />
+        <activity android:name=".ui.roomcreation._1HostGame" />
+        <activity android:name=".ui.roomcreation._2SelectSongs" />
+        <activity android:name=".ui.JoinGame" />
+        <activity android:name=".ui.playing.SingleplayerGame" />
+        <activity android:name=".ui.roomcreation._3EditQuestion" />
+        <activity android:name=".ui.roomcreation._4GameRoom" />
+        <activity android:name=".ui.playing.HostPlayScreen" />
+        <activity android:name=".ui.MusicLibrary" />
+        <activity android:name=".ui.playing.PlayerInGame" />
+        <activity android:name=".ui.experimental.GameCreationTab" />
         <activity
-            android:name=".EditProfile"
+            android:name=".ui.EditProfile"
             android:label="@string/title_activity_edit_profile"
             android:parentActivityName=".StartScreen">
             <meta-data
