@@ -1,4 +1,4 @@
-package isdp.guess_a_song;
+package isdp.guess_a_song.ui.playing;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import isdp.guess_a_song.R;
 import isdp.guess_a_song.controller.AnswersGenerator;
 import isdp.guess_a_song.db.DatabaseHandler;
 import isdp.guess_a_song.model.Question;

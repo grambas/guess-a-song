@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="isdp.guess_a_song.HostPlayScreen">
+    tools:context="isdp.guess_a_song.ui.playing.HostPlayScreen">
 
     <TextView
         android:id="@+id/tvCurrentStatus"
@@ -27,13 +27,6 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
-
-
-    <ListView
-        android:id="@+id/presence_list"
-        android:layout_marginTop="50dp"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 
 
     <ProgressBar
@@ -103,15 +96,4 @@
         android:layout_alignParentStart="true" />
 
 
-    <ToggleButton
-        android:id="@+id/togglebutton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:checked="true"
-
-        android:layout_alignParentLeft="true"
-        android:textOff="Show Players"
-        android:textOn="Hide Players"
-        android:onClick="onToggleClicked"
-        android:layout_above="@+id/btShowScore" />
 </RelativeLayout>
