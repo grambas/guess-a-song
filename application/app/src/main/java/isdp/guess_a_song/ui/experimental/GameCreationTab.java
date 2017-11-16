@@ -60,7 +60,10 @@ public class GameCreationTab extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-        this.mPresence = new PresenceListAdapter(this);
+        //this.mPresence = new PresenceListAdapter(this);
+    }
+    void setmPresence(PresenceListAdapter p){
+        this.mPresence = p;
     }
 
     @Override

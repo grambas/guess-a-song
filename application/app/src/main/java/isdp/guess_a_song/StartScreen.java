@@ -15,7 +15,6 @@ import isdp.guess_a_song.ui.EditProfile;
 import isdp.guess_a_song.ui.JoinGame;
 import isdp.guess_a_song.ui.MusicLibrary;
 import isdp.guess_a_song.ui.experimental.GameCreationTab;
-import isdp.guess_a_song.ui.playing.SingleplayerGame;
 import isdp.guess_a_song.ui.roomcreation._1HostGame;
 import isdp.guess_a_song.ui.roomcreation._4GameRoom;
 
@@ -83,10 +82,6 @@ public class StartScreen extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void spGame(View v) {
-        Intent intent = new Intent(this, SingleplayerGame.class);
-        startActivity(intent);
-    }
     public void MusicLibrary(View v) {
         Intent intent = new Intent(this, MusicLibrary.class);
         startActivity(intent);

@@ -61,7 +61,7 @@ public class PubNubClient{
             config.setUuid(this.user.getName());
         }else{
             config.setUuid(this.user.getUuid());
-           // config.setFilterExpression("from == '" + Constants.HOST_USERNAME+"'");
+            // config.setFilterExpression("from == '" + Constants.HOST_USERNAME+"'");
         }
 
         this.pubnub = new PubNub(config);
