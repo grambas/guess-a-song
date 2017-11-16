@@ -25,14 +25,18 @@ import com.google.gson.JsonObject;
 import com.pubnub.api.PubNub;
 import com.pubnub.api.callbacks.PNCallback;
 import com.pubnub.api.callbacks.SubscribeCallback;
+import com.pubnub.api.enums.PNStatusCategory;
 import com.pubnub.api.models.consumer.PNPublishResult;
 import com.pubnub.api.models.consumer.PNStatus;
+import com.pubnub.api.models.consumer.presence.PNSetStateResult;
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -41,6 +45,8 @@ import isdp.guess_a_song.controller.HostGame;
 import isdp.guess_a_song.model.Action;
 import isdp.guess_a_song.model.ActionAnswer;
 import isdp.guess_a_song.model.ActionAsk;
+import isdp.guess_a_song.model.ActionSimple;
+import isdp.guess_a_song.model.PresencePojo;
 import isdp.guess_a_song.model.Question;
 import isdp.guess_a_song.model.Settings;
 import isdp.guess_a_song.controller.PubNubClient;
@@ -48,6 +54,7 @@ import isdp.guess_a_song.model.UserProfile;
 import isdp.guess_a_song.pubsub.PresenceListAdapter;
 import isdp.guess_a_song.pubsub.PresencePnCallback;
 import isdp.guess_a_song.utils.Constants;
+import isdp.guess_a_song.utils.Helpers;
 
 public class HostPlayScreen extends AppCompatActivity implements Observer {
 
@@ -115,11 +122,14 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
         }
         game.start();
 
-        final UserProfile host = new UserProfile();
+        //client
+        final UserProfile host = new UserProfile(Constants.HOST_USERNAME);
         host.loadProfile(getApplicationContext());
+        host.setAuth(true);
+        host.setHost(true);
 
         //pubnub
-        client = new PubNubClient(host, game.getSettings().getGameIDString(), true);
+        client = new PubNubClient(host, game.getSettings().getGameIDString(), host.isHost());
         this.mPresence = new PresenceListAdapter(this);
         this.mPresencePnCallback = new PresencePnCallback(this.mPresence);
         client.initChannelsHost(mPresencePnCallback);
@@ -127,18 +137,38 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
         listView.setAdapter(this.mPresence);
 
         client.getPubnub().addListener(new SubscribeCallback() {
+
+            @Override
+
+	            public void status(PubNub pubnub, PNStatus status) {
+                             if (status != null && status.getCategory() == PNStatusCategory.PNConnectedCategory){
+                    	                    //set auth state true for host automatically
+                                        pubnub.setPresenceState()
+                    	                            .channels(Arrays.asList(game.getSettings().getGameIDString()))
+                    	                            //.uuid(userName)
+                                               .state(host.getState())
+                                                .async(new PNCallback<PNSetStateResult>() {
+				                               @Override
+				                                public void onResponse(final PNSetStateResult result, PNStatus status) {
+                                                            }
+					                            });
+
+                    	                }
+                	            }
+
+
+
             @Override
             public void message(PubNub pubnub, PNMessageResult message) {
 
                 Gson gson = new Gson();
-                boolean processed = false;
+                boolean processed;
                 String action = null;
                 JsonObject obj=null;
                 JsonElement actionElm=null;
                 try {
                     obj = message.getMessage().getAsJsonObject();
-                    actionElm = obj.get("action");
-                    action = actionElm.getAsString();
+                    action = obj.get("action").getAsString();
                     Log.d(Constants.LOGT,"HostPlayerScreen: action: "+action);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -152,16 +182,25 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
                             Log.d(Constants.LOGT, "Error in answer process");
                         }
                     }
+                }else if (action.equals(Constants.A_LOG_IN)) {
+                    //IF PIN IS GOOD
+                    ActionSimple msgLogIn = gson.fromJson(message.getMessage(), ActionSimple.class);
+                    Log.d(Constants.LOGT,"HostPlayScreen:user pin ==host pin?:"+msgLogIn.getValue()+"=="+game.getSettings().getGamePIN());
+                    if ( Integer.parseInt(msgLogIn.getValue()) == game.getSettings().getGamePIN()) {
+                        client.publish(new ActionSimple(Constants.A_START_GAME, String.valueOf(game.getSettings().getGuess_time()), Constants.HOST_USERNAME, msgLogIn.getPublisher()), Helpers.signHostMeta());
+                        Log.d(Constants.LOGT, "HostPlayScreen Listener: "+ msgLogIn.getPublisher() + " auth true + direct redirect to game)");
+                        syncPlayersWithPresence();
+                        //IF PIN IS BAD
+                    }else{
+                        client.publish(new ActionSimple(Constants.A_AUTH_RESPONSE,Constants.FALSE,Constants.HOST_USERNAME,msgLogIn.getPublisher()),Helpers.signHostMeta());
+                        Log.d(Constants.LOGT, "HostPlayScreen Listener: "+ msgLogIn.getPublisher() + " auth false (bad pin)");
+                    }
                 }
-//                else{
-//                    Log.d(Constants.LOGT, "HostPlayerScreen: msg skiped: "+message.getMessage().toString());
-//                }
             }
 
             @Override
             public void presence(PubNub pubnub, PNPresenceEventResult presence) {}
-            @Override
-            public void status(PubNub pubnub, PNStatus status) {}
+
         });
 
 
@@ -182,6 +221,8 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
                     @Override
                     public void run() {
                         tvTimer.setVisibility(View.INVISIBLE);
+                        ibPlay.setVisibility(View.VISIBLE);
+                        btNext.setVisibility(View.VISIBLE);
                     }
                 });
                 game.setStatus(Constants.GAME_STATUS_TIME_OVER);
@@ -191,16 +232,18 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
         ibPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                handlePlay();
+                if(game.getStatus() != Constants.GAME_STATUS_ON_QUESTION) {
+                    handlePlay();
+                }
             }
         });
         btShowScore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(Constants.LOGT, game.showScore());
-
-                Toast.makeText(HostPlayScreen.this, game.showScore(), Toast.LENGTH_SHORT).show();
-            }
+                client.hereNow(mPresencePnCallback);
+                syncPlayersWithPresence();
+                Toast.makeText(HostPlayScreen.this, "ID: "+game.getSettings().getGameID()+" PIN: "+game.getSettings().getGamePIN()+"\n"+game.showScore(), Toast.LENGTH_SHORT).show();}
         });
         btNext.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -251,6 +294,8 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            ibPlay.setVisibility(View.INVISIBLE);
+                            btNext.setVisibility(View.INVISIBLE);
                             tvTimer.setVisibility(View.VISIBLE);
                         }
                     });
@@ -263,7 +308,40 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
         });
     }
 
+    public void syncPlayersWithPresence() {
+        boolean exist;
+        Map<String, PresencePojo> temp = mPresence.getItems();
+        if( temp!=null){
+            for (Map.Entry<String, PresencePojo> entry : temp.entrySet())
+            {
+                exist=false;
+                for (String key : game.getPlayers().keySet()) {
+                    Log.d(Constants.LOGT,"is equals? "+key+"=="+entry.getKey().toString());
+                    if(key.equals(entry.getKey().toString())){
+                        exist = true;
+                        Log.d(Constants.LOGT,"YES");
+                    }
 
+                }
+                //if not exist and not host
+                if(!exist){
+                    String checkBoss = entry.getValue().getName();
+                    if(checkBoss !=null && !checkBoss.equals(Constants.HOST_USERNAME)){
+                        UserProfile tempUser = new UserProfile(
+                                entry.getValue().getName(),
+                                entry.getValue().getSender(),
+                                true,
+                                false
+                        );
+                        Log.d(Constants.LOGT,"adding user"+tempUser.toString());
+                        game.addPlayers(tempUser);
+                    }
+
+                }
+            }
+        }
+
+    }
     //Managing the mediaplayer
     //The song will be played, if nothing is currently playing
     //If a song is playing, the song stops as well as the timer.
