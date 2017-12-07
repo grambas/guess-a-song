@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="isdp.guess_a_song.ui.GameOver">
+
+    <TextView
+        android:id="@+id/tvGameOver"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Game Over"
+        android:textSize="36sp"
+        tools:layout_editor_absoluteX="104dp"
+        tools:layout_editor_absoluteY="16dp" />
+
+    <Button
+        android:id="@+id/btBackToMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back to menu"
+        tools:layout_editor_absoluteX="130dp"
+        tools:layout_editor_absoluteY="447dp" />
+
+    <ListView
+        android:id="@+id/lvScores"
+        android:layout_width="368dp"
+        android:layout_height="366dp"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="73dp" />
+
+</android.support.constraint.ConstraintLayout>

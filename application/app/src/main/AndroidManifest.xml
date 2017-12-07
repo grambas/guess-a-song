@@ -41,6 +41,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="isdp.guess_a_song.StartScreen" />
         </activity>
+        <activity
+            android:name=".ui.GameOver"
+            android:label="@string/title_activity_game_over"></activity>
     </application>
 
 </manifest>
