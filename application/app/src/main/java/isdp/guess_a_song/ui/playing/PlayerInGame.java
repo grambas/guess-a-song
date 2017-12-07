@@ -47,6 +47,7 @@ public class PlayerInGame extends Activity {
     Button buttonStart;
     ProgressBar progressBar;
     TextView textCounter;
+    TextView textScore;
     MyCountDownTimer myCountDownTimer;
 
     @Override
@@ -58,6 +59,8 @@ public class PlayerInGame extends Activity {
         progressBar = (ProgressBar)findViewById(R.id.progressbar);
         progressBar.setMax(100);
         textCounter = (TextView)findViewById(R.id.counter);
+        textScore = (TextView) findViewById(R.id.tvScore);
+
 
         btnAnswers[0] = (Button) findViewById(R.id.btnAnswer1);
         btnAnswers[1] = (Button) findViewById(R.id.btnAnswer2);
@@ -222,6 +225,7 @@ public class PlayerInGame extends Activity {
         @Override
         public void onFinish() {
             textCounter.setText("Finished");
+            textScore.setText("Score: " + player.getScore());
             progressBar.setProgress(0);
         }
 

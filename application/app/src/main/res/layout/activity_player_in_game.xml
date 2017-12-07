@@ -4,9 +4,15 @@
     android:layout_height="wrap_content"
     android:orientation="vertical" >
 
+    <TextView
+        android:id="@+id/tvScore"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Score:" />
+
     <Button
         android:id="@+id/btnAnswer1"
-        android:layout_width="140dp"
+        android:layout_width="262dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
@@ -15,7 +21,7 @@
 
     <Button
         android:id="@+id/btnAnswer2"
-        android:layout_width="140dp"
+        android:layout_width="262dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
@@ -24,7 +30,7 @@
 
     <Button
         android:id="@+id/btnAnswer3"
-        android:layout_width="140dp"
+        android:layout_width="262dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
@@ -33,7 +39,7 @@
 
     <Button
         android:id="@+id/btnAnswer4"
-        android:layout_width="140dp"
+        android:layout_width="262dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
