@@ -69,16 +69,6 @@ public class _2SelectSongs extends AppCompatActivity {
 
                 selectedView.setText("Total Selected " + String.valueOf(cntChoice)+ " of " +game_settings.getSongs_amount());
 
-
-//                if (cntChoice > game_settings.getSongs_amount()) {
-//                    SparseBooleanArray sparseBooleanArray = listView.getCheckedItemPositions();
-//                    for (int i = 0; i < listView.getCount(); i++) {
-//                        if (sparseBooleanArray.get(i)) {
-//                            listView.setItemChecked(i, false);
-//                            break;
-//                        }
-//                    }
-//                }
             }
         });
 
@@ -91,6 +81,7 @@ public class _2SelectSongs extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int cntChoice = listView.getCount();
+                int selectedCnt = listView.getCheckedItemCount();
 
 
                 String selected = "";
@@ -103,15 +94,14 @@ public class _2SelectSongs extends AppCompatActivity {
                         selected_songs.add((Song) listView.getItemAtPosition(i));// add songs to list
                     }
                 }
-
-                Toast.makeText(_2SelectSongs.this, selected, Toast.LENGTH_LONG).show();
-
-                Intent intent = new Intent(_2SelectSongs.this, _3EditQuestion.class);
-
-                intent.putParcelableArrayListExtra("selected_songs",selected_songs);
-                intent.putExtra("game_settings", game_settings);
-                startActivity(intent);
-
+                if(selectedCnt != game_settings.getSongs_amount() ){
+                    Toast.makeText(_2SelectSongs.this, "Please select "+ game_settings.getSongs_amount()+ " songs. Current selected "+selectedCnt, Toast.LENGTH_LONG).show();
+                }else{
+                    Intent intent = new Intent(_2SelectSongs.this, _3EditQuestion.class);
+                    intent.putParcelableArrayListExtra("selected_songs",selected_songs);
+                    intent.putExtra("game_settings", game_settings);
+                    startActivity(intent);
+                }
             }
         });
 

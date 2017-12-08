@@ -1,6 +1,7 @@
 package isdp.guess_a_song.ui.playing;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.app.Activity;
 import android.os.CountDownTimer;
@@ -11,7 +12,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.pubnub.api.PubNub;
 import com.pubnub.api.callbacks.PNCallback;
@@ -32,6 +32,7 @@ import isdp.guess_a_song.model.ActionAnswer;
 import isdp.guess_a_song.model.ActionAsk;
 import isdp.guess_a_song.model.UserProfile;
 import isdp.guess_a_song.utils.Constants;
+import isdp.guess_a_song.utils.FeedbackText;
 
 public class PlayerInGame extends Activity {
     Button[] btnAnswers = new Button[4];
@@ -42,6 +43,11 @@ public class PlayerInGame extends Activity {
     ActionAsk currentAsk;
     UserProfile player;
 
+    //c for current
+    int cGuess;
+    int cCorrect;
+    int cQuestionIndex;
+    boolean guessed;
 
     //countdown
     Button buttonStart;
@@ -62,14 +68,14 @@ public class PlayerInGame extends Activity {
         textScore = (TextView) findViewById(R.id.tvScore);
 
 
-        btnAnswers[0] = (Button) findViewById(R.id.btnAnswer1);
-        btnAnswers[1] = (Button) findViewById(R.id.btnAnswer2);
-        btnAnswers[2] = (Button) findViewById(R.id.btnAnswer3);
-        btnAnswers[3] = (Button) findViewById(R.id.btnAnswer4);
+        btnAnswers[0] = (Button) findViewById(R.id.btnAnswer0);
+        btnAnswers[1] = (Button) findViewById(R.id.btnAnswer1);
+        btnAnswers[2] = (Button) findViewById(R.id.btnAnswer2);
+        btnAnswers[3] = (Button) findViewById(R.id.btnAnswer3);
 
 
 
-    //HIDE BUTTONS ON START AND ADD LISTENER
+    //HIDE BUTTONS ON START AND ADD LISENER
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -109,8 +115,6 @@ public class PlayerInGame extends Activity {
                                 }
                             });
                 }
-
-
             }
 
             @Override
@@ -126,25 +130,37 @@ public class PlayerInGame extends Activity {
                     recipient = obj.get("recipient").getAsString();
                     action =obj.get("action").getAsString();
 
-                    Log.d(Constants.LOGT,"PlayerInGame: action="+action + ",recipient="+recipient);
+                    //Log.d(Constants.LOGT,"PlayerInGame: action="+action + ",recipient="+recipient);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
                 if (recipient.equals(client.getUser().getName()) || recipient.equals(Constants.A_FOR_ALL)) {
                     if (action.equals(Constants.A_ASK)) {
+
                         currentAsk = gson.fromJson(message.getMessage(), ActionAsk.class);
                         currentQ = currentAsk.getQuestion();
+                        cCorrect = currentAsk.getQCorrect();
+                        cQuestionIndex = currentAsk.getQIndex();
+
+                        Log.d(Constants.LOGT,"PlayerInGame (loggin A_ASK): action="+currentAsk.toString() + ",recipient="+recipient);
+                        Log.d(Constants.LOGT,"getQCorrect="+currentAsk.getQCorrect());
+                        Log.d(Constants.LOGT,"cCorrect="+cCorrect);
+
+
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 progressBar.setProgress(100);
                                 myCountDownTimer =  new MyCountDownTimer(guessTime * 1000, 1000);
+                                textCounter.setTextColor(Color.parseColor("white"));
                                 myCountDownTimer.start();
                                 for (int i = 0; i < 4; i++) {
                                     //set answers on buttons and change visibility
                                     btnAnswers[i].setText(currentQ.get(i).toString());
                                     btnAnswers[i].setVisibility(View.VISIBLE);
+                                    btnAnswers[i].setEnabled(true);
+                                    btnAnswers[i].setTextColor(Color.parseColor("white"));
                                 }
                             }
                         });//
@@ -163,25 +179,33 @@ public class PlayerInGame extends Activity {
     // Create an anonymous implementation of OnClickListener
     private View.OnClickListener answerListener = new View.OnClickListener() {
         public void onClick(View v) {
-            int answer;
-            if (v.getId() == R.id.btnAnswer1) {
-                answer = 0;
-            } else if (v.getId() == R.id.btnAnswer2) {
-                answer = 1;
-            } else if (v.getId() == R.id.btnAnswer3) {
-                answer = 2;
-            } else if (v.getId() == R.id.btnAnswer4) {
-                answer = 3;
-            } else {
-                answer = -1;
+            switch (v.getId()) {
+                case R.id.btnAnswer0:
+                    cGuess = 0;
+                    break;
+                case R.id.btnAnswer1:
+                    cGuess = 1;
+                    break;
+                case R.id.btnAnswer2:
+                    cGuess = 2;
+                    break;
+                case R.id.btnAnswer3:
+                    cGuess = 3;
+                    break;
+                default:
+                    cGuess=-1;
+                    break;
             }
+
+            btnAnswers[cGuess].setTextColor(Color.parseColor("blue"));
+
             ActionAnswer msg = new ActionAnswer(
                     Constants.A_ANSWER,
                     client.getUser().getName(),
                     Constants.HOST_USERNAME,
                     client.getUser().getUuid(),
-                    currentAsk.getqIndex(),
-                    answer
+                    currentAsk.getQIndex(),
+                    cGuess
             );
             client.getPubnub().publish()
                     .channel(client.getGameID())
@@ -195,7 +219,9 @@ public class PlayerInGame extends Activity {
                             @Override
                             public void run() {
                                 for (final Button btn : btnAnswers) {
-                                    btn.setVisibility(View.INVISIBLE);
+                                    //btn.setVisibility(View.INVISIBLE);
+                                    btn.setEnabled(false);
+                                    guessed = true;
                                 }
                             }
                         });
@@ -224,9 +250,37 @@ public class PlayerInGame extends Activity {
 
         @Override
         public void onFinish() {
-            textCounter.setText("Finished");
-            textScore.setText("Score: " + player.getScore());
+
+            //Logic to show for user Feedback
+
+            if (guessed == false){
+                textCounter.setText("Didn't tried? :(");
+                textCounter.setTextColor(Color.parseColor("red"));
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (final Button btn : btnAnswers) {
+                            //btn.setVisibility(View.INVISIBLE);
+                            btn.setEnabled(false);
+                            guessed = true;
+                        }
+                    }
+                });
+            }else if(cGuess == cCorrect){
+                textCounter.setTextColor(Color.parseColor("green"));
+                textCounter.setText(FeedbackText.getRandom(true));
+                player.addScore(Constants.REWARD_CORRECT);
+            }else{
+                btnAnswers[cGuess].setTextColor(Color.parseColor("red"));
+                textCounter.setTextColor(Color.parseColor("red"));
+                textCounter.setText(FeedbackText.getRandom(false));
+                player.addScore(Constants.REWARD_WRONG);
+            }
+            int temp= cQuestionIndex+1;
+            textScore.setText("Score: " + player.getScore()+ " Question: "+temp);
+            btnAnswers[cCorrect].setTextColor(Color.parseColor("green"));
             progressBar.setProgress(0);
+            guessed = false;
         }
 
     }
@@ -235,6 +289,8 @@ public class PlayerInGame extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        client.getPubnub().unsubscribeAll();
+        if(client != null) {
+            client.onDestroy();
+        }
     }
 }

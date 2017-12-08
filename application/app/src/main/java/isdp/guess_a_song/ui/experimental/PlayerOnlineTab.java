@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import isdp.guess_a_song.R;
 import isdp.guess_a_song.pubsub.PresenceListAdapter;
@@ -35,5 +36,7 @@ public class PlayerOnlineTab extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         presenceList = (ListView) getView().findViewById(R.id.online_list);
         presenceList.setAdapter(gameCreationTab.getPresenceListAdapter());
+        TextView title = (TextView) getView().findViewById(R.id.textView7);
+        title.setText( "ID: "+gameCreationTab.getGame().getSettings().getGameID()+" PIN: "+gameCreationTab.getGame().getSettings().getGamePIN() );
     }
 }

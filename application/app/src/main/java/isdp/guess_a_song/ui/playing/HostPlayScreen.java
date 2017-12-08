@@ -276,6 +276,7 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
                 Constants.HOST_USERNAME,
                 Constants.A_FOR_ALL,
                 game.getCurrentQuestion().songsToPlayers(),
+                game.getCurrentQuestion().getCorrectIndex(),
                 game.getCurrentIndex()
         );
 
@@ -384,19 +385,28 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
     public void onBackPressed() {
         //Asking the player to quit or something
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Do you really want to quit?");
-        builder.setMessage("This will disband the room.");
-        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (mediaPlayer != null) {
-                    mediaPlayer.stop();
-                    mediaPlayer.release();
+        Log.d(Constants.LOGT,"Game status when back is pressed"+game.getStatus());
+
+        if(game.getStatus() == Constants.GAME_STATUS_ON_QUESTION){
+            builder.setTitle("Game is on question");
+            builder.setMessage("You cannot back during the question.");
+        }else{
+            builder.setTitle("Do you really want to quit?");
+            builder.setMessage("This will disband the room.");
+            builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (mediaPlayer != null) {
+                        mediaPlayer.stop();
+                        mediaPlayer.release();
+                    }
+                    //More multiplayer stuff (Like closing the room)
+                    HostPlayScreen.super.onBackPressed();
                 }
-                //More multiplayer stuff (Like closing the room)
-                HostPlayScreen.super.onBackPressed();
-            }
-        });
+            });
+        }
+
+
         builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -424,6 +434,7 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
     protected void onDestroy() {
         super.onDestroy();
         game.deleteObserver(this);
-        client.getPubnub().unsubscribeAll();
-    }
+        if(client != null && client.getPubnub()!=null){
+            client.getPubnub().unsubscribeAll();
+        }    }
 }

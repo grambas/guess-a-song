@@ -40,13 +40,6 @@ public class Question implements Parcelable {
         this.song = son;
     }
 
-    public HashMap<String, Integer> getPlayer_answers() {
-        return player_answers;
-    }
-
-    public void setPlayer_answers(HashMap<String, Integer> player_answers) {
-        this.player_answers = player_answers;
-    }
 
     public boolean isNotAnswered(String uuid,int guess){
         Log.d(Constants.LOGT, "isNotAnswered: "+ uuid);
@@ -57,26 +50,12 @@ public class Question implements Parcelable {
         player_answers.put(uuid,guess);
         return true;
     }
-    /*Just the song. Auto builds the question*/
-    /*Right now, doesn't generate proper random wrong answers. Will add functionality later.*/
-    public Question(Song son,int ty){
-
-        answers = new ArrayList<Answer>();
-        this.answers.add( new Answer("Wrong Answer",false));
-        this.answers.add( new Answer("Wrong Answer",false));
-        this.answers.add( new Answer("Wrong Answer",false));
-        this.answers.add( new Answer(son.getTitle(),true));
-        this.type = ty;
-        this.song = son;
-    }
 
 
     /*Getters and setters*/
     public ArrayList<Answer> getAnswers(){return (ArrayList<Answer>) answers;}
 
     public Answer getAnswer(int index){return answers.get(index);}
-
-    public void setAnswer(int index, Answer newAnswer){this.answers.set(index, newAnswer);}
 
     public int getType(){return type;}
 
@@ -117,17 +96,6 @@ public class Question implements Parcelable {
     };
     //end Parcelling
 
-    public String toStringFull() {
-
-        return "Question{" +
-                "song=" + song.getOriginalName() +
-                "q0=" + answers.get(0).getText() +
-                "q1=" + answers.get(1).getText() +
-                "q2=" + answers.get(2).getText() +
-                "q3=" + answers.get(3).getText() +
-
-                '}';
-    }
     @Override
     public String toString() {
         return song.toString();
@@ -147,12 +115,19 @@ public class Question implements Parcelable {
     }
 
     public boolean isCorrect(int i){
-
         Answer ans = answers.get(i);
         if ( ans.isCorrect() )
         {
             return true;
         }
        return false;
+    }
+    public int getCorrectIndex(){
+        for(int i=0; i<4; i++) {
+            if (answers.get(i).isCorrect()) {
+                return i;
+            }
+        }
+        return -1;
     }
 }
