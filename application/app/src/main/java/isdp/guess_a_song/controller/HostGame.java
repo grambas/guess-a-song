@@ -3,6 +3,7 @@ package isdp.guess_a_song.controller;
 
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Observable;
@@ -107,6 +108,21 @@ public class HostGame extends Observable {
             scoreString += (value.getName() +" : " + value.getScore()+ "\n");
         }
         return scoreString;
+    }
+
+    public ArrayList<String> showScoreList() {
+        ArrayList<String> scores = new ArrayList<>();
+        int score = -1;
+        for (UserProfile value : players.values()) {
+
+            //This should sort the list...using Queue as datastructure might be a better idea...probably
+            if (value.getScore() > score) {
+                scores.add(0,value.getName() +" : " + value.getScore());
+                score = value.getScore();
+            }
+            scores.add(value.getName() +" : " + value.getScore());
+        }
+        return scores;
     }
 
     public void end(){

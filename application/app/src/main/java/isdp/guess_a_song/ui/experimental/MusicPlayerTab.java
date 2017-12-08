@@ -56,6 +56,7 @@ import isdp.guess_a_song.model.Settings;
 import isdp.guess_a_song.model.UserProfile;
 import isdp.guess_a_song.pubsub.PresenceListAdapter;
 import isdp.guess_a_song.pubsub.PresencePnCallback;
+import isdp.guess_a_song.ui.GameOver;
 import isdp.guess_a_song.utils.Constants;
 import isdp.guess_a_song.utils.Helpers;
 
@@ -294,8 +295,14 @@ public class MusicPlayerTab extends Fragment implements Observer {
                             mediaPlayer.stop();
                         }
                     } else {
-                        Toast.makeText(getView().getContext(), "No more questions!", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getView().getContext(), "No more questions!", Toast.LENGTH_SHORT).show();
+                        Intent intent1 = new Intent(getContext(), GameOver.class);
+                        ArrayList<String> scores = game.showScoreList();
 
+                        Log.d("scores", scores.toString());
+                        intent1.putStringArrayListExtra("scores", scores);
+                        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent1);
                     }
                 } else {
                     Toast.makeText(getView().getContext(), "Status is not READY!", Toast.LENGTH_SHORT).show();

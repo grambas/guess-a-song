@@ -139,7 +139,7 @@ public class JoinGame extends AppCompatActivity {
                                                       name_field.setVisibility(View.GONE);
                                                       gameID_field.setVisibility(View.GONE);
                                                       gamePIN_field.setVisibility(View.GONE);
-                                                      info_field.setText("Authentication Success! The Host will start soon the game");
+                                                      info_field.setText("Authentication Success!\nThe Host will start the game soon");
                                                   }
                                               });
                             } else {

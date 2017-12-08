@@ -226,7 +226,6 @@ public class PlayerInGame extends Activity {
                             }
                         });
                     }
-
                 }
             });
 
