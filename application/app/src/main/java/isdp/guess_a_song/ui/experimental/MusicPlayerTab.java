@@ -1,5 +1,6 @@
 package isdp.guess_a_song.ui.experimental;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -7,6 +8,7 @@ import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Timer;
 
 import isdp.guess_a_song.R;
 import isdp.guess_a_song.controller.HostGame;
@@ -64,7 +67,7 @@ import isdp.guess_a_song.utils.Helpers;
 
 public class MusicPlayerTab extends Fragment implements Observer {
 
-    private HostGame game;;
+    private HostGame game;
     private ArrayList<Question> questions;
 
     private CountDownTimer countDownTimer;
@@ -136,18 +139,21 @@ public class MusicPlayerTab extends Fragment implements Observer {
         game = game.getInstance();
         game.setSettings(settings);
         game.setQuestions(questions);
-        Log.d(Constants.LOGT,"questions="+questions.toString());
-
+        //Caution! setPlayers will add only authenticated players
         game.setPlayers(players);
-        Log.d(Constants.LOGT,"players="+players.toString());
 
-        Log.d(Constants.LOGT,"settings="+settings.toString());
+        //Log.d(Constants.LOGT+"1","MUSICPLAYER TAB="+players.toString());
+        //Log.d(Constants.LOGT+"1","MUSICPLAYER TAB="+game.getPlayers().toString());
+
+
         game.addObserver(this);
         // Shuffle answers
         for (final Question q : game.getQuestions()) {
             q.shuffle();
         }
+
         game.start();
+        this.gameCreationTab.setGame(game);
 
         //client
         final UserProfile host = new UserProfile(Constants.HOST_USERNAME);
@@ -235,7 +241,11 @@ public class MusicPlayerTab extends Fragment implements Observer {
             public void onTick(long millisUntilFinished) {
                 tvTimer.setText(Long.toString(millisUntilFinished / 1000));
                 if (mediaPlayer != null) {
-                    pbTimer.setProgress((int) (((double) mediaPlayer.getCurrentPosition() / (double) mediaPlayer.getDuration()) * 100));
+                    if(mediaPlayer.isPlaying()){
+                        pbTimer.setProgress((int) (((double) mediaPlayer.getCurrentPosition() / (double) mediaPlayer.getDuration()) * 100));
+                    }else{
+                        pbTimer.setProgress(100);
+                    }
                 }
             }
 
@@ -252,6 +262,7 @@ public class MusicPlayerTab extends Fragment implements Observer {
                 });
                 game.setStatus(Constants.GAME_STATUS_TIME_OVER);
             }
+
         };
 
         ibPlay.setOnClickListener(new View.OnClickListener() {
@@ -266,7 +277,7 @@ public class MusicPlayerTab extends Fragment implements Observer {
                 Log.d(Constants.LOGT, game.showScore());
                 client.hereNow(mPresencePnCallback);
                 syncPlayersWithPresence();
-                Toast.makeText(getView().getContext(), "ID: "+game.getSettings().getGameID()+" PIN: "+game.getSettings().getGamePIN()+"\n"+game.showScore(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getView().getContext(), game.showScore(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -334,8 +345,10 @@ public class MusicPlayerTab extends Fragment implements Observer {
                 Constants.HOST_USERNAME,
                 Constants.A_FOR_ALL,
                 game.getCurrentQuestion().songsToPlayers(),
+                game.getCurrentQuestion().getCorrectIndex(),
                 game.getCurrentIndex()
         );
+        Log.d(Constants.LOGT,"HOST (loggin A_ASK): action="+msg.toString() );
 
         client.getPubnub().publish()
                 .channel(this.game.getSettings().getGameIDString())
@@ -424,6 +437,26 @@ public class MusicPlayerTab extends Fragment implements Observer {
     public void onDestroy() {
         super.onDestroy();
         game.deleteObserver(this);
-        client.getPubnub().unsubscribeAll();
+        if(countDownTimer != null){
+            countDownTimer.cancel();
+        }
+        if(client != null) {
+            client.onDestroy();
+        }
+    }
+
+    public MediaPlayer getMediaPlayer(){
+        return mediaPlayer;
+    }
+    public CountDownTimer getTimer(){
+        return countDownTimer;
+    }
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(countDownTimer != null){
+            countDownTimer.cancel();
+            //cancel timer task and assign null
+        }
     }
 }

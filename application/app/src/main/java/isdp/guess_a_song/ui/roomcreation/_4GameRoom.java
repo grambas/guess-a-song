@@ -232,6 +232,8 @@ public class _4GameRoom extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        client.getPubnub().unsubscribeAll();
+        if(client != null) {
+            client.onDestroy();
+        }
     }
 }

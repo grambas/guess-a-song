@@ -204,6 +204,11 @@ public class PubNubClient{
     public PubNub getPubnub() {
         return pubnub;
     }
+    public void onDestroy(){
+        pubnub.destroy();
+        pubnub.unsubscribeAll();
+        pubnub.disconnect();
+    }
 
     public UserProfile getUser() {
         return user;

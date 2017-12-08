@@ -30,6 +30,7 @@ public class UserProfile implements Parcelable{
     private boolean auth;
     private boolean isHost;
     private int score;
+    private boolean nameChanged;
 
     public UserProfile(String name,String uuid,boolean auth,boolean isHost) {
         this.name = name;
@@ -72,33 +73,23 @@ public class UserProfile implements Parcelable{
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
-
+    public void setName(String name) { this.name = name; }
+    public void setUuid(String uuid) { this.uuid = uuid; }
     public boolean isHost() {
         return isHost;
     }
-
+    public boolean isNameChanged() {
+        return nameChanged;
+    }
+    public void setNameChanged(boolean b){this.nameChanged = b;}
     public void setHost(boolean host) {
         isHost = host;
     }
-
     public int getScore() {
         return score;
     }
-
     public void addScore(int change) {
         this.score += change;
-    }
-
-    //other functions
-    public void generateNewUUID(){
-        this.uuid = java.util.UUID.randomUUID().toString();
     }
 
     public void saveProfile(Context con){
@@ -110,6 +101,7 @@ public class UserProfile implements Parcelable{
         editor.putString("UUID", this.uuid);
         editor.putBoolean("auth", this.auth);
         editor.putBoolean("isHost", this.isHost);
+        editor.putBoolean("nameChanged", true);
         editor.putInt("score", this.score);
 
         //commit saved changes to SHaredPreferences
@@ -125,6 +117,7 @@ public class UserProfile implements Parcelable{
         this.uuid = pref.getString("UUID", this.uuid);
         this.auth = pref.getBoolean("auth", this.auth);
         this.isHost = pref.getBoolean("isHost", this.isHost);
+        this.nameChanged = pref.getBoolean("nameChanged", this.nameChanged);
         this.score = pref.getInt("score", this.score);
 
         if(this.uuid == null){
@@ -132,14 +125,12 @@ public class UserProfile implements Parcelable{
             this.name = Constants.DEFAULT_PLAYER_NAME+" "+randomNumber;
             this.auth = false;
             this.score= 0;
+            this.nameChanged = false;
             this.uuid = Settings.Secure.getString(con.getContentResolver(),
                     Settings.Secure.ANDROID_ID);
         }
     }
-    public String getUUID(Context con){
-        return Settings.Secure.getString(con.getContentResolver(),
-                Settings.Secure.ANDROID_ID);
-    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -166,6 +157,7 @@ public class UserProfile implements Parcelable{
         this.uuid = in.readString();
         this.auth = in.readByte() != 0;     //myBoolean == true if byte != 0
         this.isHost = in.readByte() != 0;     //myBoolean == true if byte != 0
+        this.nameChanged = in.readByte() != 0;     //myBoolean == true if byte != 0
         this.score = in.readInt();
     }
 
@@ -177,6 +169,8 @@ public class UserProfile implements Parcelable{
         dest.writeString(this.uuid);
         dest.writeByte((byte) (this.auth ? 1 : 0));     //if myBoolean == true, byte == 1
         dest.writeByte((byte) (this.isHost ? 1 : 0));     //if myBoolean == true, byte == 1
+        dest.writeByte((byte) (this.nameChanged ? 1 : 0));     //if myBoolean == true, byte == 1
+
         dest.writeInt(this.score);
     }
     public static final Parcelable.Creator<UserProfile> CREATOR = new Parcelable.Creator<UserProfile>() {

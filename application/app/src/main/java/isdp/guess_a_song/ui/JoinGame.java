@@ -214,7 +214,9 @@ public class JoinGame extends AppCompatActivity {
         builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                client.getPubnub().unsubscribeAll();
+                if(client != null && client.getPubnub()!=null){
+                    client.getPubnub().unsubscribeAll();
+                }
                 JoinGame.super.onBackPressed();
 
             }
@@ -231,8 +233,8 @@ public class JoinGame extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if(this.client.getPubnub()!=null){
-            this.client.getPubnub().unsubscribeAll();
+        if(client != null && client.getPubnub()!=null){
+            client.getPubnub().unsubscribeAll();
         }
     }
 
@@ -241,6 +243,8 @@ public class JoinGame extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        client.getPubnub().unsubscribeAll();
+        if(client != null && client.getPubnub()!=null){
+            client.getPubnub().unsubscribeAll();
+        }
     }
 }

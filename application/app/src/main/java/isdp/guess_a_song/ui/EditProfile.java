@@ -4,6 +4,7 @@ package isdp.guess_a_song.ui;
     Andrew Burns
  */
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -13,7 +14,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import isdp.guess_a_song.R;
+import isdp.guess_a_song.StartScreen;
 import isdp.guess_a_song.model.UserProfile;
+import isdp.guess_a_song.ui.playing.HostPlayScreen;
 
 public class EditProfile extends AppCompatActivity {
 
@@ -43,10 +46,13 @@ public class EditProfile extends AppCompatActivity {
                 String content = nameField.getText().toString();
                 profile.setName(content);
                 profile.saveProfile(getApplicationContext());
+
                 Toast.makeText(EditProfile.this, "Profile successfully saved!", Toast.LENGTH_SHORT).show();
-                onBackPressed();
 
-
+                Intent intent = new Intent(v.getContext(), StartScreen.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                finish();
             }
         });
     }
