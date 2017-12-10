@@ -25,26 +25,11 @@ public class GameOver extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_over);
-
-        /*
-        Get the scores somewhere?
-         */
-
-        List<Score> scores = new ArrayList<>();
-        //Sorts the List, so the player with most correctly answered questions is #1.
-        scores.sort(new Comparator<Score>() {
-        @Override public int compare(Score s1, Score s2) {
-            if (s1.getScore() > s2.getScore()) {
-                return 1;
-            }
-            if (s1.getScore() < s2.getScore()) {
-                return -1;
-            }
-            return 0;
-        }});
+        List<String> scores = getIntent().getStringArrayListExtra("scores");
 
         listView = (ListView) findViewById(R.id.lvScores);
-        ArrayAdapter<Score> scoreAdapter = new ArrayAdapter<Score>(this, android.R.layout.simple_list_item_1, android.R.id.text1, scores );
+        ArrayAdapter<String> scoreAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, scores );
+        listView.setAdapter(scoreAdapter);
 
 
         btBackToMenu = (Button) findViewById(R.id.btBackToMenu);

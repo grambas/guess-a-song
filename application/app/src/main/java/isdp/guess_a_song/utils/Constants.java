@@ -23,6 +23,7 @@ public class Constants {
     public final static String A_ASK = "ask";
     public final static String A_ANSWER = "answer";
     public final static String A_FOR_ALL = "all";
+    public final static String A_FINISH = "finish";
 
 
 

@@ -10,12 +10,12 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat">
         <activity
             android:name=".StartScreen"
-            android:label="@string/title_activity_database_test"
+            android:label="Guess a Song"
             android:theme="@style/Theme.AppCompat">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,7 +26,6 @@
         <activity android:name=".ui.roomcreation._1HostGame" />
         <activity android:name=".ui.roomcreation._2SelectSongs" />
         <activity android:name=".ui.JoinGame" />
-        <activity android:name=".ui.playing.SingleplayerGame" />
         <activity android:name=".ui.roomcreation._3EditQuestion" />
         <activity android:name=".ui.roomcreation._4GameRoom" />
         <activity android:name=".ui.playing.HostPlayScreen" />

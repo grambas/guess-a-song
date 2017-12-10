@@ -62,16 +62,17 @@
 
     <TextView
         android:id="@+id/tvInfo"
-        android:text=""
-        android:textSize="24sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:layout_below="@+id/etPin"
-        android:layout_alignLeft="@+id/etGameId"
-        android:layout_alignStart="@+id/etGameId"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/etPin"
+        android:ems="10"
+        android:text=""
+        android:textAlignment="center"
+        android:textSize="24sp" />
 
     <ProgressBar
         android:id="@+id/progressBar"
