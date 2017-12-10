@@ -119,8 +119,9 @@ public class HostGame extends Observable {
             if (value.getScore() > score) {
                 scores.add(0,value.getName() +" : " + value.getScore());
                 score = value.getScore();
+            } else {
+                scores.add(value.getName() + " : " + value.getScore());
             }
-            scores.add(value.getName() +" : " + value.getScore());
         }
         return scores;
     }

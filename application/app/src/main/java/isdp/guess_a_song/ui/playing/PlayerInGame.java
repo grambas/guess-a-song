@@ -23,6 +23,7 @@ import com.pubnub.api.models.consumer.presence.PNSetStateResult;
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -30,7 +31,9 @@ import isdp.guess_a_song.R;
 import isdp.guess_a_song.controller.PubNubClient;
 import isdp.guess_a_song.model.ActionAnswer;
 import isdp.guess_a_song.model.ActionAsk;
+import isdp.guess_a_song.model.ActionGameOver;
 import isdp.guess_a_song.model.UserProfile;
+import isdp.guess_a_song.ui.GameOver;
 import isdp.guess_a_song.utils.Constants;
 import isdp.guess_a_song.utils.FeedbackText;
 
@@ -40,7 +43,9 @@ public class PlayerInGame extends Activity {
     String gameID;
     PubNubClient client;
     HashMap<Integer, String> currentQ;
+    ArrayList<String> scores;
     ActionAsk currentAsk;
+    ActionGameOver actionGameOver;
     UserProfile player;
 
     //c for current
@@ -164,6 +169,19 @@ public class PlayerInGame extends Activity {
                                 }
                             }
                         });//
+                    }
+
+                    if (action.equals(Constants.A_FINISH)) {
+
+                        actionGameOver = gson.fromJson(message.getMessage(), ActionGameOver.class);
+                        scores = actionGameOver.getScores();
+
+                        Log.d(Constants.LOGT,"Got scores: " + scores.toString());
+
+                        Intent intent1 = new Intent(PlayerInGame.this, GameOver.class);
+                        intent1.putStringArrayListExtra("scores", scores);
+                        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent1);
                     }
                 }
 

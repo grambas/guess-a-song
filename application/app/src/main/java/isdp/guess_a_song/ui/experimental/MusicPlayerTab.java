@@ -49,6 +49,7 @@ import isdp.guess_a_song.controller.PubNubClient;
 import isdp.guess_a_song.model.Action;
 import isdp.guess_a_song.model.ActionAnswer;
 import isdp.guess_a_song.model.ActionAsk;
+import isdp.guess_a_song.model.ActionGameOver;
 import isdp.guess_a_song.model.ActionSimple;
 import isdp.guess_a_song.model.PresencePojo;
 import isdp.guess_a_song.model.Question;
@@ -298,6 +299,30 @@ public class MusicPlayerTab extends Fragment implements Observer {
                         //Toast.makeText(getView().getContext(), "No more questions!", Toast.LENGTH_SHORT).show();
                         Intent intent1 = new Intent(getContext(), GameOver.class);
                         ArrayList<String> scores = game.showScoreList();
+
+                        Action msg = new ActionGameOver(
+                                Constants.A_FINISH,
+                                Constants.HOST_USERNAME,
+                                Constants.A_FOR_ALL,
+                                scores
+                        );
+                        Log.d(Constants.LOGT,"HOST (loggin A_GameOver): action="+msg.toString() );
+
+                        client.getPubnub().publish()
+                                .channel(game.getSettings().getGameIDString())
+                                //.meta(Helpers.signHostMeta())
+                                .message(msg).async(new PNCallback<PNPublishResult>() {
+                            @Override
+                            public void onResponse(PNPublishResult result, PNStatus status) {
+                                // handle publish response
+                                //check if succes and play song local
+                                if(!status.isError()){
+                                    Log.d(Constants.LOGT, "now switching to game over screen");
+                                    game.setStatus(Constants.GAME_STATUS_FINISHED);
+                                }
+
+                            }
+                        });
 
                         Log.d("scores", scores.toString());
                         intent1.putStringArrayListExtra("scores", scores);
