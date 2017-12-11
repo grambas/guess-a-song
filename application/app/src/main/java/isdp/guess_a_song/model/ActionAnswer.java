@@ -10,7 +10,7 @@ public class ActionAnswer extends Action {
     private int questionIndex;
     private int answerIndex;
 
-    public ActionAnswer(String action, String publisher, String recipient,String uuid,int questionIndex,int answerIndex) {
+    public ActionAnswer(String action, String publisher, String recipient, String uuid, int questionIndex, int answerIndex) {
         super(action, publisher, recipient);
         this.uuid = uuid;
         this.questionIndex = questionIndex;

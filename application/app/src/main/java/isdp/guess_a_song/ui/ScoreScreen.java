@@ -16,7 +16,7 @@ import isdp.guess_a_song.model.Settings;
  * Created by Andy on 10/27/2017.
  */
 
-public class ScoreScreen extends AppCompatActivity{
+public class ScoreScreen extends AppCompatActivity {
 
     private TextView scoreText;
     private HostGame game;
@@ -25,7 +25,7 @@ public class ScoreScreen extends AppCompatActivity{
     private int gamePIN;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_score_screen);
 

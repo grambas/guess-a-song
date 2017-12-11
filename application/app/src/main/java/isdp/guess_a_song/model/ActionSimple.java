@@ -7,6 +7,7 @@ package isdp.guess_a_song.model;
 
 public class ActionSimple extends Action {
     String value;
+
     public ActionSimple(String action, String value, String publisher, String recipient) {
         super(action, publisher, recipient);
         this.value = value;

@@ -59,16 +59,15 @@ import isdp.guess_a_song.utils.Helpers;
 public class HostPlayScreen extends AppCompatActivity implements Observer {
 
 
-    private HostGame game;;
+    private HostGame game;
+    ;
     private ArrayList<Question> questions;
-
     private CountDownTimer countDownTimer;
 
     //PUBNUB
     private PubNubClient client;
     private PresenceListAdapter mPresence;
     private PresencePnCallback mPresencePnCallback;
-
 
     private TextView tvSongname;
     private TextView tvTimer;
@@ -78,10 +77,7 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
     private ImageButton ibPlay;
     private Button btNext;
     private Button btShowScore;
-    private TextView tvAnsGot;
     private ListView listView;
-
-    //private int currentQuestion = 0;
     private MediaPlayer mediaPlayer;
 
 
@@ -116,19 +112,20 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
         game.setQuestions(questions);
         game.setPlayers(players);
         game.addObserver(this);
+
         // Shuffle answers
         for (final Question q : game.getQuestions()) {
             q.shuffle();
         }
         game.start();
 
-        //client
+        //CLIENT
         final UserProfile host = new UserProfile(Constants.HOST_USERNAME);
         host.loadProfile(getApplicationContext());
         host.setAuth(true);
         host.setHost(true);
 
-        //pubnub
+        //PUBNUB
         client = new PubNubClient(host, game.getSettings().getGameIDString(), host.isHost());
         this.mPresence = new PresenceListAdapter(this);
         this.mPresencePnCallback = new PresencePnCallback(this.mPresence);
@@ -139,71 +136,75 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
         client.getPubnub().addListener(new SubscribeCallback() {
 
             @Override
+            public void status(PubNub pubnub, PNStatus status) {
+                if (status != null && status.getCategory() == PNStatusCategory.PNConnectedCategory) {
+                    //set auth state true for host automatically
+                    pubnub.setPresenceState()
+                            .channels(Arrays.asList(game.getSettings().getGameIDString()))
+                            //.uuid(userName)
+                            .state(host.getState())
+                            .async(new PNCallback<PNSetStateResult>() {
+                                @Override
+                                public void onResponse(final PNSetStateResult result, PNStatus status) {
+                                }
+                            });
 
-	            public void status(PubNub pubnub, PNStatus status) {
-                             if (status != null && status.getCategory() == PNStatusCategory.PNConnectedCategory){
-                    	                    //set auth state true for host automatically
-                                        pubnub.setPresenceState()
-                    	                            .channels(Arrays.asList(game.getSettings().getGameIDString()))
-                    	                            //.uuid(userName)
-                                               .state(host.getState())
-                                                .async(new PNCallback<PNSetStateResult>() {
-				                               @Override
-				                                public void onResponse(final PNSetStateResult result, PNStatus status) {
-                                                            }
-					                            });
-
-                    	                }
-                	            }
-
-
+                }
+            }
 
             @Override
             public void message(PubNub pubnub, PNMessageResult message) {
 
+                //PARSE AND PREPARE MESSAGE
                 Gson gson = new Gson();
                 boolean processed;
                 String action = null;
-                JsonObject obj=null;
-                JsonElement actionElm=null;
+                JsonObject obj;
                 try {
                     obj = message.getMessage().getAsJsonObject();
                     action = obj.get("action").getAsString();
-                    Log.d(Constants.LOGT,"HostPlayerScreen: action: "+action);
+                    Log.d(Constants.LOGT, "HostPlayerScreen: action: " + action);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
-                if(action.equals(Constants.A_ANSWER)){
-                    ActionAnswer msgAnswer =  gson.fromJson(message.getMessage(), ActionAnswer.class);
+                /*
+                * PROCESS PLAYER ANSWER MESSAGE
+                * */
+                if (action.equals(Constants.A_ANSWER)) {
+                    ActionAnswer msgAnswer = gson.fromJson(message.getMessage(), ActionAnswer.class);
                     if (game.getStatus() == Constants.GAME_STATUS_ON_QUESTION) {
                         processed = game.processAnswer(msgAnswer.getUuid(), msgAnswer.getAnswerIndex(), msgAnswer.getQuestionIndex());
                         if (!processed) {
-                            Log.d(Constants.LOGT, "Error in answer process");
+                            if (Constants.DEBUG_MODE) {
+                                Log.d(Constants.LOGT, "Error in answer process");
+                            }
                         }
                     }
-                }else if (action.equals(Constants.A_LOG_IN)) {
+                } else if (action.equals(Constants.A_LOG_IN)) {
                     //IF PIN IS GOOD
                     ActionSimple msgLogIn = gson.fromJson(message.getMessage(), ActionSimple.class);
-                    Log.d(Constants.LOGT,"HostPlayScreen:user pin ==host pin?:"+msgLogIn.getValue()+"=="+game.getSettings().getGamePIN());
-                    if ( Integer.parseInt(msgLogIn.getValue()) == game.getSettings().getGamePIN()) {
+                    Log.d(Constants.LOGT, "HostPlayScreen:user pin ==host pin?:" + msgLogIn.getValue() + "==" + game.getSettings().getGamePIN());
+                    if (Integer.parseInt(msgLogIn.getValue()) == game.getSettings().getGamePIN()) {
                         client.publish(new ActionSimple(Constants.A_START_GAME, String.valueOf(game.getSettings().getGuess_time()), Constants.HOST_USERNAME, msgLogIn.getPublisher()), Helpers.signHostMeta());
-                        Log.d(Constants.LOGT, "HostPlayScreen Listener: "+ msgLogIn.getPublisher() + " auth true + direct redirect to game)");
+                        Log.d(Constants.LOGT, "HostPlayScreen Listener: " + msgLogIn.getPublisher() + " auth true + direct redirect to game)");
                         syncPlayersWithPresence();
                         //IF PIN IS BAD
-                    }else{
-                        client.publish(new ActionSimple(Constants.A_AUTH_RESPONSE,Constants.FALSE,Constants.HOST_USERNAME,msgLogIn.getPublisher()),Helpers.signHostMeta());
-                        Log.d(Constants.LOGT, "HostPlayScreen Listener: "+ msgLogIn.getPublisher() + " auth false (bad pin)");
+                    } else {
+                        client.publish(new ActionSimple(Constants.A_AUTH_RESPONSE, Constants.FALSE, Constants.HOST_USERNAME, msgLogIn.getPublisher()), Helpers.signHostMeta());
+                        if (Constants.DEBUG_MODE)
+                            Log.d(Constants.LOGT, "HostPlayScreen Listener: " + msgLogIn.getPublisher() + " auth false (bad pin)");
                     }
                 }
             }
 
             @Override
-            public void presence(PubNub pubnub, PNPresenceEventResult presence) {}
-
+            public void presence(PubNub pubnub, PNPresenceEventResult presence) {
+            }
         });
 
-
+        /*
+        * COUNTDOWN TIMER IMPLEMETNATION
+        * */
         countDownTimer = new CountDownTimer(game.getSettings().getGuess_time() * 1000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -227,12 +228,16 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
                 });
                 game.setStatus(Constants.GAME_STATUS_TIME_OVER);
             }
-        };
+        };//COUNTDOWN TIMER IMPLEMENTATION
 
+        /*
+        * BUTTON LISTENERS
+        *
+        * */
         ibPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(game.getStatus() != Constants.GAME_STATUS_ON_QUESTION) {
+                if (game.getStatus() != Constants.GAME_STATUS_ON_QUESTION) {
                     handlePlay();
                 }
             }
@@ -243,7 +248,8 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
                 Log.d(Constants.LOGT, game.showScore());
                 client.hereNow(mPresencePnCallback);
                 syncPlayersWithPresence();
-                Toast.makeText(HostPlayScreen.this, "ID: "+game.getSettings().getGameID()+" PIN: "+game.getSettings().getGamePIN()+"\n"+game.showScore(), Toast.LENGTH_SHORT).show();}
+                Toast.makeText(HostPlayScreen.this, "ID: " + game.getSettings().getGameID() + " PIN: " + game.getSettings().getGamePIN() + "\n" + game.showScore(), Toast.LENGTH_SHORT).show();
+            }
         });
         btNext.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -269,8 +275,13 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
         });
     }
 
+    /*
+    * Function to play song and send question for players
+    * also it controlls gui elements
+    *
+    * */
     private void handlePlay() {
-
+        //Prepare message
         Action msg = new ActionAsk(
                 Constants.A_ASK,
                 Constants.HOST_USERNAME,
@@ -279,7 +290,7 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
                 game.getCurrentQuestion().getCorrectIndex(),
                 game.getCurrentIndex()
         );
-
+        //Send message
         client.getPubnub().publish()
                 .channel(this.game.getSettings().getGameIDString())
                 //.meta(Helpers.signHostMeta())
@@ -288,7 +299,7 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
             public void onResponse(PNPublishResult result, PNStatus status) {
                 // handle publish response
                 //check if succes and play song local
-                if(!status.isError()){
+                if (!status.isError()) {
                     Log.d(Constants.LOGT, "now playing song from handler");
                     game.setStatus(Constants.GAME_STATUS_ON_QUESTION);
 
@@ -300,41 +311,48 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
                             tvTimer.setVisibility(View.VISIBLE);
                         }
                     });
-
                     playSong(game.getCurrentQuestion().getSong().getPath(), countDownTimer);
-
                 }
-
             }
         });
     }
 
+    /*
+    * Function to synchronise current online players array (presence from Pubnub)
+    * with game players array. New players can join to the game after the game is
+    * already started. New players will start with score 0
+    * */
     public void syncPlayersWithPresence() {
         boolean exist;
         Map<String, PresencePojo> temp = mPresence.getItems();
-        if( temp!=null){
-            for (Map.Entry<String, PresencePojo> entry : temp.entrySet())
-            {
-                exist=false;
+        if (temp != null) {
+            for (Map.Entry<String, PresencePojo> entry : temp.entrySet()) {
+                exist = false;
                 for (String key : game.getPlayers().keySet()) {
-                    Log.d(Constants.LOGT,"is equals? "+key+"=="+entry.getKey().toString());
-                    if(key.equals(entry.getKey().toString())){
+                    if (Constants.DEBUG_MODE) {
+                        Log.d(Constants.LOGT, "is equals? " + key + "==" + entry.getKey().toString());
+                    }
+                    if (key.equals(entry.getKey().toString())) {
                         exist = true;
-                        Log.d(Constants.LOGT,"YES");
+                        if (Constants.DEBUG_MODE) {
+                            Log.d(Constants.LOGT, "YES");
+                        }
                     }
 
                 }
                 //if not exist and not host
-                if(!exist){
+                if (!exist) {
                     String checkBoss = entry.getValue().getName();
-                    if(checkBoss !=null && !checkBoss.equals(Constants.HOST_USERNAME)){
+                    if (checkBoss != null && !checkBoss.equals(Constants.HOST_USERNAME)) {
                         UserProfile tempUser = new UserProfile(
                                 entry.getValue().getName(),
                                 entry.getValue().getSender(),
                                 true,
                                 false
                         );
-                        Log.d(Constants.LOGT,"adding user"+tempUser.toString());
+                        if (Constants.DEBUG_MODE) {
+                            Log.d(Constants.LOGT, "adding user" + tempUser.toString());
+                        }
                         game.addPlayers(tempUser);
                     }
 
@@ -343,9 +361,12 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
         }
 
     }
-    //Managing the mediaplayer
-    //The song will be played, if nothing is currently playing
-    //If a song is playing, the song stops as well as the timer.
+
+    /*
+    Managing the mediaplayer
+    The song will be played, if nothing is currently playing
+    If a song is playing, the song stops as well as the timer.
+    */
     private void playSong(String path, CountDownTimer timer) {
         if (mediaPlayer == null) {
             mediaPlayer = MediaPlayer.create(this, Uri.parse(path));
@@ -363,36 +384,29 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
                     mediaPlayer.start();
                     timer.start();
                 } catch (IOException e) {
-                    Log.e("Error", "Cannot play song.");
+                    if (Constants.DEBUG_MODE) {
+                        Log.e("Error", "Cannot play song.");
+                    }
                 }
 
             }
         }
     }
 
-    public void onToggleClicked(View view) {
-        // Is the toggle on?
-        boolean on = ((ToggleButton) view).isChecked();
-        if (on) {
-            listView.setVisibility(View.VISIBLE);
-        } else {
-            listView.setVisibility(View.GONE);
-
-        }
-    }
-
     @Override
     public void onBackPressed() {
-        //Asking the player to quit or something
+        //Warning user if he lefts the game all game data will be lost
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        Log.d(Constants.LOGT,"Game status when back is pressed"+game.getStatus());
+        if (Constants.DEBUG_MODE) {
+            Log.d(Constants.LOGT, "Game status when back is pressed" + game.getStatus());
+        }
 
-        if(game.getStatus() == Constants.GAME_STATUS_ON_QUESTION){
+        if (game.getStatus() == Constants.GAME_STATUS_ON_QUESTION) {
             builder.setTitle("Game is on question");
             builder.setMessage("You cannot back during the question.");
-        }else{
+        } else {
             builder.setTitle("Do you really want to quit?");
-            builder.setMessage("This will disband the room.");
+            builder.setMessage("This will disband the game.");
             builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -434,7 +448,8 @@ public class HostPlayScreen extends AppCompatActivity implements Observer {
     protected void onDestroy() {
         super.onDestroy();
         game.deleteObserver(this);
-        if(client != null && client.getPubnub()!=null){
+        if (client != null && client.getPubnub() != null) {
             client.getPubnub().unsubscribeAll();
-        }    }
+        }
+    }
 }

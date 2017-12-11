@@ -5,6 +5,8 @@ import java.util.List;
 
 /**
  * Created by Mindau on 08/12/2017.
+ * This function gives random Salut for player
+ * for guess feedback
  */
 
 public class FeedbackText {

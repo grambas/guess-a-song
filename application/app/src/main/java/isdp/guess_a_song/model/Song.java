@@ -30,7 +30,6 @@ public class Song implements Parcelable {
     int played_count;
 
 
-
     // Empty constructor
     public Song() {
     }
@@ -124,7 +123,7 @@ public class Song implements Parcelable {
     }
 
     public String getOriginalName() {
-        if(original_name != null && !original_name.isEmpty()){
+        if (original_name != null && !original_name.isEmpty()) {
             return original_name;
         }
         return "No name";
@@ -143,21 +142,22 @@ public class Song implements Parcelable {
         return path;
     }
 
-    public int getIsRreal() { return is_real;  }
+    public int getIsRreal() {
+        return is_real;
+    }
 
     public int getPlayedCount() {
         return played_count;
     }
 
-    public String songToAnswer(int type){
-        if( type == Constants.GAME_TYPE_TITLE){
+    public String songToAnswer(int type) {
+        if (type == Constants.GAME_TYPE_TITLE) {
             //Log.d("Song.java", "asked title. title= "+this.title);
             return this.title;
-        }else if (type == Constants.GAME_TYPE_ARTIST){
+        } else if (type == Constants.GAME_TYPE_ARTIST) {
             //Log.d("Song.java", "asked artist. artist= "+this.artist);
             return this.artist;
-        }
-        else return getOriginalName();
+        } else return getOriginalName();
     }
 
     public String toStringFull() {
@@ -171,10 +171,12 @@ public class Song implements Parcelable {
                 ", played_count='" + played_count + '\'' +
                 '}';
     }
+
     @Override
     public String toString() {
-        return  artist + " - " + title;
+        return artist + " - " + title;
     }
+
     @Override
     public int describeContents() {
         return 0;
@@ -191,6 +193,7 @@ public class Song implements Parcelable {
         dest.writeInt(played_count);
 
     }
+
     public Song(Parcel source) {
         this.id = source.readInt();
         this.original_name = source.readString();
@@ -200,6 +203,7 @@ public class Song implements Parcelable {
         this.is_real = source.readInt();
         this.played_count = source.readInt();
     }
+
     public static final Parcelable.Creator<Song> CREATOR = new Parcelable.Creator<Song>() {
 
         @Override

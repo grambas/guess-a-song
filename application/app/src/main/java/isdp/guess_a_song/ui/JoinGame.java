@@ -34,6 +34,7 @@ import isdp.guess_a_song.model.ActionSimple;
 import isdp.guess_a_song.model.UserProfile;
 import isdp.guess_a_song.ui.playing.PlayerInGame;
 import isdp.guess_a_song.utils.Constants;
+
 public class JoinGame extends AppCompatActivity {
 
     private EditText gameID_field;
@@ -42,8 +43,8 @@ public class JoinGame extends AppCompatActivity {
     private TextView info_field;
     private Button btnJoin;
     private ProgressBar spinner;
-    private  String gameID;
-    private  String gamePIN;
+    private String gameID;
+    private String gamePIN;
     private ImageView checkImg;
     private PubNubClient client;
 
@@ -56,13 +57,13 @@ public class JoinGame extends AppCompatActivity {
         // INIT
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join_game);
-        gameID_field= (EditText)findViewById(R.id.etGameId);
+        gameID_field = (EditText) findViewById(R.id.etGameId);
         gamePIN_field = (EditText) findViewById(R.id.etPin);
         name_field = (TextView) findViewById(R.id.etName);
         info_field = (TextView) findViewById(R.id.tvInfo);
         btnJoin = (Button) findViewById(R.id.btJoin);
         checkImg = (ImageView) findViewById(R.id.imageView);
-        spinner=(ProgressBar)findViewById(R.id.progressBar);
+        spinner = (ProgressBar) findViewById(R.id.progressBar);
         checkImg.setVisibility(View.INVISIBLE);
         spinner.setVisibility(View.GONE);
 
@@ -71,11 +72,9 @@ public class JoinGame extends AppCompatActivity {
         player.setHost(false);
         player.setAuth(false);
         name_field.setText("Name: " + player.getName());
-        //this.game = new PlayerGame(0,0);
         //Some adjustments
         btnJoin.setVisibility(View.VISIBLE);
         info_field.setText("Please fill all fields and click join");
-
 
 
     }
@@ -88,19 +87,25 @@ public class JoinGame extends AppCompatActivity {
         spinner.setVisibility(View.VISIBLE);
 
 
-        this.client = new PubNubClient(player,this.gameID,false);
+        this.client = new PubNubClient(player, this.gameID, false);
 
 
         //this.client.getRoomPlayers();
 
+        /**
+         * Pubnub ADD listener in order to read Host player messages
+         * this Listener waits for messages delicated to "this" user or
+         * message marked with "FOR_ALL" value and process actions:
+         * Authorization response,Start Game
+         */
         this.client.getPubnub().addListener(new SubscribeCallback() {
             @Override
             public void status(PubNub pubnub, PNStatus status) {
-                if (status.getCategory() == PNStatusCategory.PNConnectedCategory){
+                if (status.getCategory() == PNStatusCategory.PNConnectedCategory) {
                     // USER CONNECTED
                     // Ask Host for authentication on connected
                     Action ask_auth = new ActionSimple(Constants.A_LOG_IN, gamePIN, player.getName(), Constants.HOST_USERNAME);
-                    pubnub.publish().channel(gameID).message( ask_auth ).async(new PNCallback<PNPublishResult>() {
+                    pubnub.publish().channel(gameID).message(ask_auth).async(new PNCallback<PNPublishResult>() {
                         @Override
                         public void onResponse(PNPublishResult result, PNStatus status) {
                             // handle publish response
@@ -108,14 +113,18 @@ public class JoinGame extends AppCompatActivity {
                     });
                 }
             }
+
             @Override
             public void message(PubNub pubnub, PNMessageResult message) {
                 try {
                     message.getMessage();
-                    Log.v(Constants.LOGT, "PLAYER MESSAGE LISTENER: (" +message.toString() + ")");
+                    Log.v(Constants.LOGT, "PLAYER MESSAGE LISTENER: (" + message.toString() + ")");
                     Gson gson = new Gson();
-                    ActionSimple action= gson.fromJson(message.getMessage(), ActionSimple.class);
-                    if(action.getRecipient().equals(player.getName()) || action.getRecipient().equals(Constants.A_FOR_ALL) ){
+                    ActionSimple action = gson.fromJson(message.getMessage(), ActionSimple.class);
+                    if (action.getRecipient().equals(player.getName()) || action.getRecipient().equals(Constants.A_FOR_ALL)) {
+                        /*
+                        * CATCH HOST AUTHORISATION RESPONSE MESSAGE
+                        * */
                         if (action.getAction().equals(Constants.A_AUTH_RESPONSE)) {
                             if (action.getValue().equals(Constants.TRUE)) {
                                 //IF HOST sends to this user and action is authorisation and auth value is TRUE
@@ -127,21 +136,21 @@ public class JoinGame extends AppCompatActivity {
                                         .async(new PNCallback<PNSetStateResult>() {
                                             @Override
                                             public void onResponse(final PNSetStateResult result, PNStatus status) {
-                                                Log.d(Constants.LOGT, "set auth state true OK");
+                                                //Log.d(Constants.LOGT, "set auth state true OK");
                                             }
                                         });
                                 runOnUiThread(new Runnable() {
-                                                  @Override
-                                                  public void run() {
-                                                      checkImg.setVisibility(View.VISIBLE);
-                                                      spinner.setVisibility(View.GONE);
-                                                      btnJoin.setVisibility(View.GONE);
-                                                      name_field.setVisibility(View.GONE);
-                                                      gameID_field.setVisibility(View.GONE);
-                                                      gamePIN_field.setVisibility(View.GONE);
-                                                      info_field.setText("Authentication Success!\nThe Host will start the game soon");
-                                                  }
-                                              });
+                                    @Override
+                                    public void run() {
+                                        checkImg.setVisibility(View.VISIBLE);
+                                        spinner.setVisibility(View.GONE);
+                                        btnJoin.setVisibility(View.GONE);
+                                        name_field.setVisibility(View.GONE);
+                                        gameID_field.setVisibility(View.GONE);
+                                        gamePIN_field.setVisibility(View.GONE);
+                                        info_field.setText("Authentication Success!\nThe Host will start the game soon");
+                                    }
+                                });
                             } else {
                                 //set auth false
                                 pubnub.setPresenceState()
@@ -170,23 +179,25 @@ public class JoinGame extends AppCompatActivity {
                                     }
                                 });
                             }
+                        /*
+                        * CATCH HOST STAR GAME MESSAGE
+                        * */
+                        } else if (action.getAction().equals(Constants.A_START_GAME) && action.getPublisher().equals(Constants.HOST_USERNAME)) {
+                            Log.d(Constants.LOGT, "Action Start game got and from HOST");
+                            //START GAME
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    info_field.setText("Host started the game. Redirecting finds here!");
+                                }
+                            });
 
-                        }else if (action.getAction().equals(Constants.A_START_GAME) && action.getPublisher().equals(Constants.HOST_USERNAME)) {
-                            Log.d(Constants.LOGT,"Action Start game got and from HOST");
-                                //START GAME
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                       info_field.setText("Host started the game. Redirecting finds here!");
-                                    }
-                                });
-
-                                Intent intent = new Intent(JoinGame.this, PlayerInGame.class);
-                                intent.putExtra("gameID", gameID);
-                                intent.putExtra("guessTime", Integer.parseInt(action.getValue()));//guestime
-                                client.getPubnub().unsubscribeAll();
-                                startActivity(intent);
-                                finish();
+                            Intent intent = new Intent(JoinGame.this, PlayerInGame.class);
+                            intent.putExtra("gameID", gameID);
+                            intent.putExtra("guessTime", Integer.parseInt(action.getValue()));
+                            client.getPubnub().unsubscribeAll();
+                            startActivity(intent);
+                            finish();
                         }
                     }
                 } catch (Exception e) {
@@ -196,15 +207,17 @@ public class JoinGame extends AppCompatActivity {
 
             @Override
             public void presence(PubNub pubnub, PNPresenceEventResult presence) {
+                //no need to read presence
                 //Log.d(Constants.LOGT, "[USER PRESENCE] event "+ presence.getEvent()+
-                 //       "state:=" +presence.getState()+ " uuid:= "+ presence.getUuid());
+                // "state:=" +presence.getState()+ " uuid:= "+ presence.getUuid());
             }
         });
-
-
         this.client.subscribe(Constants.NO_PRESENCE);
     }
 
+    /**
+     * Warns user that if he goes back in Login screen, connection with Pubnub will be lost
+     */
     @Override
     public void onBackPressed() {
         //Asking the player to quit or something
@@ -214,7 +227,7 @@ public class JoinGame extends AppCompatActivity {
         builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if(client != null && client.getPubnub()!=null){
+                if (client != null && client.getPubnub() != null) {
                     client.getPubnub().unsubscribeAll();
                 }
                 JoinGame.super.onBackPressed();
@@ -230,10 +243,11 @@ public class JoinGame extends AppCompatActivity {
         );
         builder.show();
     }
+
     @Override
     protected void onStop() {
         super.onStop();
-        if(client != null && client.getPubnub()!=null){
+        if (client != null && client.getPubnub() != null) {
             client.getPubnub().unsubscribeAll();
         }
     }
@@ -243,7 +257,7 @@ public class JoinGame extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(client != null && client.getPubnub()!=null){
+        if (client != null && client.getPubnub() != null) {
             client.getPubnub().unsubscribeAll();
         }
     }

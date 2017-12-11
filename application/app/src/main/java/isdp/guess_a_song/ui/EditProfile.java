@@ -16,7 +16,6 @@ import android.widget.Toast;
 import isdp.guess_a_song.R;
 import isdp.guess_a_song.StartScreen;
 import isdp.guess_a_song.model.UserProfile;
-import isdp.guess_a_song.ui.playing.HostPlayScreen;
 
 public class EditProfile extends AppCompatActivity {
 
@@ -29,8 +28,8 @@ public class EditProfile extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
-        nameField = (EditText)findViewById(R.id.profileNameEditText);
-        uuidText = (TextView)findViewById(R.id.profileUUIDTextView);
+        nameField = (EditText) findViewById(R.id.profileNameEditText);
+        uuidText = (TextView) findViewById(R.id.profileUUIDTextView);
 
         //replace with devices userprofile
         profile = new UserProfile();
@@ -49,6 +48,7 @@ public class EditProfile extends AppCompatActivity {
 
                 Toast.makeText(EditProfile.this, "Profile successfully saved!", Toast.LENGTH_SHORT).show();
 
+                //After save redirect user to Main Screen
                 Intent intent = new Intent(v.getContext(), StartScreen.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);

@@ -22,18 +22,12 @@ import isdp.guess_a_song.model.Song;
  * Song objects with parsed Artist and Title fields.
  * File foramt: [artist];[title]
  * Usage:
- *  SongsImporter importer = new SongsImporter(getApplicationContext());
- *  List<Song> songs_list = importer.importSongs();
+ * SongsImporter importer = new SongsImporter(getApplicationContext());
+ * List<Song> songs_list = importer.importSongs();
  *
  * @Author Mindaugas Milius
  */
 
-// TODO artist and title is mixed in Database. Need to recheck
-/*
-10-09 16:29:24.263 5897-5897/isdp.guess_a_song D/Song.java: asked title. title= The Beatles
-10-09 16:29:24.265 5897-5897/isdp.guess_a_song D/Song.java: asked title. title= My Neck, My Back (Lick It)
-10-09 16:29:24.266 5897-5897/isdp.guess_a_song D/Song.java: asked title. title= Bob Dylan
-*/
 public class SongsImporter {
     public static final String path = "fake_songs.txt";
     private List<Song> songs;
@@ -43,8 +37,9 @@ public class SongsImporter {
         this._context = context;
         this.songs = new ArrayList<Song>();
     }
+
     public List<Song> importSongs() {
-        AssetManager am =  _context.getAssets();
+        AssetManager am = _context.getAssets();
         String[] exploded;
         try {
             InputStream is = am.open(path);
@@ -53,11 +48,11 @@ public class SongsImporter {
 
             while ((line = reader.readLine()) != null) {
                 //split String with delimiter ; into 2 pieces
-                exploded = line.split(";",2);
+                exploded = line.split(";", 2);
                 if (exploded.length == 2) {
                     songs.add(new Song(exploded[1], exploded[0]));
                 } else {
-                    Log.d("Helpers", "line without ';' delimter: "+ line);
+                    if (Constants.DEBUG_MODE){Log.d("Helpers", "line without ';' delimter: " + line);}
                 }
 
             }

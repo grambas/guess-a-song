@@ -4,15 +4,10 @@ import android.util.Log;
 import android.widget.EditText;
 
 /**
- * Created on 10/5/2017, 10:20 PM
- */
-
-
-/**
  * Simple Validation class to check input fields
+ * Created on 10/5/2017, 10:20 PM
+ * @author Mindaugas Milius
  */
-
-//TODO maybe add validation to check if input is number
 
 public class Validation {
 
@@ -22,6 +17,7 @@ public class Validation {
     /**
      * Check the input field has any text or not
      * return true if it contains text otherwise false
+     *
      * @param editText
      * @return true if not empty, false if not
      */
@@ -42,6 +38,7 @@ public class Validation {
 
     /**
      * Check if input field is bigger than 0
+     *
      * @param editText
      * @return true if valid, false if not
      */
@@ -50,18 +47,18 @@ public class Validation {
 
         String text = editText.getText().toString().trim();
         int number;
-        try{
+        try {
             number = Integer.parseInt(text);
-        }catch(NumberFormatException nfe){
+        } catch (NumberFormatException nfe) {
             return false;
         }
         editText.setError(null);
-        if (number > 0){
-            //Log.d("Validation", "OK. Number is bigger than 0");
+        if (number > 0) {
+            if (Constants.DEBUG_MODE){Log.d("Validation", "OK. Number is bigger than 0");}
             return true;
         }
         editText.setError(VALID_NUMBER_MSG);
-        //Log.d("Validation", "BAD. Number is not bigger than 0");
+        if (Constants.DEBUG_MODE){Log.d("Validation", "BAD. Number is not bigger than 0");}
         return false;
 
     }

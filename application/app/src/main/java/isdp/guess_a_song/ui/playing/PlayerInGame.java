@@ -66,12 +66,14 @@ public class PlayerInGame extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player_in_game);
 
-        buttonStart = (Button)findViewById(R.id.start);
-        progressBar = (ProgressBar)findViewById(R.id.progressbar);
+        /*
+        * INIT
+        */
+        buttonStart = (Button) findViewById(R.id.start);
+        progressBar = (ProgressBar) findViewById(R.id.progressbar);
         progressBar.setMax(100);
-        textCounter = (TextView)findViewById(R.id.counter);
+        textCounter = (TextView) findViewById(R.id.counter);
         textScore = (TextView) findViewById(R.id.tvScore);
-
 
         btnAnswers[0] = (Button) findViewById(R.id.btnAnswer0);
         btnAnswers[1] = (Button) findViewById(R.id.btnAnswer1);
@@ -79,8 +81,7 @@ public class PlayerInGame extends Activity {
         btnAnswers[3] = (Button) findViewById(R.id.btnAnswer3);
 
 
-
-    //HIDE BUTTONS ON START AND ADD LISENER
+        //HIDE BUTTONS ON START AND ADD LISENER
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -91,7 +92,7 @@ public class PlayerInGame extends Activity {
             }
         });
 
-        //GET GAMEID FROM JOIN ACTIVITY
+        //GET GAME ID FROM JOIN ACTIVITY
         Intent iin = getIntent();
         Bundle b = iin.getExtras();
         if (b != null) {
@@ -99,15 +100,18 @@ public class PlayerInGame extends Activity {
             guessTime = (int) b.get("guessTime");
         }
 
+        // SET USER PROFILE
         this.player = new UserProfile();
         this.player.loadProfile(getApplicationContext());
         this.player.setAuth(true);
         this.player.setHost(false);
-        this.client = new PubNubClient(player, gameID, false);
 
+
+        this.client = new PubNubClient(player, gameID, false);
         this.client.getPubnub().addListener(new SubscribeCallback() {
             @Override
             public void status(PubNub pubnub, PNStatus status) {
+                //Check if connection status is "successfullyconnected"
                 if (status.getCategory() == PNStatusCategory.PNConnectedCategory) {
                     pubnub.setPresenceState()
                             .channels(Arrays.asList(gameID))
@@ -116,7 +120,9 @@ public class PlayerInGame extends Activity {
                             .async(new PNCallback<PNSetStateResult>() {
                                 @Override
                                 public void onResponse(final PNSetStateResult result, PNStatus status) {
-                                    Log.d(Constants.LOGT, "set auth state true OK");
+                                    if (Constants.DEBUG_MODE) {
+                                        Log.d(Constants.LOGT, "set auth state true OK");
+                                    }
                                 }
                             });
                 }
@@ -125,22 +131,28 @@ public class PlayerInGame extends Activity {
             @Override
             public void message(PubNub pubnub, PNMessageResult message) {
 
+                //Parse and prepare message for usage
                 Gson gson = new Gson();
                 String action = null;
                 String recipient = null;
-                JsonObject obj=null;
+                JsonObject obj = null;
 
                 try {
                     obj = message.getMessage().getAsJsonObject();
                     recipient = obj.get("recipient").getAsString();
-                    action =obj.get("action").getAsString();
+                    action = obj.get("action").getAsString();
 
-                    //Log.d(Constants.LOGT,"PlayerInGame: action="+action + ",recipient="+recipient);
+                    if (Constants.DEBUG_MODE) {
+                        Log.d(Constants.LOGT, "PlayerInGame: action=" + action + ",recipient=" + recipient);
+                    }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
+                //PROCESS MESSAGE ONLY IF THE MESSAGE IS ASSIGNED FOR USER OR FOR ALL USERS
                 if (recipient.equals(client.getUser().getName()) || recipient.equals(Constants.A_FOR_ALL)) {
+
+                    //PROCESS QUESTION MESSAGE
                     if (action.equals(Constants.A_ASK)) {
 
                         currentAsk = gson.fromJson(message.getMessage(), ActionAsk.class);
@@ -148,16 +160,17 @@ public class PlayerInGame extends Activity {
                         cCorrect = currentAsk.getQCorrect();
                         cQuestionIndex = currentAsk.getQIndex();
 
-                        Log.d(Constants.LOGT,"PlayerInGame (loggin A_ASK): action="+currentAsk.toString() + ",recipient="+recipient);
-                        Log.d(Constants.LOGT,"getQCorrect="+currentAsk.getQCorrect());
-                        Log.d(Constants.LOGT,"cCorrect="+cCorrect);
-
+                        if (Constants.DEBUG_MODE) {
+                            Log.d(Constants.LOGT, "PlayerInGame (loggin A_ASK): action=" + currentAsk.toString() + ",recipient=" + recipient);
+                            Log.d(Constants.LOGT, "getQCorrect=" + currentAsk.getQCorrect());
+                            Log.d(Constants.LOGT, "cCorrect=" + cCorrect);
+                        }
 
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 progressBar.setProgress(100);
-                                myCountDownTimer =  new MyCountDownTimer(guessTime * 1000, 1000);
+                                myCountDownTimer = new MyCountDownTimer(guessTime * 1000, 1000);
                                 textCounter.setTextColor(Color.parseColor("white"));
                                 myCountDownTimer.start();
                                 for (int i = 0; i < 4; i++) {
@@ -168,15 +181,17 @@ public class PlayerInGame extends Activity {
                                     btnAnswers[i].setTextColor(Color.parseColor("white"));
                                 }
                             }
-                        });//
+                        });
                     }
-
+                    //RPOCESS GAME OVER MESSAGE
                     if (action.equals(Constants.A_FINISH)) {
 
                         actionGameOver = gson.fromJson(message.getMessage(), ActionGameOver.class);
                         scores = actionGameOver.getScores();
 
-                        Log.d(Constants.LOGT,"Got scores: " + scores.toString());
+                        if (Constants.DEBUG_MODE) {
+                            Log.d(Constants.LOGT, "Got scores: " + scores.toString());
+                        }
 
                         Intent intent1 = new Intent(PlayerInGame.this, GameOver.class);
                         intent1.putStringArrayListExtra("scores", scores);
@@ -184,17 +199,17 @@ public class PlayerInGame extends Activity {
                         startActivity(intent1);
                     }
                 }
-
             }
 
             @Override
-            public void presence(PubNub pubnub, PNPresenceEventResult presence) {}
+            public void presence(PubNub pubnub, PNPresenceEventResult presence) {
+            }
         });
 
         this.client.getPubnub().subscribe().channels(Arrays.asList(client.getGameID())).execute();
     }
 
-    // Create an anonymous implementation of OnClickListener
+    // Create an anonymous implementation of OnClickListener to avoid redundant code
     private View.OnClickListener answerListener = new View.OnClickListener() {
         public void onClick(View v) {
             switch (v.getId()) {
@@ -211,12 +226,13 @@ public class PlayerInGame extends Activity {
                     cGuess = 3;
                     break;
                 default:
-                    cGuess=-1;
+                    cGuess = -1;
                     break;
             }
 
             btnAnswers[cGuess].setTextColor(Color.parseColor("blue"));
 
+            //PREPARE ANSWER MESSAGE TO HOST
             ActionAnswer msg = new ActionAnswer(
                     Constants.A_ANSWER,
                     client.getUser().getName(),
@@ -225,6 +241,8 @@ public class PlayerInGame extends Activity {
                     currentAsk.getQIndex(),
                     cGuess
             );
+
+            //SEND ANSWER MESSAGE TO HOST
             client.getPubnub().publish()
                     .channel(client.getGameID())
                     //.meta(Helpers.signHostMeta())
@@ -237,7 +255,6 @@ public class PlayerInGame extends Activity {
                             @Override
                             public void run() {
                                 for (final Button btn : btnAnswers) {
-                                    //btn.setVisibility(View.INVISIBLE);
                                     btn.setEnabled(false);
                                     guessed = true;
                                 }
@@ -249,6 +266,10 @@ public class PlayerInGame extends Activity {
 
         }
     };
+
+    /*
+    *  COUNTDOWN TIMER IMPLEMENTATION
+    * */
     public class MyCountDownTimer extends CountDownTimer {
 
         public MyCountDownTimer(long millisInFuture, long countDownInterval) {
@@ -259,9 +280,8 @@ public class PlayerInGame extends Activity {
         public void onTick(long millisUntilFinished) {
 
             textCounter.setText(Long.toString(millisUntilFinished / 1000));
-            int progress = (int) (millisUntilFinished/1000);
-            long pos=100L * progress/guessTime;
-            //Log.d(Constants.LOGT, "pos: "+pos);
+            int progress = (int) (millisUntilFinished / 1000);
+            long pos = 100L * progress / guessTime;
             progressBar.setProgress((int) pos);
         }
 
@@ -270,43 +290,42 @@ public class PlayerInGame extends Activity {
 
             //Logic to show for user Feedback
 
-            if (guessed == false){
+            if (guessed == false) {
                 textCounter.setText("Didn't tried? :(");
                 textCounter.setTextColor(Color.parseColor("red"));
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         for (final Button btn : btnAnswers) {
-                            //btn.setVisibility(View.INVISIBLE);
                             btn.setEnabled(false);
                             guessed = true;
                         }
                     }
                 });
-            }else if(cGuess == cCorrect){
+            } else if (cGuess == cCorrect) {
                 textCounter.setTextColor(Color.parseColor("green"));
                 textCounter.setText(FeedbackText.getRandom(true));
                 player.addScore(Constants.REWARD_CORRECT);
-            }else{
+            } else {
                 btnAnswers[cGuess].setTextColor(Color.parseColor("red"));
                 textCounter.setTextColor(Color.parseColor("red"));
                 textCounter.setText(FeedbackText.getRandom(false));
                 player.addScore(Constants.REWARD_WRONG);
             }
-            int temp= cQuestionIndex+1;
-            textScore.setText("Score: " + player.getScore()+ " Question: "+temp);
+            int temp = cQuestionIndex + 1;
+            textScore.setText("Score: " + player.getScore() + " Question: " + temp);
             btnAnswers[cCorrect].setTextColor(Color.parseColor("green"));
             progressBar.setProgress(0);
             guessed = false;
         }
 
-    }
+    }//COUNTDOWN TIMER IMPLEMENTATION
 
     //Activity destroy
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(client != null) {
+        if (client != null) {
             client.onDestroy();
         }
     }

@@ -28,7 +28,7 @@ public class Settings implements Parcelable {
      * Default constructor with default values
      */
     public Settings() {
-        this.guess_time =15;
+        this.guess_time = 15;
         this.songs_amount = 10;
         this.game_type = 1;
         this.gameID = -1;
@@ -36,8 +36,9 @@ public class Settings implements Parcelable {
 
     }
 
-     /**
+    /**
      * Constructor with all parameters
+     *
      * @param guess_time
      * @param songs_amount
      * @param game_type
@@ -51,7 +52,7 @@ public class Settings implements Parcelable {
     }
 
     /**
-     *  Getter & Setter
+     * Getter & Setter
      */
 
     public int getGuess_time() {
@@ -71,7 +72,7 @@ public class Settings implements Parcelable {
     }
 
     public String getGameIDString() {
-        Log.d("mylogger", Integer.toString(gameID)) ;
+        Log.d("mylogger", Integer.toString(gameID));
         return Integer.toString(gameID);
     }
 
@@ -91,22 +92,25 @@ public class Settings implements Parcelable {
     public void setGame_type(int game_type) {
         this.game_type = game_type;
     }
+
     public void setGameID(int gameID) {
         this.gameID = gameID;
     }
+
     public void setGamePIN(int gamePIN) {
         this.gamePIN = gamePIN;
     }
+
     /**
-     *  Parcelling part
+     * Parcelling part
      */
 
-    public Settings(Parcel in){
+    public Settings(Parcel in) {
         this.guess_time = in.readInt();
         this.songs_amount = in.readInt();
-        this.game_type =  in.readInt();
-        this.gameID =  in.readInt();
-        this.gamePIN=  in.readInt();
+        this.game_type = in.readInt();
+        this.gameID = in.readInt();
+        this.gamePIN = in.readInt();
     }
 
     @Override
@@ -123,10 +127,12 @@ public class Settings implements Parcelable {
         dest.writeInt(this.gamePIN);
 
     }
+
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
         public Settings createFromParcel(Parcel in) {
             return new Settings(in);
         }
+
         public Settings[] newArray(int size) {
             return new Settings[size];
         }

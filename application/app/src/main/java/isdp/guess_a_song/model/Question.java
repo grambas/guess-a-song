@@ -13,14 +13,14 @@ import isdp.guess_a_song.utils.Constants;
 
 /**
  * Question model as described in the UML.
- *
+ * <p>
  * Needs more work, but this will get us by for now.
  */
 
 public class Question implements Parcelable {
 
     private ArrayList<Answer> answers = new ArrayList<Answer>();
-    private HashMap<String,Integer> player_answers = new HashMap<String,Integer>();
+    private HashMap<String, Integer> player_answers = new HashMap<String, Integer>();
 
     /* 1 is song, 2 is artist* (changed to 1,2 because, radio button gives
     * 1,2 by default in game creation set settings step) also let's use Constant type
@@ -34,38 +34,48 @@ public class Question implements Parcelable {
 
 
     /*All parameters*/
-    public Question(ArrayList<Answer> ans, int ty, Song son){
+    public Question(ArrayList<Answer> ans, int ty, Song son) {
         this.answers = ans;
         this.type = ty;
         this.song = son;
     }
 
 
-    public boolean isNotAnswered(String uuid,int guess){
-        Log.d(Constants.LOGT, "isNotAnswered: "+ uuid);
+    public boolean isNotAnswered(String uuid, int guess) {
+        Log.d(Constants.LOGT, "isNotAnswered: " + uuid);
 
-        if(player_answers.containsKey(uuid)){
+        if (player_answers.containsKey(uuid)) {
             return false;
         }
-        player_answers.put(uuid,guess);
+        player_answers.put(uuid, guess);
         return true;
     }
 
 
     /*Getters and setters*/
-    public ArrayList<Answer> getAnswers(){return (ArrayList<Answer>) answers;}
+    public ArrayList<Answer> getAnswers() {
+        return (ArrayList<Answer>) answers;
+    }
 
-    public Answer getAnswer(int index){return answers.get(index);}
+    public Answer getAnswer(int index) {
+        return answers.get(index);
+    }
 
-    public int getType(){return type;}
+    public int getType() {
+        return type;
+    }
 
-    public void setType(int newType){this.type = newType;}
+    public void setType(int newType) {
+        this.type = newType;
+    }
 
-    public Song getSong(){return song;}
+    public Song getSong() {
+        return song;
+    }
 
 
     /**
-     *  Parcelling part
+     * Parcelling part
      */
 
     @Override
@@ -79,7 +89,8 @@ public class Question implements Parcelable {
         dest.writeValue(song);
         dest.writeInt(type);
     }
-    public Question(Parcel in){
+
+    public Question(Parcel in) {
         in.readTypedList(answers, Answer.CREATOR);
         this.song = (Song) in.readValue(Song.class.getClassLoader());
         this.type = in.readInt();
@@ -101,29 +112,29 @@ public class Question implements Parcelable {
         return song.toString();
     }
 
-    public void shuffle(){
+    public void shuffle() {
         Collections.shuffle(this.answers);
     }
 
-    public HashMap<Integer, String>  songsToPlayers(){
+    public HashMap<Integer, String> songsToPlayers() {
         HashMap<Integer, String> r = new HashMap<Integer, String>();
-        r.put(0,answers.get(0).getText());
-        r.put(1,answers.get(1).getText());
-        r.put(2,answers.get(2).getText());
-        r.put(3,answers.get(3).getText());
+        r.put(0, answers.get(0).getText());
+        r.put(1, answers.get(1).getText());
+        r.put(2, answers.get(2).getText());
+        r.put(3, answers.get(3).getText());
         return r;
     }
 
-    public boolean isCorrect(int i){
+    public boolean isCorrect(int i) {
         Answer ans = answers.get(i);
-        if ( ans.isCorrect() )
-        {
+        if (ans.isCorrect()) {
             return true;
         }
-       return false;
+        return false;
     }
-    public int getCorrectIndex(){
-        for(int i=0; i<4; i++) {
+
+    public int getCorrectIndex() {
+        for (int i = 0; i < 4; i++) {
             if (answers.get(i).isCorrect()) {
                 return i;
             }

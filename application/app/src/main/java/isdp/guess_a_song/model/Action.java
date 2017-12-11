@@ -11,7 +11,7 @@ package isdp.guess_a_song.model;
  * with basic methods. Please add other attributes by needs.
  *
  * @Author Mindaugas Milius
-**/
+ **/
 
 
 public abstract class Action {

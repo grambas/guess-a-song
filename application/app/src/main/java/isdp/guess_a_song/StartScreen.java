@@ -15,7 +15,6 @@ import isdp.guess_a_song.model.UserProfile;
 import isdp.guess_a_song.ui.EditProfile;
 import isdp.guess_a_song.ui.JoinGame;
 import isdp.guess_a_song.ui.MusicLibrary;
-import isdp.guess_a_song.ui.experimental.GameCreationTab;
 import isdp.guess_a_song.ui.roomcreation._1HostGame;
 import isdp.guess_a_song.ui.roomcreation._4GameRoom;
 
@@ -26,7 +25,6 @@ public class StartScreen extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_screen);
-
 
 
         /********************************************
@@ -52,9 +50,8 @@ public class StartScreen extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
-
-
     }
+
     /**
      * Storage permission stuff
      *
@@ -73,7 +70,7 @@ public class StartScreen extends AppCompatActivity {
                     //SYNC DB SONGS
                     ContentResolver contentResolver = getContentResolver();
                     DatabaseHandler db = new DatabaseHandler(this);
-                    MusicLibrary.syncSongToDB(contentResolver,db);
+                    MusicLibrary.syncSongToDB(contentResolver, db);
                 } else {
                     Toast.makeText(this, "No Permission Granted. Restart App!", Toast.LENGTH_SHORT).show();
                     finish();
@@ -82,6 +79,8 @@ public class StartScreen extends AppCompatActivity {
             }
         }
     }
+
+    //BUTTONS ACTION
     public void hostGame(View v) {
         Intent intent = new Intent(this, _1HostGame.class);
         startActivity(intent);
@@ -96,6 +95,7 @@ public class StartScreen extends AppCompatActivity {
         Intent intent = new Intent(this, MusicLibrary.class);
         startActivity(intent);
     }
+
     public void GameRoomActivity(View v) {
         Intent intent = new Intent(this, _4GameRoom.class);
         startActivity(intent);

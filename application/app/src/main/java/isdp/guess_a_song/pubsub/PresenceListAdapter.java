@@ -29,8 +29,6 @@ import isdp.guess_a_song.model.PresencePojo;
  * @author Mindaugas Milius
  */
 
-
-
 public class PresenceListAdapter extends ArrayAdapter<PresencePojo> {
     private final Context context;
     private final LayoutInflater inflater;
@@ -43,21 +41,25 @@ public class PresenceListAdapter extends ArrayAdapter<PresencePojo> {
         this.context = context;
         this.inflater = LayoutInflater.from(context);
     }
-    public Map<String, PresencePojo> getItems(){
+
+    public Map<String, PresencePojo> getItems() {
         return latestPresence;
     }
 
-
+    /**
+     * Add user to the list.
+     * and notify observers
+     *
+     * @param message
+     */
     @Override
     public void add(PresencePojo message) {
-        if ( latestPresence.containsKey(message.getSender()) ) {
+
+        if (latestPresence.containsKey(message.getSender())) {
             this.presenceList.remove(message.getSender());//remove to update later
         }
-        //Ignore Console_Admin
-        if(!message.getSender().equals("Console_Admin")){
-            this.presenceList.add(0, message.getSender());
-            latestPresence.put(message.getSender(), message);
-        }
+        this.presenceList.add(0, message.getSender());
+        latestPresence.put(message.getSender(), message);
 
         ((Activity) this.context).runOnUiThread(new Runnable() {
             @Override
@@ -72,9 +74,7 @@ public class PresenceListAdapter extends ArrayAdapter<PresencePojo> {
         String sender = this.presenceList.get(position);
         PresencePojo presenceMsg = this.latestPresence.get(sender);
 
-
         PresenceMessageListRowUi msgView;
-
 
         if (convertView == null) {
             msgView = new PresenceMessageListRowUi();
@@ -85,15 +85,16 @@ public class PresenceListAdapter extends ArrayAdapter<PresencePojo> {
             msgView.presence = (TextView) convertView.findViewById(R.id.value);
             msgView.timestamp = (TextView) convertView.findViewById(R.id.timestamp);
             msgView.auth = (TextView) convertView.findViewById(R.id.auth);
+
             convertView.setTag(msgView);
         } else {
             msgView = (PresenceMessageListRowUi) convertView.getTag();
         }
-        msgView.sender.setText(presenceMsg.getSenderOrName());
 
+        msgView.sender.setText(presenceMsg.getSenderOrName());
         msgView.presence.setText(presenceMsg.getPresence());
-        msgView.timestamp.setText("Status: "+presenceMsg.getTimestamp());
-        msgView.auth.setText("Authenticated: "+String.valueOf(presenceMsg.isAuth()));
+        msgView.timestamp.setText("Status: " + presenceMsg.getTimestamp());
+        msgView.auth.setText("Authenticated: " + String.valueOf(presenceMsg.isAuth()));
         return convertView;
     }
 
@@ -102,12 +103,17 @@ public class PresenceListAdapter extends ArrayAdapter<PresencePojo> {
         return this.presenceList.size();
     }
 
+    /**
+     * Clear presence array list (Online Users)
+     */
     public void clear() {
         this.presenceList.clear();
         this.latestPresence.clear();
         notifyDataSetChanged();
     }
 }
+
+//SIMPEL CLASS WITCH HOLDS GUI ELEMENTS
 class PresenceMessageListRowUi {
     public TextView sender;
     public TextView presence;

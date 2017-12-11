@@ -12,7 +12,7 @@ public class ActionAsk extends Action {
     int qIndex;
     int correct;
 
-    public ActionAsk(String action, String publisher, String recipient, HashMap<Integer, String> question,int correct,int qIndex) {
+    public ActionAsk(String action, String publisher, String recipient, HashMap<Integer, String> question, int correct, int qIndex) {
         super(action, publisher, recipient);
         this.question = question;
         this.qIndex = qIndex;
@@ -22,9 +22,11 @@ public class ActionAsk extends Action {
     public HashMap<Integer, String> getQuestion() {
         return question;
     }
+
     public int getQIndex() {
         return qIndex;
     }
+
     public int getQCorrect() {
         return correct;
     }

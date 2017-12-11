@@ -10,17 +10,17 @@ import android.os.Parcelable;
 /**
  * This class holds answer text ant boolean
  * if answer ir correct one.
- *  This class is Parcelable ready
+ * This class is Parcelable ready
  *
  * @Author Mindaugas Milius
  */
 
-public class Answer  implements Parcelable {
+public class Answer implements Parcelable {
     private String text;
     private boolean correct;
 
 
-    public Answer(String text,boolean correct) {
+    public Answer(String text, boolean correct) {
         this.correct = correct;
         this.text = text;
     }
@@ -50,7 +50,7 @@ public class Answer  implements Parcelable {
     }
 
     /**
-     *  Parcelling part
+     * Parcelling part
      */
 
     @Override
@@ -63,15 +63,18 @@ public class Answer  implements Parcelable {
         dest.writeString(text);
         dest.writeInt(correct ? 1 : 0);
     }
-    public Answer(Parcel in){
+
+    public Answer(Parcel in) {
         this.text = in.readString();
-        this.correct  = (in.readInt() == 0) ? false : true;
+        this.correct = (in.readInt() == 0) ? false : true;
 
     }
+
     public static final Parcelable.Creator<Answer> CREATOR = new Parcelable.Creator<Answer>() {
         public Answer createFromParcel(Parcel in) {
             return new Answer(in);
         }
+
         public Answer[] newArray(int size) {
             return new Answer[size];
         }

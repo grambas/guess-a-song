@@ -28,36 +28,35 @@ import java.util.UUID;
 /**
  * Simple class to hold miscellaneous help functions
  * and methods
+ *
  * @Author Mindaugas Milius
  */
 public class Helpers {
 
     private static String uniqueID = null;
     private static final String PREF_UNIQUE_ID = "PREF_UNIQUE_ID";
+
     /**
-     *
      * @param min min value for random number
      * @param max max value for random number
      * @return random int number
      */
-    public static int randomInt(int min,int max){
+    public static int randomInt(int min, int max) {
         Random r = new Random();
         return r.nextInt(max - min + 1) + min;
     }
 
     /**
-     *
      * @param min min value for random number
      * @param max max value for random number
      * @return random int as string
      */
-    public static String randomNumberString(int min,int max){
+    public static String randomNumberString(int min, int max) {
         Random r = new Random();
         return String.valueOf(r.nextInt(max - min + 1) + min);
     }
 
     /**
-     *
      * @return get current timestamp in UTC date format
      */
     public static String getTimeStampUtc() {
@@ -65,27 +64,34 @@ public class Helpers {
     }
 
     /**
-     *  This function needed for PubNub Subscriber
-     *  channels(List<String>)
+     * This function needed for PubNub Subscriber
+     * channels(List<String>)
+     *
      * @param numb
      * @return String as array list item
      */
-    public static List<String> numberToStringList(int numb){
+    public static List<String> numberToStringList(int numb) {
         return Arrays.asList(String.valueOf(numb));
     }
 
     /**
-     *  This function needed for PubNub Subscriber
-     *  channels(List<String>)
+     * This function needed for PubNub Subscriber
+     * channels(List<String>)
+     *
      * @param numb
      * @return String as array list item
      */
-    public static List<String> numberToStringList(String numb){
+    public static List<String> numberToStringList(String numb) {
         return Arrays.asList(numb);
     }
 
 
-
+    /**
+     * Get user ID
+     *
+     * @param context
+     * @return
+     */
     public synchronized static String id(Context context) {
         if (uniqueID == null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(
@@ -103,8 +109,13 @@ public class Helpers {
         return uniqueID;
     }
 
-
-    public static Map<String, Object> signHostMeta(){
+    /**
+     * Function to put meta information, that
+     * the message gonna be sended from Host
+     *
+     * @return
+     */
+    public static Map<String, Object> signHostMeta() {
         Map<String, Object> meta = new HashMap<>();
         meta.put("from", Constants.HOST_USERNAME);
         return meta;

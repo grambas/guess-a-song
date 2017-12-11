@@ -29,9 +29,11 @@ public class PresencePnCallback extends SubscribeCallback {
     public PresencePnCallback(PresenceListAdapter presenceListAdapter) {
         this.presenceListAdapter = presenceListAdapter;
     }
-    public PresenceListAdapter getAdapter(){
+
+    public PresenceListAdapter getAdapter() {
         return this.presenceListAdapter;
     }
+
     @Override
     public void status(PubNub pubnub, PNStatus status) {
         // no status handling for simplicity
@@ -48,20 +50,30 @@ public class PresencePnCallback extends SubscribeCallback {
         String name = null;
         boolean is_auth = false;
         try {
-            Log.v(Constants.LOGT, "gotPresencePnCallback.java : (" +presence.toString() + ")");
+            if (Constants.DEBUG_MODE){Log.v(Constants.LOGT, "gotPresencePnCallback.java : (" + presence.toString() + ")");}
+
+            //PARSE INFO FROM PRESENCE
             String sender = presence.getUuid();
             String presenceString = presence.getEvent().toString();
             String timestamp = Helpers.getTimeStampUtc();
 
-            if(presence.getState() != null){
+            //IGNORE PUBNUB DEFAULT DEBUG USER NAME
+            //  if (!sender.equals("Console_Admin")) {
+
+            //BUILD OBJECT FROM PRESENCE
+            if (presence.getState() != null) {
                 is_auth = presence.getState().getAsJsonObject().get("is_auth").getAsBoolean();
                 name = presence.getState().getAsJsonObject().get("name").getAsString();
             }
 
-            pm = new PresencePojo(sender, name,is_auth,presenceString, timestamp);
+            pm = new PresencePojo(sender, name, is_auth, presenceString, timestamp);
             pm.setAuth(is_auth);
             pm.setName(name);
+
+            //ADD TO LIST
             presenceListAdapter.add(pm);
+            //   }
+
         } catch (Exception e) {
             e.printStackTrace();
         }

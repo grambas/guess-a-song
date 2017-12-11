@@ -36,17 +36,18 @@ import isdp.guess_a_song.utils.Helpers;
 
 /**
  * This is Wrapper from PubNub APi Framework
+ *
  * @Author Mindaugas Milius
  */
 
-public class PubNubClient{
+public class PubNubClient {
 
     private PubNub pubnub;
     public String gameID;
     private UserProfile user;
     private boolean usePost;
 
-    public PubNubClient(UserProfile user,String gameID, boolean isHost) {
+    public PubNubClient(UserProfile user, String gameID, boolean isHost) {
 
         this.gameID = gameID;
         this.user = user;
@@ -57,21 +58,20 @@ public class PubNubClient{
         config.setSubscribeKey(Constants.SKEY);
         //config.setSecure(true);
 
-        if (isHost){
+        if (isHost) {
             config.setUuid(this.user.getName());
-        }else{
+        } else {
             config.setUuid(this.user.getUuid());
             // config.setFilterExpression("from == '" + Constants.HOST_USERNAME+"'");
         }
 
         this.pubnub = new PubNub(config);
-        Log.d(Constants.LOGT, user.getName() + " PubNub Client init");
+        if (Constants.DEBUG_MODE) {
+            Log.d(Constants.LOGT, user.getName() + " PubNub Client init");
+        }
 
     }
 
-    public String getGameID() {
-        return gameID;
-    }
 
     public void publish(Action m, Map<String, Object> meta) {
         try {
@@ -86,22 +86,24 @@ public class PubNubClient{
                         public void onResponse(PNPublishResult result, PNStatus status) {
                             if (status != null && status.isError()) {
                                 // something bad happened.
-                                Log.d(Constants.LOGT,user.getName()+ " Publish error");
+                                if (Constants.DEBUG_MODE) {Log.d(Constants.LOGT, user.getName() + " Publish error");}
                             }
                         }
                     });
         } catch (Exception e) {
-            Log.e(Constants.LOGT, "exception while publishing message", e);
+            if (Constants.DEBUG_MODE) {
+                Log.e(Constants.LOGT, "exception while publishing message", e);
+            }
         }
     }
 
-    public void subscribe(boolean withPre){
-        if (withPre){
-            this.pubnub.subscribe().withPresence().channels( Arrays.asList(gameID) ).execute();
-            Log.d(Constants.LOGT, user.getName()+" Subscribed with Presence");
-        }else{
-            this.pubnub.subscribe().channels( Arrays.asList(gameID) ).execute();
-            Log.d(Constants.LOGT, user.getName()+" Subscribed withOUT Presence");
+    public void subscribe(boolean withPre) {
+        if (withPre) {
+            this.pubnub.subscribe().withPresence().channels(Arrays.asList(gameID)).execute();
+            if (Constants.DEBUG_MODE) {Log.d(Constants.LOGT, user.getName() + " Subscribed with Presence");}
+        } else {
+            this.pubnub.subscribe().channels(Arrays.asList(gameID)).execute();
+            if (Constants.DEBUG_MODE) {Log.d(Constants.LOGT, user.getName() + " Subscribed withOUT Presence");}
 
         }
     }
@@ -109,13 +111,13 @@ public class PubNubClient{
     public final void initChannelsHost(final PresencePnCallback pr) {
         this.pubnub.addListener(pr);
 
-        this.pubnub.subscribe().channels( Arrays.asList(this.gameID) ).withPresence().execute();
+        this.pubnub.subscribe().channels(Arrays.asList(this.gameID)).withPresence().execute();
         hereNow(pr);
 
     }
 
-    public void hereNow(final PresencePnCallback pr){
-        this.pubnub.hereNow().includeState(true).includeUUIDs(true).channels( Arrays.asList(this.gameID) ).async(new PNCallback<PNHereNowResult>() {
+    public void hereNow(final PresencePnCallback pr) {
+        this.pubnub.hereNow().includeState(true).includeUUIDs(true).channels(Arrays.asList(this.gameID)).async(new PNCallback<PNHereNowResult>() {
             @Override
             public void onResponse(PNHereNowResult result, PNStatus status) {
                 if (status != null && status.isError()) {
@@ -123,17 +125,19 @@ public class PubNubClient{
                 }
 
                 try {
-                    Log.d(Constants.LOGT, "HOST HERE NOW" +result.toString());
+                    if (Constants.DEBUG_MODE) {Log.d(Constants.LOGT, "HOST HERE NOW" + result.toString());}
 
                     for (Map.Entry<String, PNHereNowChannelData> entry : result.getChannels().entrySet()) {
                         for (PNHereNowOccupantData occupant : entry.getValue().getOccupants()) {
-                            JsonObject state=occupant.getState().getAsJsonObject();
+                            JsonObject state = occupant.getState().getAsJsonObject();
                             boolean auth = state.get("is_auth").getAsBoolean();
                             String name = state.get("name").getAsString();
 
-                            Log.d(Constants.LOGT, "HOST HERE NOW sate" +state.toString());
+                            if (Constants.DEBUG_MODE) {
+                                Log.d(Constants.LOGT, "HOST HERE NOW sate" + state.toString());
+                            }
 
-                            pr.getAdapter().add(new PresencePojo(occupant.getUuid(), name,auth,"online", Helpers.getTimeStampUtc()));
+                            pr.getAdapter().add(new PresencePojo(occupant.getUuid(), name, auth, "online", Helpers.getTimeStampUtc()));
                         }
                     }
                 } catch (Exception e) {
@@ -143,7 +147,32 @@ public class PubNubClient{
             }
         });
     }
-    public Map<String, PresencePojo> getRoomPlayers(){
+
+
+
+    public Map<String, JsonElement> getPresenceState() {
+        final Map<String, JsonElement> r = new HashMap<>();
+        this.pubnub.getPresenceState()
+                .channels(Arrays.asList(this.gameID)) // channels to fetch state for
+                .uuid("suchUUID") // uuid of user to fetch, or for own uuid
+                .async(new PNCallback<PNGetStateResult>() {
+                    @Override
+                    public void onResponse(PNGetStateResult result, PNStatus status) {
+                        // handle response
+                        //r.putAll(result.getStateByUUID());
+                    }
+                });
+        return r;
+    }
+
+
+    public void onDestroy() {
+        pubnub.destroy();
+        pubnub.unsubscribeAll();
+        pubnub.disconnect();
+    }
+
+    public Map<String, PresencePojo> getRoomPlayers() {
 
         // Put elements to the map
         final Map<String, PresencePojo> r = new LinkedHashMap<String, PresencePojo>();
@@ -162,13 +191,15 @@ public class PubNubClient{
                         }
 
                         for (PNHereNowChannelData channelData : result.getChannels().values()) {
-                            Log.d(Constants.LOGT,"---");
-                            Log.d(Constants.LOGT,"channel:" + channelData.getChannelName());
-                            Log.d(Constants.LOGT,"occupancy: " + channelData.getOccupancy());
-                            Log.d(Constants.LOGT,"occupants:");
-                            for (PNHereNowOccupantData occupant : channelData.getOccupants()) {
-                                Log.d(Constants.LOGT,"uuid: " + occupant.getUuid() + " state: " + occupant.getState());
-                                //r.put(occupant.getUuid(), new PresencePojo(occupant.getUuid(),"",""));
+                            if (Constants.DEBUG_MODE) {
+                                Log.d(Constants.LOGT, "---");
+                                Log.d(Constants.LOGT, "channel:" + channelData.getChannelName());
+                                Log.d(Constants.LOGT, "occupancy: " + channelData.getOccupancy());
+                                Log.d(Constants.LOGT, "occupants:");
+                                for (PNHereNowOccupantData occupant : channelData.getOccupants()) {
+                                    Log.d(Constants.LOGT, "uuid: " + occupant.getUuid() + " state: " + occupant.getState());
+                                    //r.put(occupant.getUuid(), new PresencePojo(occupant.getUuid(),"",""));
+                                }
                             }
                         }
                     }
@@ -176,7 +207,7 @@ public class PubNubClient{
         return r;
     }
 
-    public void setPresenceState(JsonObject state,String uuid){
+    public void setPresenceState(JsonObject state, String uuid) {
 
         this.pubnub.setPresenceState().uuid(uuid)
                 //.channels(Arrays.asList(gameID))
@@ -187,35 +218,15 @@ public class PubNubClient{
                     }
                 });
     }
-    public Map<String, JsonElement> getPresenceState(){
-        final Map<String, JsonElement> r = new HashMap<>();
-        this.pubnub.getPresenceState()
-                .channels(Arrays.asList(this.gameID)) // channels to fetch state for
-                .uuid("suchUUID") // uuid of user to fetch, or for own uuid
-                .async(new PNCallback<PNGetStateResult>() {
-                    @Override
-                    public void onResponse(PNGetStateResult result, PNStatus status) {
-                        // handle response
-                        //r.putAll(result.getStateByUUID());
-                    }
-                });
-        return r;
-    }
-    public PubNub getPubnub() {
-        return pubnub;
-    }
-    public void onDestroy(){
-        pubnub.destroy();
-        pubnub.unsubscribeAll();
-        pubnub.disconnect();
-    }
-
     public UserProfile getUser() {
         return user;
     }
 
-    public String getUsername() {
-        return this.user.getName();
+    public String getGameID() {
+        return gameID;
+    }
+    public PubNub getPubnub() {
+        return pubnub;
     }
 
 }

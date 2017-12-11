@@ -1,7 +1,6 @@
 package isdp.guess_a_song.db;
 
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,8 +23,8 @@ import static android.R.attr.name;
 /**
  * Database manager. This class interacts with database.
  * Contents all CRUD methods
- * @author Mindaugas Milius
  *
+ * @author Mindaugas Milius
  */
 
 public class DatabaseHandler extends SQLiteOpenHelper {
@@ -100,17 +99,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     /**
      * Getting single song
+     *
      * @param path path
      * @return song object
      */
     public Song getSong(String path) {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.query(TABLE_SONGS, new String[] { KEY_ID,
-                        KEY_ORG_NAME,KEY_ARTIST,KEY_TITLE,KEY_PATH,KEY_IS_REAL,KEY_PLAYED_COUNT }, KEY_PATH + "=?",
-                new String[] { path }, null, null, null, null);
-        if (cursor != null){
-            if(cursor.moveToFirst()){
+        Cursor cursor = db.query(TABLE_SONGS, new String[]{KEY_ID,
+                        KEY_ORG_NAME, KEY_ARTIST, KEY_TITLE, KEY_PATH, KEY_IS_REAL, KEY_PLAYED_COUNT}, KEY_PATH + "=?",
+                new String[]{path}, null, null, null, null);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
                 Song song = new Song(
                         Integer.parseInt(cursor.getString(0)),
                         cursor.getString(1),
@@ -133,21 +133,24 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     /**
      * Getting single song
+     *
      * @return song object
      */
     public boolean checkIfExist(String path) {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.query(TABLE_SONGS, new String[] { KEY_ID,
-                        KEY_ORG_NAME,KEY_ARTIST,KEY_TITLE,KEY_PATH,KEY_IS_REAL,KEY_PLAYED_COUNT }, KEY_PATH + "=?",
-                new String[] { path }, null, null, null, null);
-        if (cursor != null){
+        Cursor cursor = db.query(TABLE_SONGS, new String[]{KEY_ID,
+                        KEY_ORG_NAME, KEY_ARTIST, KEY_TITLE, KEY_PATH, KEY_IS_REAL, KEY_PLAYED_COUNT}, KEY_PATH + "=?",
+                new String[]{path}, null, null, null, null);
+        if (cursor != null) {
             return false;
         }
         return true;
     }
+
     /**
      * Getting All Songs
+     *
      * @return songs in List
      */
     public List<Song> getAllSongs(int onlyReal) {
@@ -156,9 +159,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String selectQuery;
 
         // Select All Query
-        if (onlyReal == 1){
-            selectQuery = "SELECT * FROM "+TABLE_SONGS+" WHERE "+KEY_IS_REAL+" ="+1;
-        }else{
+        if (onlyReal == 1) {
+            selectQuery = "SELECT * FROM " + TABLE_SONGS + " WHERE " + KEY_IS_REAL + " =" + 1;
+        } else {
             selectQuery = "SELECT  * FROM " + TABLE_SONGS;
         }
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -185,8 +188,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // return song list
         return songsList;
     }
+
     /**
      * Getting All Songs
+     *
      * @return songs in List
      */
     public List<Song> getRandomSongs(Song s) {
@@ -196,7 +201,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         // Select All Query
         // TODO maybe  not like artist or title separte
-            selectQuery = "SELECT * FROM "+TABLE_SONGS+" WHERE "+KEY_ORG_NAME+" NOT LIKE '%" + s.getOriginalName() +"%' ORDER BY RANDOM() LIMIT "+ 4;
+        selectQuery = "SELECT * FROM " + TABLE_SONGS + " WHERE " + KEY_ORG_NAME + " NOT LIKE '%" + s.getOriginalName() + "%' ORDER BY RANDOM() LIMIT " + 4;
 
         Cursor cursor = db.rawQuery(selectQuery, null);
 
@@ -222,8 +227,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // return song list
         return songsList;
     }
+
     /**
      * Update song record in database
+     *
      * @param s song to update
      * @return 1 if success
      */
@@ -241,10 +248,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         db.beginTransaction();
         try {
-            res=db.update(TABLE_SONGS, values, KEY_ID + " = ?",
-                    new String[] { String.valueOf(s.getID()) });
+            res = db.update(TABLE_SONGS, values, KEY_ID + " = ?",
+                    new String[]{String.valueOf(s.getID())});
             db.setTransactionSuccessful();
-        } catch (Exception e){
+        } catch (Exception e) {
             //Error in between database transaction
             e.printStackTrace();
         } finally {
@@ -258,6 +265,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     /**
      * Adding new song
+     *
      * @param s song
      * @return inserted record ID as long
      */
@@ -267,7 +275,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         Song exist = getSong(s.getPath());
 
-        if(exist != null){
+        if (exist != null) {
             return s.getID();
         }
 
@@ -285,24 +293,25 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         try {
             inserted_id = db.insert(TABLE_SONGS, null, values);
             db.setTransactionSuccessful();
-        } catch (Exception e){
+        } catch (Exception e) {
             //Error in between database transaction
             e.printStackTrace();
         } finally {
             db.endTransaction();
             db.close(); // Closing database connection
         }
-        Log.d("syncSongsToDB", "Inserted= "+s.toString());
+        Log.d("syncSongsToDB", "Inserted= " + s.toString());
         return inserted_id;
     }
 
     /**
      * Delete song from database.
      * Method takes Song object and deletes it by ID
+     *
      * @param s Song to delete
      */
     public void deleteSong(Song s) {
-        Log.d("syncSongsToDB", "delete where path= "+s.getPath());
+        Log.d("syncSongsToDB", "delete where path= " + s.getPath());
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -310,9 +319,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.beginTransaction();
         try {
             db.delete(TABLE_SONGS, KEY_PATH + " = ?",
-                    new String[] { String.valueOf(s.getPath()) });
+                    new String[]{String.valueOf(s.getPath())});
             db.setTransactionSuccessful();
-        } catch (Exception e){
+        } catch (Exception e) {
             //Error in between database transaction
             e.printStackTrace();
         } finally {
@@ -324,6 +333,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     /**
      * Counts all song records
+     *
      * @return number of songs in database as int
      */
     public int getSongsCount() {
@@ -341,11 +351,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * Adds some fake songs to database
      * uisng in "onCreate" method
      */
-    public void addFakeSongs( SQLiteDatabase db ) {
+    public void addFakeSongs(SQLiteDatabase db) {
 
         List<Song> songs = new SongsImporter(this._context).importSongs();
         ContentValues values = new ContentValues();
-        values.put(KEY_ORG_NAME,"");
+        values.put(KEY_ORG_NAME, "");
         values.put(KEY_PATH, "");
         values.put(KEY_IS_REAL, 0);
         values.put(KEY_PLAYED_COUNT, 0);
@@ -359,9 +369,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
 
-    public void clearTable()   {
+    public void clearTable() {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_SONGS, null,null);
+        db.delete(TABLE_SONGS, null, null);
     }
 
 }

@@ -33,9 +33,6 @@ public class HostGame extends Observable {
     Settings settings;
     List<Question> questions;
     HashMap<String, UserProfile> players;
-    HashMap<Integer, Set<String>> already_answered;
-
-    //Score score
 
     int status;
     int currentIndex;
@@ -48,8 +45,7 @@ public class HostGame extends Observable {
     private HostGame() {
         status = Constants.GAME_STATUS_STARTED;
         currentIndex = 0;
-       // scoreMap = null;
-        players = new HashMap<String,UserProfile>();
+        players = new HashMap<String, UserProfile>();
 
         questions = null;
         settings = null;
@@ -60,29 +56,19 @@ public class HostGame extends Observable {
         return ans_amount;
     }
 
-    public void setAns_amount(int ans_amount) {
-        this.ans_amount = ans_amount;
-        setChanged();
-        notifyObservers();
-    }
-
-
-    public void setCurrentIndex(int currentIndex) {
-        this.currentIndex = currentIndex;
-    }
 
     /**
      * Methdod to start a game after all game
      * creation steps are done and all players joined
      * into the room
      */
-    public void start(){
-        status  = Constants.GAME_STATUS_STARTED;
+    public void start() {
+        status = Constants.GAME_STATUS_STARTED;
     }
 
-    public boolean next_q(){
+    public boolean next_q() {
         ans_amount = 0;
-        if (currentIndex == questions.size()-1 ) {
+        if (currentIndex == questions.size() - 1) {
             return false;
         }
         currentIndex++;
@@ -90,22 +76,27 @@ public class HostGame extends Observable {
         notifyObservers();
         return true;
     }
-    public void pause(){
-        status  = Constants.GAME_STATUS_PAUSE;
+
+    public void pause() {
+        status = Constants.GAME_STATUS_PAUSE;
     }
 
-    public Question getCurrentQuestion(){
+    public Question getCurrentQuestion() {
         return questions.get(currentIndex);
     }
 
-    public int getCurrentIndex(){
+    public int getCurrentIndex() {
         return currentIndex;
     }
-    public String showScore(){
+
+    /**
+     * Function to display current score.
+     * @return current score as string . Not sorted
+     */
+    public String showScore() {
         String scoreString = "Score: \n";
-        //TODO add sorting
         for (UserProfile value : players.values()) {
-            scoreString += (value.getName() +" : " + value.getScore()+ "\n");
+            scoreString += (value.getName() + " : " + value.getScore() + "\n");
         }
         return scoreString;
     }
@@ -115,9 +106,9 @@ public class HostGame extends Observable {
         int score = -1;
         for (UserProfile value : players.values()) {
 
-            //This should sort the list...using Queue as datastructure might be a better idea...probably
+            //This should sort the list...using Queue as data structure might be a better idea...probably
             if (value.getScore() > score) {
-                scores.add(0,value.getName() +" : " + value.getScore());
+                scores.add(0, value.getName() + " : " + value.getScore());
                 score = value.getScore();
             } else {
                 scores.add(value.getName() + " : " + value.getScore());
@@ -126,10 +117,9 @@ public class HostGame extends Observable {
         return scores;
     }
 
-    public void end(){
-        status  = Constants.GAME_STATUS_FINISHED;
+    public void end() {
+        status = Constants.GAME_STATUS_FINISHED;
     }
-
 
     public Settings getSettings() {
         return settings;
@@ -147,29 +137,41 @@ public class HostGame extends Observable {
         this.questions = questions;
     }
 
-    public  HashMap<String, UserProfile> getPlayers() {
+    public HashMap<String, UserProfile> getPlayers() {
         return players;
     }
 
-    public void setPlayers( List<UserProfile> players) {
+    public void setPlayers(List<UserProfile> players) {
         for (UserProfile record : players) {
-            if(record.isAuth()){
-                this.players.put(record.getUuid(),record);
+            if (record.isAuth()) {
+                this.players.put(record.getUuid(), record);
             }
         }
     }
-    public void addPlayers( UserProfile player) {
-        players.put(player.getUuid(),player);
+
+    public void addPlayers(UserProfile player) {
+        players.put(player.getUuid(), player);
     }
 
-    public boolean processAnswer(String player,int guess,int guess_index){
+    /**
+     * Function to calculate points after Player guess
+     * This function also checks if user is already guessed
+     * for current question and if so, it won't give points
+     * for that questions twice.
+     * @param player
+     * @param guess
+     * @param guess_index
+     * @return true or false if player is already guessed for current question
+     */
+
+    public boolean processAnswer(String player, int guess, int guess_index) {
         boolean result = true;
-        Log.d(Constants.LOGT, "processAnswer: "+ player);
-        if(currentIndex == guess_index && players.containsKey(player)){
-            if(getCurrentQuestion().isNotAnswered(player,guess)){
-                if( getCurrentQuestion().isCorrect(guess)){
+        if (Constants.DEBUG_MODE){Log.d(Constants.LOGT, "processAnswer: " + player);}
+        if (currentIndex == guess_index && players.containsKey(player)) {
+            if (getCurrentQuestion().isNotAnswered(player, guess)) {
+                if (getCurrentQuestion().isCorrect(guess)) {
                     players.get(player).addScore(Constants.REWARD_CORRECT);
-                }else{
+                } else {
                     //decrement?
                     players.get(player).addScore(Constants.REWARD_WRONG);
                 }
@@ -178,10 +180,10 @@ public class HostGame extends Observable {
                 notifyObservers();
             }
 
-        }else{
-           result = false;
+        } else {
+            result = false;
         }
-    return result;
+        return result;
     }
 
     public int getStatus() {
@@ -189,29 +191,34 @@ public class HostGame extends Observable {
     }
 
     public void setStatus(int status) {
-        Log.d(Constants.LOGT, "Game Status changed from "+ this.status + " to "+ status);
+        if (Constants.DEBUG_MODE){Log.d(Constants.LOGT, "Game Status changed from " + this.status + " to " + status);}
         this.status = status;
         setChanged();
         notifyObservers();
     }
 
-    public String getHumanStatus(){
-        if (status == Constants.GAME_STATUS_STARTED){
+    /**
+     * Display Game status for user in words
+     * @return
+     */
+    public String getHumanStatus() {
+        if (status == Constants.GAME_STATUS_STARTED) {
             return "Started";
-        }else  if(status == Constants.GAME_STATUS_FINISHED){
+        } else if (status == Constants.GAME_STATUS_FINISHED) {
             return "Finished";
-        }else  if(status == Constants.GAME_STATUS_ON_QUESTION){
+        } else if (status == Constants.GAME_STATUS_ON_QUESTION) {
             return "On question";
-        }else  if(status == Constants.GAME_STATUS_PAUSE){
+        } else if (status == Constants.GAME_STATUS_PAUSE) {
             return "Paused";
-        }else  if(status == Constants.GAME_STATUS_TIME_OVER){
+        } else if (status == Constants.GAME_STATUS_TIME_OVER) {
             return "Time over";
-        }else  if(status == Constants.GAME_STATUS_READY){
+        } else if (status == Constants.GAME_STATUS_READY) {
             return "Ready";
-        }else{
+        } else {
             return "not defined";
         }
     }
+
     @Override
     public String toString() {
         return "HostGame{" +

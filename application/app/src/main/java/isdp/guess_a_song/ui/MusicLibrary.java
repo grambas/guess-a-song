@@ -44,8 +44,6 @@ public class MusicLibrary extends AppCompatActivity {
     private DatabaseHandler db;
     private ListView listView;
     private Button btSync;
-    private Button btTest;
-    private String tag = "MusicLibrary";
 
 
     @Override
@@ -53,7 +51,6 @@ public class MusicLibrary extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music_library);
         db = new DatabaseHandler(this);
-        //db.clearDatabase();
 
 
         /********************************************
@@ -79,22 +76,7 @@ public class MusicLibrary extends AppCompatActivity {
 
     public void doStuff() {
 
-        /********************************************
-         * for testing only
-         *******************************************/
-
-        btTest = (Button) findViewById(R.id.btTest2);
-        btTest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(tag, " btTest2 clicked ");
-
-                db.clearTable();
-                dbSongsToView();
-
-            }
-        });
-
+        // For feature to play or edit song file maybe
 
         /*
          listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -146,7 +128,7 @@ public class MusicLibrary extends AppCompatActivity {
     public static List<Song> getStorageMusic(ContentResolver cr) {
         List<Song> found_songs = new ArrayList<Song>();
         Song curr;
-        ContentResolver contentResolver =cr;
+        ContentResolver contentResolver = cr;
         Uri songUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor songCursor = contentResolver.query(songUri, null, null, null, null);
 
@@ -190,39 +172,27 @@ public class MusicLibrary extends AppCompatActivity {
      * Compare DB song list with storage list
      * and sync the DB
      */
-    //TODO remove log messages
-    public static List<Song> syncSongToDB(ContentResolver cr,DatabaseHandler db) {
+    public static List<Song> syncSongToDB(ContentResolver cr, DatabaseHandler db) {
         List<Song> fresh_list = getStorageMusic(cr);
         List<Song> songs_list = new ArrayList<>();
 
-
         List<Song> temp_to_del = new ArrayList<Song>(db.getAllSongs(1));
         List<Song> temp_to_add = new ArrayList<Song>(fresh_list);
-//        Log.d(tag, "songs_list= " + songs_list.toString());
-//        Log.d(tag, "fresh_list= " + fresh_list.toString());
 
 
         //remove from temporary list all active songs in storage
         temp_to_del.removeAll(fresh_list);
-//        Log.d(tag, "temp_to_del(after removeAll)= " + temp_to_del.toString());
-//        Log.d(tag, "songs_list= " + songs_list.toString());
-
         temp_to_add.removeAll(songs_list);
-//        Log.d(tag, "temp_to_add(after removeAll)= " + temp_to_add.toString());
-//
-//        Log.d(tag, "For temp to del call ...");
 
         //delete from db all songs witch are not in storage
         for (final Song song : temp_to_del) {
             db.deleteSong(song);
         }
-//        Log.d(tag, "For temp to add call ...");
         //add all songs from fresh list witch are not in songs_list
         for (final Song song : temp_to_add) {
             db.addSong(song);
         }
-//        Log.d(tag, "DONE!");
-        return  songs_list;
+        return songs_list;
     }
 
     /**
@@ -251,13 +221,13 @@ public class MusicLibrary extends AppCompatActivity {
     }
 
     /**
-     * Sunc button listener
+     * Sznc button listener
      */
     private View.OnClickListener btSyncListener = new View.OnClickListener() {
         @Override
         public void onClick(final View v) {
             ContentResolver contentResolver = getContentResolver();
-            classMusicList = syncSongToDB(contentResolver,db);
+            classMusicList = syncSongToDB(contentResolver, db);
             dbSongsToView();
         }
     };
@@ -266,7 +236,5 @@ public class MusicLibrary extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(tag, " super.onResume();\n");
-
     }
 }

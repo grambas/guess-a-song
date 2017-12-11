@@ -12,6 +12,7 @@ package isdp.guess_a_song.utils;
 
 public class Constants {
 
+    public final static boolean DEBUG_MODE = true;
 
     //messages
 
